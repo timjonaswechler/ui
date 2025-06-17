@@ -1,6 +1,6 @@
 # Radix Themes UI
 
-Dieses Repository enthaelt eine Sammlung von React-Komponenten und Styles, die auf den [Radix Themes](https://www.radix-ui.com/themes) basieren. Sie dienen als Ausgangspunkt, um wiederverwendbare UI-Bausteine in eigenen Projekten einzusetzen oder weiter nach Bevy zu portieren.
+Dieses Repository enthaelt unter `radix_source` eine Sammlung von Dokumentationsdateien (*.mdx), die auf den [Radix Themes](https://www.radix-ui.com/themes) und [Radix Primitives](https://www.radix-ui.com/primitives) basieren. Sie dienen als Ausgangspunkt, um wiederverwendbare UI-Bausteine in einem eigenen Bevy 0.16 Projekt zu erstellen.
 
 ## Struktur des Projekts
 
@@ -10,5 +10,4 @@ Dieses Repository enthaelt eine Sammlung von React-Komponenten und Styles, die a
 
 ## Verwendung
 
-Die Dateien koennen direkt in eine bestehende React-Anwendung eingebunden werden. Anpassungen an den Styles koennen ueber die CSS-Dateien erfolgen. Fuer den geplanten Bevy-Port liefern diese Quellen die Grundlage, um das Look & Feel von Radix nach Rust zu uebertragen.
-
+Die Dateien (*.mdx) dienen der Referenz um die eigenen UIBausteine zu erstellen. 
