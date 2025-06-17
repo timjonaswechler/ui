@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import { getResponsiveClassNames, getResponsiveStyles } from './get-responsive-styles.js';
 import { isResponsiveObject } from './is-responsive-object.js';
 import { mergeStyles } from './merge-styles.js';
+import { hasOwnProperty } from './has-own-property.js';
+import { breakpoints } from '../props/prop-def.js';
 
 import type * as React from 'react';
 import type { PropDef } from '../props/prop-def.js';
@@ -108,9 +110,28 @@ function extractProps<
         continue;
       }
 
-      if (propDef.type === 'boolean' && value) {
-        // TODO handle responsive boolean props
-        className = classNames(className, propDef.className);
+      if (propDef.type === 'boolean') {
+        if (isResponsiveObject(value)) {
+          const classes: string[] = [];
+          for (const bp in value) {
+            if (!hasOwnProperty(value, bp) || !breakpoints.includes(bp as any)) {
+              continue;
+            }
+            if (value[bp]) {
+              const bpClassName =
+                bp === 'initial'
+                  ? propDef.className
+                  : `${bp}:${propDef.className}`;
+              classes.push(bpClassName);
+            }
+          }
+          className = classNames(className, classes.join(' '));
+          continue;
+        }
+
+        if (value) {
+          className = classNames(className, propDef.className);
+        }
         continue;
       }
     }
