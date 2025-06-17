@@ -1,36 +1,50 @@
 use bevy::prelude::*;
-use bevy_project::{AccentColor, ButtonBuilder, ButtonSize, ButtonVariant, RadixUIPlugin};
+use bevy_project::{AccentColor, ButtonBuilder, ButtonSize, ButtonVariant, RadixUIPlugin, ButtonClickEvent};
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(RadixUIPlugin)
         .add_systems(Startup, setup)
+        .add_systems(Update, handle_button_events)
         .run();
 }
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 
-    // Button mit verschiedenen Varianten
-    let button1 = ButtonBuilder::new("Solid Button")
+    // Demo verschiedener Button-Features
+    let solid_button = ButtonBuilder::new("Solid")
         .variant(ButtonVariant::Solid)
         .size(ButtonSize::Size2)
         .text("Solid Button")
         .build();
 
-    let button2 = ButtonBuilder::new("Soft Button")
+    let disabled_button = ButtonBuilder::new("Disabled")
         .variant(ButtonVariant::Soft)
         .size(ButtonSize::Size2)
-        .color(AccentColor::Indigo)
-        .text("Soft Button")
+        .text("Disabled Button")
+        .disabled()
         .build();
 
-    let button3 = ButtonBuilder::new("Outline Button")
+    let loading_button = ButtonBuilder::new("Loading")
+        .variant(ButtonVariant::Surface)
+        .size(ButtonSize::Size2)
+        .text("Loading Button")
+        .loading()
+        .build();
+
+    let outline_button = ButtonBuilder::new("Outline")
         .variant(ButtonVariant::Outline)
         .size(ButtonSize::Size3)
-        .high_contrast()
+        .color(AccentColor::Indigo)
         .text("Outline Button")
+        .build();
+
+    let ghost_button = ButtonBuilder::new("Ghost")
+        .variant(ButtonVariant::Ghost)
+        .size(ButtonSize::Size1)
+        .text("Ghost Button")
         .build();
 
     // Container für die Buttons
@@ -45,23 +59,38 @@ fn setup(mut commands: Commands) {
             ..default()
         })
         .with_children(|parent| {
-            parent.spawn(button1).with_children(|child| {
-                child.spawn((
-                    Text::new("Solid Button"),
-                    TextColor(Color::WHITE),
-                ));
-            });
-            parent.spawn(button2).with_children(|child| {
-                child.spawn((
-                    Text::new("Soft Button"),
-                    TextColor(Color::BLACK),
-                ));
-            });
-            parent.spawn(button3).with_children(|child| {
-                child.spawn((
-                    Text::new("Outline Button"),
-                    TextColor(Color::BLACK),
-                ));
-            });
+            // Titel
+            parent.spawn((
+                Text::new("Radix UI Button Demo"),
+                TextColor(Color::BLACK),
+                Node {
+                    margin: UiRect::bottom(Val::Px(20.0)),
+                    ..default()
+                },
+            ));
+
+            // Buttons
+            parent.spawn(solid_button);
+            parent.spawn(disabled_button);
+            parent.spawn(loading_button);
+            parent.spawn(outline_button);
+            parent.spawn(ghost_button);
+
+            // Info Text
+            parent.spawn((
+                Text::new("Hover over buttons to see hover effects!\nClick active buttons to see events in console.\nLoading button shows animated spinner!"),
+                TextColor(Color::srgb(0.5, 0.5, 0.5)),
+                Node {
+                    margin: UiRect::top(Val::Px(20.0)),
+                    ..default()
+                },
+            ));
         });
+}
+
+fn handle_button_events(mut events: EventReader<ButtonClickEvent>) {
+    for event in events.read() {
+        info!("🎉 Custom Button Event! Entity: {:?}, Variant: {:?}", 
+              event.button_entity, event.button_variant);
+    }
 }

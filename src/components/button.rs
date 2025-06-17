@@ -1,6 +1,15 @@
 use crate::theme::*;
-use bevy::prelude::*;
-use bevy_picking::prelude::{Pickable, Pointer, Click, Over, Out};
+use bevy::{
+    ecs::spawn::SpawnWith,
+    prelude::*,
+};
+use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer};
+
+#[derive(Event, Debug, Clone)]
+pub struct ButtonClickEvent {
+    pub button_entity: Entity,
+    pub button_variant: ButtonVariant,
+}
 
 #[derive(Component, Debug, Clone)]
 pub struct Button {
@@ -122,6 +131,8 @@ impl ButtonBuilder {
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();
         let border_radius = self.calculate_border_radius();
+        let text_color = self.calculate_text_color();
+        let display_text = self.text.unwrap_or_default();
 
         (
             Name::new(format!("{}_Button", self.name)),
@@ -129,8 +140,29 @@ impl ButtonBuilder {
             border_color,
             border_radius,
             background_color,
-            self.button,
             Pickable::default(),
+            Children::spawn(SpawnWith(move |parent: &mut ChildSpawner| {
+                if self.button.loading {
+                    // Spawn rotating spinner image
+                    parent.spawn((
+                        Name::new("Button Spinner"),
+                        Node {
+                            width: Val::Px(16.0),
+                            height: Val::Px(16.0),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },
+                        SpinnerAnimation::default(),
+                    ));
+                } else {
+                    parent.spawn((
+                        Name::new("Button Inner"),
+                        Text::new(display_text),
+                        text_color,
+                    ));
+                }
+            })),
         )
     }
 }
@@ -170,7 +202,7 @@ impl ButtonBuilder {
             None => &theme_colors.accent,
         };
 
-        let color = match self.button.variant {
+        let mut color = match self.button.variant {
             ButtonVariant::Classic => color_scale.step_9,
             ButtonVariant::Solid => color_scale.step_9,
             ButtonVariant::Soft => color_scale.step_3,
@@ -178,6 +210,12 @@ impl ButtonBuilder {
             ButtonVariant::Outline => Color::NONE,
             ButtonVariant::Ghost => Color::NONE,
         };
+
+        // Apply disabled state
+        if self.button.disabled {
+            let srgba = color.to_srgba();
+            color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
+        }
 
         BackgroundColor(color)
     }
@@ -215,26 +253,101 @@ impl ButtonBuilder {
             None => BorderRadius::all(Val::Px(4.0)),
         }
     }
+
+    fn calculate_text_color(&self) -> TextColor {
+        let color = match self.button.variant {
+            ButtonVariant::Classic | ButtonVariant::Solid => Color::WHITE,
+            ButtonVariant::Soft | ButtonVariant::Surface => Color::BLACK,
+            ButtonVariant::Outline | ButtonVariant::Ghost => Color::BLACK,
+        };
+
+        if self.button.disabled {
+            TextColor(Color::srgba(
+                color.to_srgba().red,
+                color.to_srgba().green,
+                color.to_srgba().blue,
+                0.5,
+            ))
+        } else {
+            TextColor(color)
+        }
+    }
+}
+
+#[derive(Component)]
+pub struct SpinnerAnimation {
+    pub rotation_speed: f32,
+}
+
+impl Default for SpinnerAnimation {
+    fn default() -> Self {
+        Self {
+            rotation_speed: 360.0, // Grad pro Sekunde
+        }
+    }
 }
 
 // System für Button-Interaktionen
 pub fn setup_button_interactions(mut commands: Commands, buttons: Query<Entity, Added<Button>>) {
     for entity in &buttons {
-        commands.entity(entity)
+        commands
+            .entity(entity)
             .observe(on_button_click)
             .observe(on_button_hover)
             .observe(on_button_hover_out);
     }
 }
 
+// System für Loading-Animation (rotiert PNG-Spinner)
+pub fn animate_loading_spinners(
+    time: Res<Time>,
+    mut spinners: Query<(&mut Transform, &SpinnerAnimation)>,
+) {
+    for (mut transform, spinner) in spinners.iter_mut() {
+        let rotation_delta = spinner.rotation_speed * time.delta_secs();
+        transform.rotation *= Quat::from_rotation_z(rotation_delta.to_radians());
+    }
+}
+
+// System um Spinner-Texture zu laden
+pub fn setup_spinner_textures(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    spinners: Query<Entity, (With<SpinnerAnimation>, Without<ImageNode>)>,
+) {
+    let spinner_texture: Handle<Image> = asset_server.load("texture/spinner_loading_icon.png");
+    
+    for entity in spinners.iter() {
+        commands.entity(entity).insert((
+            ImageNode::new(spinner_texture.clone()),
+            Node {
+                width: Val::Px(16.0),
+                height: Val::Px(16.0),
+                ..default()
+            },
+        ));
+    }
+}
+
 fn on_button_click(
     trigger: Trigger<Pointer<Click>>,
     buttons: Query<&Button>,
+    mut events: EventWriter<ButtonClickEvent>,
 ) {
     let entity = trigger.target();
     if let Ok(button) = buttons.get(entity) {
+        // Don't trigger if disabled or loading
+        if button.disabled || button.loading {
+            return;
+        }
+
         info!("Button clicked! Variant: {:?}", button.variant);
-        // Hier können weitere Click-Logiken implementiert werden
+
+        // Send custom event
+        events.write(ButtonClickEvent {
+            button_entity: entity,
+            button_variant: button.variant,
+        });
     }
 }
 
@@ -244,8 +357,13 @@ fn on_button_hover(
     mut bg_colors: Query<&mut BackgroundColor>,
 ) {
     let entity = trigger.target();
-    if let Ok(_button) = buttons.get(entity) {
+    if let Ok(button) = buttons.get(entity) {
         if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
+            // Don't apply hover effect if disabled or loading
+            if button.disabled || button.loading {
+                return;
+            }
+
             // Hover-Effekt: Farbe etwas aufhellen
             let current = bg_color.0;
             let srgba = current.to_srgba();
@@ -283,7 +401,7 @@ fn on_button_hover_out(
             };
 
             let color_scale = &theme_colors.accent;
-            let original_color = match button.variant {
+            let mut original_color = match button.variant {
                 ButtonVariant::Classic => color_scale.step_9,
                 ButtonVariant::Solid => color_scale.step_9,
                 ButtonVariant::Soft => color_scale.step_3,
@@ -291,7 +409,13 @@ fn on_button_hover_out(
                 ButtonVariant::Outline => Color::NONE,
                 ButtonVariant::Ghost => Color::NONE,
             };
-            
+
+            // Apply disabled state
+            if button.disabled {
+                let srgba = original_color.to_srgba();
+                original_color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
+            }
+
             bg_color.0 = original_color;
         }
     }
