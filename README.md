@@ -1,29 +1,14 @@
-# Radix Themes for Bevy
+# Radix Themes UI
 
-This repository contains a Rust crate that brings Radix UI styles and components to the [Bevy](https://bevyengine.org/) game engine. The goal is to provide ready-made building blocks so you can quickly assemble modern user interfaces in your Bevy projects.
+Dieses Repository enthaelt eine Sammlung von React-Komponenten und Styles, die auf den [Radix Themes](https://www.radix-ui.com/themes) basieren. Sie dienen als Ausgangspunkt, um wiederverwendbare UI-Bausteine in eigenen Projekten einzusetzen oder weiter nach Bevy zu portieren.
 
-## Repository Structure
+## Struktur des Projekts
 
-- `src/components` – reusable Bevy UI components styled with Radix
-- `src/styles` – CSS and style definitions ported from Radix
-- `src/utilities` – helper utilities used by the components
+- `src/components` – fertige React-Komponenten
+- `src/styles` – CSS-Dateien und Tokens
+- `src/utilities` – Hilfsfunktionen fuer Styling und Props
 
-## Usage
+## Verwendung
 
-Add the crate to your `Cargo.toml`:
+Die Dateien koennen direkt in eine bestehende React-Anwendung eingebunden werden. Anpassungen an den Styles koennen ueber die CSS-Dateien erfolgen. Fuer den geplanten Bevy-Port liefern diese Quellen die Grundlage, um das Look & Feel von Radix nach Rust zu uebertragen.
 
-```toml
-radix_bevy = { path = "." }
-```
-
-Then import the components and styles in your Bevy app:
-
-```rust
-use radix_bevy::prelude::*;
-
-fn setup_ui(mut commands: Commands) {
-    commands.spawn(Button::new("Click me"));
-}
-```
-
-Make sure to include the provided styles by loading them during startup. Explore the modules under `src` for more customization options.
