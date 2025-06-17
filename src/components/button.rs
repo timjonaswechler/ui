@@ -1,5 +1,6 @@
 use crate::theme::*;
 use bevy::prelude::*;
+use bevy_picking::prelude::{Pickable, Pointer, Click, Over, Out};
 
 #[derive(Component, Debug, Clone)]
 pub struct Button {
@@ -60,9 +61,9 @@ pub struct ButtonBuilder {
 }
 
 impl ButtonBuilder {
-    pub fn new(text: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
-            name: format!("{}_Button", text.into()),
+            name: format!("{}_Button", name.into()),
             button: Button::default(),
             text: None,
             children: Vec::new(),
@@ -123,12 +124,13 @@ impl ButtonBuilder {
         let border_radius = self.calculate_border_radius();
 
         (
-            Name::new(self.name),
+            Name::new(format!("{}_Button", self.name)),
             style,
-            background_color,
             border_color,
             border_radius,
+            background_color,
             self.button,
+            Pickable::default(),
         )
     }
 }
@@ -211,6 +213,86 @@ impl ButtonBuilder {
             Some(ButtonRadius::Large) => BorderRadius::all(Val::Px(8.0)),
             Some(ButtonRadius::Full) => BorderRadius::all(Val::Px(9999.0)),
             None => BorderRadius::all(Val::Px(4.0)),
+        }
+    }
+}
+
+// System für Button-Interaktionen
+pub fn setup_button_interactions(mut commands: Commands, buttons: Query<Entity, Added<Button>>) {
+    for entity in &buttons {
+        commands.entity(entity)
+            .observe(on_button_click)
+            .observe(on_button_hover)
+            .observe(on_button_hover_out);
+    }
+}
+
+fn on_button_click(
+    trigger: Trigger<Pointer<Click>>,
+    buttons: Query<&Button>,
+) {
+    let entity = trigger.target();
+    if let Ok(button) = buttons.get(entity) {
+        info!("Button clicked! Variant: {:?}", button.variant);
+        // Hier können weitere Click-Logiken implementiert werden
+    }
+}
+
+fn on_button_hover(
+    trigger: Trigger<Pointer<Over>>,
+    buttons: Query<&Button>,
+    mut bg_colors: Query<&mut BackgroundColor>,
+) {
+    let entity = trigger.target();
+    if let Ok(_button) = buttons.get(entity) {
+        if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
+            // Hover-Effekt: Farbe etwas aufhellen
+            let current = bg_color.0;
+            let srgba = current.to_srgba();
+            let r = srgba.red;
+            let g = srgba.green;
+            let b = srgba.blue;
+            let a = srgba.alpha;
+            bg_color.0 = Color::srgba(
+                (r + 0.1).min(1.0),
+                (g + 0.1).min(1.0),
+                (b + 0.1).min(1.0),
+                a,
+            );
+        }
+    }
+}
+
+fn on_button_hover_out(
+    trigger: Trigger<Pointer<Out>>,
+    buttons: Query<&Button>,
+    mut bg_colors: Query<&mut BackgroundColor>,
+) {
+    let entity = trigger.target();
+    if let Ok(button) = buttons.get(entity) {
+        if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
+            // Hover-Effekt zurücksetzen: Original-Farbe wiederherstellen
+            let theme_colors = ThemeColors {
+                accent: indigo_scale(),
+                gray: gray_scale(),
+                background: Color::WHITE,
+                panel_solid: Color::WHITE,
+                panel_translucent: Color::srgba(1.0, 1.0, 1.0, 0.9),
+                surface: Color::srgb(0.98, 0.98, 0.98),
+                overlay: Color::srgba(0.0, 0.0, 0.0, 0.5),
+            };
+
+            let color_scale = &theme_colors.accent;
+            let original_color = match button.variant {
+                ButtonVariant::Classic => color_scale.step_9,
+                ButtonVariant::Solid => color_scale.step_9,
+                ButtonVariant::Soft => color_scale.step_3,
+                ButtonVariant::Surface => color_scale.step_2,
+                ButtonVariant::Outline => Color::NONE,
+                ButtonVariant::Ghost => Color::NONE,
+            };
+            
+            bg_color.0 = original_color;
         }
     }
 }

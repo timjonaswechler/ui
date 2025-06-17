@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_project::{RadixUIPlugin, ButtonBuilder, ButtonVariant, ButtonSize, AccentColor};
+use bevy_project::{AccentColor, ButtonBuilder, ButtonSize, ButtonVariant, RadixUIPlugin};
 
 fn main() {
     App::new()
@@ -46,13 +46,22 @@ fn setup(mut commands: Commands) {
         })
         .with_children(|parent| {
             parent.spawn(button1).with_children(|child| {
-                child.spawn(Text::new("Solid Button"));
+                child.spawn((
+                    Text::new("Solid Button"),
+                    TextColor(Color::WHITE),
+                ));
             });
             parent.spawn(button2).with_children(|child| {
-                child.spawn(Text::new("Soft Button"));
+                child.spawn((
+                    Text::new("Soft Button"),
+                    TextColor(Color::BLACK),
+                ));
             });
             parent.spawn(button3).with_children(|child| {
-                child.spawn(Text::new("Outline Button"));
+                child.spawn((
+                    Text::new("Outline Button"),
+                    TextColor(Color::BLACK),
+                ));
             });
         });
 }
