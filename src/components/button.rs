@@ -1,8 +1,5 @@
 use crate::theme::*;
-use bevy::{
-    ecs::spawn::SpawnWith,
-    prelude::*,
-};
+use bevy::{ecs::spawn::SpawnWith, prelude::*};
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer};
 
 #[derive(Event, Debug, Clone)]
@@ -133,16 +130,18 @@ impl ButtonBuilder {
         let border_radius = self.calculate_border_radius();
         let text_color = self.calculate_text_color();
         let display_text = self.text.unwrap_or_default();
-
+        let is_loading = self.button.loading;
+        
         (
             Name::new(format!("{}_Button", self.name)),
+            self.button,
             style,
             border_color,
             border_radius,
             background_color,
             Pickable::default(),
             Children::spawn(SpawnWith(move |parent: &mut ChildSpawner| {
-                if self.button.loading {
+                if is_loading {
                     // Spawn rotating spinner image
                     parent.spawn((
                         Name::new("Button Spinner"),
@@ -316,7 +315,7 @@ pub fn setup_spinner_textures(
     spinners: Query<Entity, (With<SpinnerAnimation>, Without<ImageNode>)>,
 ) {
     let spinner_texture: Handle<Image> = asset_server.load("texture/spinner_loading_icon.png");
-    
+
     for entity in spinners.iter() {
         commands.entity(entity).insert((
             ImageNode::new(spinner_texture.clone()),
