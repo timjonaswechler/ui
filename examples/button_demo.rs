@@ -1,5 +1,7 @@
 use bevy::prelude::*;
-use bevy_project::{AccentColor, ButtonBuilder, ButtonSize, ButtonVariant, RadixUIPlugin, ButtonClickEvent};
+use bevy_project::{
+    AccentColor, ButtonBuilder, ButtonClickEvent, ButtonSize, ButtonVariant, RadixUIPlugin,
+};
 
 fn main() {
     App::new()
@@ -90,7 +92,9 @@ fn setup(mut commands: Commands) {
 
 fn handle_button_events(mut events: EventReader<ButtonClickEvent>) {
     for event in events.read() {
-        info!("🎉 Custom Button Event! Entity: {:?}, Variant: {:?}", 
-              event.button_entity, event.button_variant);
+        info!(
+            "🎉 Custom Button Event! Entity: {:?}, Variant: {:?}",
+            event.button_entity, event.button_variant
+        );
     }
 }
