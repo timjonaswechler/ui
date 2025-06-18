@@ -8,8 +8,8 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(RadixUIPlugin)
-        // Set theme mode at startup - change this to ThemeMode::Dark for dark theme
-        .insert_resource(ThemeMode::Light)
+        // 🌙 Set to Dark theme - this is all you need to change!
+        .insert_resource(ThemeMode::Dark)
         .add_systems(Startup, setup)
         .add_systems(Update, handle_button_events)
         .run();
@@ -18,55 +18,34 @@ fn main() {
 fn setup(mut commands: Commands, tokens: Res<ThemeTokens>, theme_mode: Res<ThemeMode>) {
     commands.spawn(Camera2d);
 
-    // Demo verschiedener Button-Features using new theme system
-    let solid_button = ButtonBuilder::new("Solid")
+    // Same button setup as the light theme demo
+    let primary_button = ButtonBuilder::new("Primary")
         .variant(ButtonVariant::Solid)
         .size(ButtonSize::Size2)
-        .text("Primary Solid")
+        .text("Primary Action")
         .build_with_theme(&tokens);
 
     let secondary_button = ButtonBuilder::new("Secondary")
         .variant(ButtonVariant::Soft)
         .size(ButtonSize::Size2)
-        .text("Secondary Soft")
+        .text("Secondary")
         .build_with_theme(&tokens);
 
-    let disabled_button = ButtonBuilder::new("Disabled")
-        .variant(ButtonVariant::Solid)
-        .size(ButtonSize::Size2)
-        .text("Disabled Button")
-        .disabled()
-        .build_with_theme(&tokens);
-
-    let loading_button = ButtonBuilder::new("Loading")
-        .variant(ButtonVariant::Surface)
-        .size(ButtonSize::Size2)
-        .text("Loading Button")
-        .loading()
-        .build_with_theme(&tokens);
-
-    let outline_button = ButtonBuilder::new("Outline")
-        .variant(ButtonVariant::Outline)
-        .size(ButtonSize::Size3)
-        .color(AccentColor::Blue)
-        .text("Outline Button")
-        .build_with_theme(&tokens);
-
-    let ghost_button = ButtonBuilder::new("Ghost")
-        .variant(ButtonVariant::Ghost)
-        .size(ButtonSize::Size1)
-        .text("Ghost Button")
-        .build_with_theme(&tokens);
-
-    // Destructive button example
-    let destructive_button = ButtonBuilder::new("Destructive")
+    let danger_button = ButtonBuilder::new("Danger")
         .variant(ButtonVariant::Solid)
         .size(ButtonSize::Size2)
         .color(AccentColor::Red)
         .text("Delete")
         .build_with_theme(&tokens);
 
-    // Container für die Buttons with themed background
+    let outline_button = ButtonBuilder::new("Outline")
+        .variant(ButtonVariant::Outline)
+        .size(ButtonSize::Size2)
+        .color(AccentColor::Green)
+        .text("Save")
+        .build_with_theme(&tokens);
+
+    // Dark themed container
     commands
         .spawn((
             Node {
@@ -84,12 +63,7 @@ fn setup(mut commands: Commands, tokens: Res<ThemeTokens>, theme_mode: Res<Theme
         .with_children(|parent| {
             // Title
             parent.spawn((
-                Text::new(format!("Game UI Demo - {} Theme", 
-                    match *theme_mode {
-                        ThemeMode::Light => "Light",
-                        ThemeMode::Dark => "Dark",
-                    }
-                )),
+                Text::new(format!("🌙 Dark Theme Demo")),
                 TextColor(tokens.semantic.foreground),
                 Node {
                     margin: UiRect::bottom(Val::Px(32.0)),
@@ -97,7 +71,7 @@ fn setup(mut commands: Commands, tokens: Res<ThemeTokens>, theme_mode: Res<Theme
                 },
             ));
 
-            // Button Grid - Main Actions
+            // Button Grid
             parent.spawn((
                 Node {
                     flex_direction: FlexDirection::Row,
@@ -106,41 +80,28 @@ fn setup(mut commands: Commands, tokens: Res<ThemeTokens>, theme_mode: Res<Theme
                     ..default()
                 },
             )).with_children(|row| {
-                row.spawn(solid_button);
+                row.spawn(primary_button);
                 row.spawn(secondary_button);
-                row.spawn(outline_button);
             });
 
-            // Button Grid - States
             parent.spawn((
                 Node {
                     flex_direction: FlexDirection::Row,
                     column_gap: Val::Px(12.0),
-                    margin: UiRect::bottom(Val::Px(16.0)),
                     ..default()
                 },
             )).with_children(|row| {
-                row.spawn(disabled_button);
-                row.spawn(loading_button);
-                row.spawn(ghost_button);
+                row.spawn(outline_button);
+                row.spawn(danger_button);
             });
-
-            // Destructive action
-            parent.spawn(destructive_button);
 
             // Info Text
             parent.spawn((
-                Text::new(format!(
-                    "🎮 Game-Ready Theme System ({})\n• Consistent button variants\n• Proper disabled & loading states\n• Semantic color tokens\n• Change ThemeMode in main() to switch themes", 
-                    match *theme_mode {
-                        ThemeMode::Light => "Light Mode",
-                        ThemeMode::Dark => "Dark Mode",
-                    }
-                )),
+                Text::new("🎮 Dark Theme Active!\nSame theme system, different colors.\nChange ThemeMode::Dark to ThemeMode::Light in main()."),
                 TextColor(tokens.semantic.muted_foreground),
                 Node {
                     margin: UiRect::top(Val::Px(24.0)),
-                    max_width: Val::Px(500.0),
+                    max_width: Val::Px(400.0),
                     ..default()
                 },
             ));
@@ -150,8 +111,8 @@ fn setup(mut commands: Commands, tokens: Res<ThemeTokens>, theme_mode: Res<Theme
 fn handle_button_events(mut events: EventReader<ButtonClickEvent>) {
     for event in events.read() {
         info!(
-            "🎮 Button clicked! Entity: {:?}, Variant: {:?}",
-            event.button_entity, event.button_variant
+            "🌙 Dark theme button clicked! Variant: {:?}",
+            event.button_variant
         );
     }
 }

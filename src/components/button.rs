@@ -124,11 +124,16 @@ impl ButtonBuilder {
 
 impl ButtonBuilder {
     pub fn build(self) -> impl Bundle {
-        let style = self.calculate_style();
-        let background_color = self.calculate_background_color();
-        let border_color = self.calculate_border_color();
-        let border_radius = self.calculate_border_radius();
-        let text_color = self.calculate_text_color();
+        let default_tokens = ThemeTokens::default();
+        self.build_with_theme(&default_tokens)
+    }
+    
+    pub fn build_with_theme(self, tokens: &ThemeTokens) -> impl Bundle {
+        let style = self.calculate_style(tokens);
+        let background_color = self.calculate_background_color(tokens);
+        let border_color = self.calculate_border_color(tokens);
+        let border_radius = self.calculate_border_radius(tokens);
+        let text_color = self.calculate_text_color(tokens);
         let display_text = self.text.unwrap_or_default();
         let is_loading = self.button.loading;
         
@@ -167,12 +172,14 @@ impl ButtonBuilder {
 }
 
 impl ButtonBuilder {
-    fn calculate_style(&self) -> Node {
-        let (width, height, padding) = match self.button.size {
-            ButtonSize::Size1 => (Val::Auto, Val::Px(24.0), UiRect::all(Val::Px(8.0))),
-            ButtonSize::Size2 => (Val::Auto, Val::Px(32.0), UiRect::all(Val::Px(12.0))),
-            ButtonSize::Size3 => (Val::Auto, Val::Px(40.0), UiRect::all(Val::Px(16.0))),
+    fn calculate_style(&self, tokens: &ThemeTokens) -> Node {
+        let (width, height, padding_size) = match self.button.size {
+            ButtonSize::Size1 => (Val::Auto, Val::Px(24.0), SpacingSize::Sm),
+            ButtonSize::Size2 => (Val::Auto, Val::Px(32.0), SpacingSize::Md),
+            ButtonSize::Size3 => (Val::Auto, Val::Px(40.0), SpacingSize::Lg),
         };
+
+        let padding = self.themed_padding(&tokens.spacing, padding_size);
 
         Node {
             width,
@@ -185,91 +192,76 @@ impl ButtonBuilder {
         }
     }
 
-    fn calculate_background_color(&self) -> BackgroundColor {
-        let theme_colors = ThemeColors {
-            accent: indigo_scale(),
-            gray: gray_scale(),
-            background: Color::WHITE,
-            panel_solid: Color::WHITE,
-            panel_translucent: Color::srgba(1.0, 1.0, 1.0, 0.9),
-            surface: Color::srgb(0.98, 0.98, 0.98),
-            overlay: Color::srgba(0.0, 0.0, 0.0, 0.5),
+    fn calculate_background_color(&self, tokens: &ThemeTokens) -> BackgroundColor {
+        let variant = match self.button.variant {
+            ButtonVariant::Classic => BackgroundVariant::Primary,
+            ButtonVariant::Solid => BackgroundVariant::Primary,
+            ButtonVariant::Soft => BackgroundVariant::Secondary,
+            ButtonVariant::Surface => BackgroundVariant::Muted,
+            ButtonVariant::Outline => BackgroundVariant::Transparent,
+            ButtonVariant::Ghost => BackgroundVariant::Transparent,
         };
 
-        let color_scale = match self.button.color {
-            Some(_) => &theme_colors.accent,
-            None => &theme_colors.accent,
-        };
-
-        let mut color = match self.button.variant {
-            ButtonVariant::Classic => color_scale.step_9,
-            ButtonVariant::Solid => color_scale.step_9,
-            ButtonVariant::Soft => color_scale.step_3,
-            ButtonVariant::Surface => color_scale.step_2,
-            ButtonVariant::Outline => Color::NONE,
-            ButtonVariant::Ghost => Color::NONE,
-        };
+        let mut bg_color = self.themed_background_color(&tokens.semantic, variant);
 
         // Apply disabled state
         if self.button.disabled {
-            let srgba = color.to_srgba();
-            color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
+            let srgba = bg_color.0.to_srgba();
+            bg_color.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
         }
 
-        BackgroundColor(color)
+        bg_color
     }
 
-    fn calculate_border_color(&self) -> BorderColor {
-        let theme_colors = ThemeColors {
-            accent: indigo_scale(),
-            gray: gray_scale(),
-            background: Color::WHITE,
-            panel_solid: Color::WHITE,
-            panel_translucent: Color::srgba(1.0, 1.0, 1.0, 0.9),
-            surface: Color::srgb(0.98, 0.98, 0.98),
-            overlay: Color::srgba(0.0, 0.0, 0.0, 0.5),
+    fn calculate_border_color(&self, tokens: &ThemeTokens) -> BorderColor {
+        let variant = match self.button.variant {
+            ButtonVariant::Outline => BorderVariant::Default,
+            _ => BorderVariant::Default, // Will be transparent since no border for other variants
         };
 
-        let color_scale = match self.button.color {
-            Some(_) => &theme_colors.accent,
-            None => &theme_colors.accent,
-        };
+        let mut border_color = self.themed_border_color(&tokens.semantic, variant);
 
-        let color = match self.button.variant {
-            ButtonVariant::Outline => color_scale.step_7,
-            _ => Color::NONE,
-        };
-
-        BorderColor(color)
-    }
-    fn calculate_border_radius(&self) -> BorderRadius {
-        match self.button.radius {
-            Some(ButtonRadius::None) => BorderRadius::all(Val::Px(0.0)),
-            Some(ButtonRadius::Small) => BorderRadius::all(Val::Px(2.0)),
-            Some(ButtonRadius::Medium) => BorderRadius::all(Val::Px(4.0)),
-            Some(ButtonRadius::Large) => BorderRadius::all(Val::Px(8.0)),
-            Some(ButtonRadius::Full) => BorderRadius::all(Val::Px(9999.0)),
-            None => BorderRadius::all(Val::Px(4.0)),
+        // Make border transparent for non-outline variants
+        if !matches!(self.button.variant, ButtonVariant::Outline) {
+            border_color.0 = Color::NONE;
         }
+
+        border_color
+    }
+    fn calculate_border_radius(&self, tokens: &ThemeTokens) -> BorderRadius {
+        let radius_size = match self.button.radius {
+            Some(ButtonRadius::None) => RadiusSize::None,
+            Some(ButtonRadius::Small) => RadiusSize::Sm,
+            Some(ButtonRadius::Medium) => RadiusSize::Md,
+            Some(ButtonRadius::Large) => RadiusSize::Lg,
+            Some(ButtonRadius::Full) => RadiusSize::Full,
+            None => RadiusSize::Md,
+        };
+
+        self.themed_border_radius(&tokens.radius, radius_size)
     }
 
-    fn calculate_text_color(&self) -> TextColor {
-        let color = match self.button.variant {
-            ButtonVariant::Classic | ButtonVariant::Solid => Color::WHITE,
-            ButtonVariant::Soft | ButtonVariant::Surface => Color::BLACK,
-            ButtonVariant::Outline | ButtonVariant::Ghost => Color::BLACK,
+    fn calculate_text_color(&self, tokens: &ThemeTokens) -> TextColor {
+        let variant = match self.button.variant {
+            ButtonVariant::Classic | ButtonVariant::Solid => TextVariant::Primary,
+            ButtonVariant::Soft | ButtonVariant::Surface => TextVariant::Default,
+            ButtonVariant::Outline | ButtonVariant::Ghost => TextVariant::Default,
         };
+
+        let mut text_color = self.themed_text_color(&tokens.semantic, variant);
 
         if self.button.disabled {
-            TextColor(Color::srgba(
-                color.to_srgba().red,
-                color.to_srgba().green,
-                color.to_srgba().blue,
-                0.5,
-            ))
-        } else {
-            TextColor(color)
+            let srgba = text_color.0.to_srgba();
+            text_color.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
         }
+
+        text_color
+    }
+
+    // Backward compatibility method for the old build()
+    fn calculate_style_default(&self) -> Node {
+        let default_tokens = ThemeTokens::default();
+        self.calculate_style(&default_tokens)
     }
 }
 
@@ -354,6 +346,7 @@ fn on_button_hover(
     trigger: Trigger<Pointer<Over>>,
     buttons: Query<&Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
+    tokens: Res<ThemeTokens>,
 ) {
     let entity = trigger.target();
     if let Ok(button) = buttons.get(entity) {
@@ -363,19 +356,37 @@ fn on_button_hover(
                 return;
             }
 
-            // Hover-Effekt: Farbe etwas aufhellen
-            let current = bg_color.0;
-            let srgba = current.to_srgba();
-            let r = srgba.red;
-            let g = srgba.green;
-            let b = srgba.blue;
-            let a = srgba.alpha;
-            bg_color.0 = Color::srgba(
-                (r + 0.1).min(1.0),
-                (g + 0.1).min(1.0),
-                (b + 0.1).min(1.0),
-                a,
-            );
+            // Apply hover effect based on button variant
+            let hover_color = match button.variant {
+                ButtonVariant::Classic | ButtonVariant::Solid => {
+                    // Slightly darker primary color
+                    let current = bg_color.0;
+                    let srgba = current.to_srgba();
+                    Color::srgba(
+                        (srgba.red * 0.9).max(0.0),
+                        (srgba.green * 0.9).max(0.0),
+                        (srgba.blue * 0.9).max(0.0),
+                        srgba.alpha,
+                    )
+                },
+                ButtonVariant::Soft | ButtonVariant::Surface => {
+                    // Slightly more opaque secondary color
+                    let current = bg_color.0;
+                    let srgba = current.to_srgba();
+                    Color::srgba(
+                        srgba.red,
+                        srgba.green,
+                        srgba.blue,
+                        (srgba.alpha + 0.1).min(1.0),
+                    )
+                },
+                ButtonVariant::Outline | ButtonVariant::Ghost => {
+                    // Add subtle background for outline/ghost variants
+                    tokens.semantic.muted
+                },
+            };
+
+            bg_color.0 = hover_color;
         }
     }
 }
@@ -384,38 +395,38 @@ fn on_button_hover_out(
     trigger: Trigger<Pointer<Out>>,
     buttons: Query<&Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
+    tokens: Res<ThemeTokens>,
 ) {
     let entity = trigger.target();
     if let Ok(button) = buttons.get(entity) {
         if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
-            // Hover-Effekt zurücksetzen: Original-Farbe wiederherstellen
-            let theme_colors = ThemeColors {
-                accent: indigo_scale(),
-                gray: gray_scale(),
-                background: Color::WHITE,
-                panel_solid: Color::WHITE,
-                panel_translucent: Color::srgba(1.0, 1.0, 1.0, 0.9),
-                surface: Color::srgb(0.98, 0.98, 0.98),
-                overlay: Color::srgba(0.0, 0.0, 0.0, 0.5),
+            // Restore original background color using theme tokens
+            let variant = match button.variant {
+                ButtonVariant::Classic => BackgroundVariant::Primary,
+                ButtonVariant::Solid => BackgroundVariant::Primary,
+                ButtonVariant::Soft => BackgroundVariant::Secondary,
+                ButtonVariant::Surface => BackgroundVariant::Muted,
+                ButtonVariant::Outline => BackgroundVariant::Transparent,
+                ButtonVariant::Ghost => BackgroundVariant::Transparent,
             };
 
-            let color_scale = &theme_colors.accent;
-            let mut original_color = match button.variant {
-                ButtonVariant::Classic => color_scale.step_9,
-                ButtonVariant::Solid => color_scale.step_9,
-                ButtonVariant::Soft => color_scale.step_3,
-                ButtonVariant::Surface => color_scale.step_2,
-                ButtonVariant::Outline => Color::NONE,
-                ButtonVariant::Ghost => Color::NONE,
+            let original_color = match variant {
+                BackgroundVariant::Primary => tokens.semantic.primary,
+                BackgroundVariant::Secondary => tokens.semantic.secondary,
+                BackgroundVariant::Muted => tokens.semantic.muted,
+                BackgroundVariant::Transparent => Color::NONE,
+                _ => tokens.semantic.background,
             };
 
             // Apply disabled state
-            if button.disabled {
+            let final_color = if button.disabled {
                 let srgba = original_color.to_srgba();
-                original_color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
-            }
+                Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5)
+            } else {
+                original_color
+            };
 
-            bg_color.0 = original_color;
+            bg_color.0 = final_color;
         }
     }
 }
