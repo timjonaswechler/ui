@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_project::components::{ButtonBuilder, ButtonClickEvent, ButtonVariant};
 use bevy_project::plugin::ForgeUiPlugin;
-use bevy_project::theme::color::{UiColorPalette, UiColorPalettes};
+use bevy_project::theme::color::theme;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
@@ -40,7 +40,7 @@ fn setup(mut commands: Commands) {
 
     let outline_button = ButtonBuilder::new("Outline")
         .variant(ButtonVariant::Outline)
-        .color(UiColorPalettes::default().green)
+        .color(theme().green)
         .text("Outline Button")
         .build();
 
@@ -52,7 +52,7 @@ fn setup(mut commands: Commands) {
     // Destructive button example
     let destructive_button = ButtonBuilder::new("Destructive")
         .variant(ButtonVariant::Solid)
-        .color(UiColorPalettes::default().red)
+        .color(theme().red)
         .text("Delete")
         .build();
 
@@ -72,7 +72,7 @@ fn setup(mut commands: Commands) {
             // Title
             parent.spawn((
                 Text::new(format!("Game UI Demo")),
-                TextColor(UiColorPalettes::default().black.step11),
+                TextColor(theme().black.step11),
                 Node {
                     margin: UiRect::bottom(Val::Px(32.0)),
                     ..default()

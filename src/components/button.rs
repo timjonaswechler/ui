@@ -1,14 +1,23 @@
 use crate::theme::{
-    color::{UiColorPalette, UiColorPalettes, ACCENT_COLOR_PALETTE},
+    color::{accent_palette, TextContrastLevel, UiColorPalette},
     layout::UiLayout,
 };
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
-use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer};
+use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer, Pressed, Released};
 
 #[derive(Event, Debug, Clone)]
 pub struct ButtonClickEvent {
     pub button_entity: Entity,
     pub button_variant: ButtonVariant,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ButtonState {
+    Normal,
+    Hover,
+    Active,
+    Disabled,
+    Loading,
 }
 
 #[derive(Component, Debug, Clone)]
@@ -20,6 +29,7 @@ pub struct Button {
     pub radius: Option<Val>,
     pub loading: bool,
     pub disabled: bool,
+    pub current_state: ButtonState,
 }
 
 impl Default for Button {
@@ -27,11 +37,12 @@ impl Default for Button {
         Self {
             variant: ButtonVariant::Solid,
             size: ButtonSize::Default,
-            color: ACCENT_COLOR_PALETTE.clone(),
+            color: accent_palette(),
             high_contrast: false,
             radius: None,
             loading: false,
             disabled: false,
+            current_state: ButtonState::Normal,
         }
     }
 }
@@ -124,6 +135,12 @@ impl ButtonBuilder {
         self
     }
 
+    pub fn auto_contrast(mut self) -> Self {
+        // Aktiviert automatische Kontrastberechnung (ist standardmäßig aktiviert)
+        // Diese Methode dient der Klarstellung und kann in Zukunft erweitert werden
+        self
+    }
+
     pub fn radius(mut self, radius: Val) -> Self {
         self.button.radius = Some(radius);
         self
@@ -155,7 +172,11 @@ impl ButtonBuilder {
         let node = self.calculate_style();
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();
-        let border_radius = BorderRadius::all(self.button.radius.unwrap_or(Val::Px(10.0)));
+        let border_radius = BorderRadius::all(
+            self.button
+                .radius
+                .unwrap_or(Val::Px(UiLayout::default().radius.base)),
+        );
         let text_color = self.calculate_text_color();
         let display_text = self.text.unwrap_or_default();
         let is_loading = self.button.loading;
@@ -194,6 +215,115 @@ impl ButtonBuilder {
     }
 }
 
+impl Button {
+    pub fn get_styling(&self, state: ButtonState) -> ButtonStyling {
+        let current_state = if self.disabled {
+            ButtonState::Disabled
+        } else if self.loading {
+            ButtonState::Loading
+        } else {
+            state
+        };
+
+        ButtonStyling {
+            background_color: self.calculate_background_color(current_state),
+            border_color: self.calculate_border_color(current_state),
+            text_color: self.calculate_text_color(current_state),
+        }
+    }
+
+    fn calculate_background_color(&self, state: ButtonState) -> BackgroundColor {
+        let base_color = match (self.variant, state) {
+            (ButtonVariant::Solid, ButtonState::Normal) => self.color.step09,
+            (ButtonVariant::Solid, ButtonState::Hover) => self.color.step08,
+            (ButtonVariant::Solid, ButtonState::Active) => self.color.step10,
+            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.step01,
+            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.step02,
+            (ButtonVariant::Ghost, ButtonState::Active) => self.color.step03,
+            (ButtonVariant::Soft, ButtonState::Normal)
+            | (ButtonVariant::Outline, ButtonState::Normal) => self.color.step04,
+            (ButtonVariant::Soft, ButtonState::Hover)
+            | (ButtonVariant::Outline, ButtonState::Hover) => self.color.step06,
+            (ButtonVariant::Soft, ButtonState::Active)
+            | (ButtonVariant::Outline, ButtonState::Active) => self.color.step07,
+            (_, ButtonState::Disabled) => match self.variant {
+                ButtonVariant::Solid => self.color.step09,
+                ButtonVariant::Ghost => self.color.step01,
+                ButtonVariant::Soft | ButtonVariant::Outline => self.color.step04,
+            },
+            (_, ButtonState::Loading) => match self.variant {
+                ButtonVariant::Solid => self.color.step09,
+                ButtonVariant::Ghost => self.color.step01,
+                ButtonVariant::Soft | ButtonVariant::Outline => self.color.step04,
+            },
+        };
+
+        let mut bg_color = BackgroundColor(base_color);
+
+        if state == ButtonState::Disabled {
+            let srgba = bg_color.0.to_srgba();
+            bg_color.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.6);
+        }
+
+        bg_color
+    }
+
+    fn calculate_border_color(&self, _state: ButtonState) -> BorderColor {
+        match self.variant {
+            ButtonVariant::Solid | ButtonVariant::Soft | ButtonVariant::Ghost => {
+                BorderColor(Color::NONE)
+            }
+            ButtonVariant::Outline => BorderColor(self.color.step11),
+        }
+    }
+
+    fn calculate_text_color(&self, state: ButtonState) -> TextColor {
+        let background_color = match (self.variant, state) {
+            (ButtonVariant::Solid, ButtonState::Normal) => self.color.step09,
+            (ButtonVariant::Solid, ButtonState::Hover) => self.color.step08,
+            (ButtonVariant::Solid, ButtonState::Active) => self.color.step10,
+            (ButtonVariant::Ghost, _) => self.color.step01,
+            (ButtonVariant::Soft, _) | (ButtonVariant::Outline, _) => self.color.step04,
+            (_, ButtonState::Disabled) | (_, ButtonState::Loading) => match self.variant {
+                ButtonVariant::Solid => self.color.step09,
+                ButtonVariant::Ghost => self.color.step01,
+                ButtonVariant::Soft | ButtonVariant::Outline => self.color.step04,
+            },
+        };
+
+        let contrast_level = if self.high_contrast {
+            TextContrastLevel::Accessible
+        } else {
+            TextContrastLevel::High
+        };
+
+        let mut text_color = self
+            .color
+            .get_text_color_for_contrast_level(&background_color, contrast_level);
+
+        if state == ButtonState::Disabled {
+            let background_luminance = UiColorPalette::calculate_luminance(&background_color);
+            if background_luminance > 0.5 {
+                text_color = self.color.step10;
+            } else {
+                text_color = self.color.step03;
+            }
+
+            let srgba = text_color.to_srgba();
+            text_color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.7);
+        }
+
+        TextColor(text_color)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ButtonStyling {
+    pub background_color: BackgroundColor,
+    pub border_color: BorderColor,
+    pub text_color: TextColor,
+}
+
 impl ButtonBuilder {
     fn calculate_style(&self) -> Node {
         let padding = UiRect::all(Val::Px(match self.button.size {
@@ -212,40 +342,17 @@ impl ButtonBuilder {
     }
 
     fn calculate_background_color(&self) -> BackgroundColor {
-        let mut bg_color = match self.button.variant {
-            (ButtonVariant::Solid) => BackgroundColor(self.button.color.step09),
-            (ButtonVariant::Ghost) => BackgroundColor(self.button.color.step01),
-            (ButtonVariant::Soft) | (ButtonVariant::Outline) => {
-                BackgroundColor(self.button.color.step03)
-            }
-        };
-
-        // Apply disabled state
-        if self.button.disabled {
-            let srgba = bg_color.0.to_srgba();
-            bg_color.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.6);
-        }
-
-        bg_color
+        self.button
+            .get_styling(ButtonState::Normal)
+            .background_color
     }
 
     fn calculate_border_color(&self) -> BorderColor {
-        match (self.button.variant) {
-            (ButtonVariant::Solid) | (ButtonVariant::Soft) | (ButtonVariant::Ghost) => {
-                BorderColor(Color::NONE)
-            }
-            (ButtonVariant::Outline) => BorderColor(self.button.color.step11),
-        }
+        self.button.get_styling(ButtonState::Normal).border_color
     }
 
     fn calculate_text_color(&self) -> TextColor {
-        let mut text_color = self.button.color.step01;
-
-        if self.button.disabled {
-            text_color = text_color.mix(&UiColorPalettes::default().black.step08, 0.5);
-        }
-
-        TextColor(text_color)
+        self.button.get_styling(ButtonState::Normal).text_color
     }
 }
 
@@ -269,7 +376,9 @@ pub fn setup_button_interactions(mut commands: Commands, buttons: Query<Entity, 
             .entity(entity)
             .observe(on_button_click)
             .observe(on_button_hover)
-            .observe(on_button_hover_out);
+            .observe(on_button_hover_out)
+            .observe(on_button_pressed)
+            .observe(on_button_released);
     }
 }
 
@@ -326,54 +435,108 @@ fn on_button_click(
     }
 }
 
+fn apply_button_styling(
+    entity: Entity,
+    button: &Button,
+    state: ButtonState,
+    bg_colors: &mut Query<&mut BackgroundColor>,
+    text_colors: &mut Query<&mut TextColor>,
+) {
+    let styling = button.get_styling(state);
+
+    if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
+        *bg_color = styling.background_color;
+    }
+
+    if let Ok(mut text_color) = text_colors.get_mut(entity) {
+        *text_color = styling.text_color;
+    }
+}
+
 fn on_button_hover(
     trigger: Trigger<Pointer<Over>>,
-    buttons: Query<&Button>,
+    mut buttons: Query<&mut Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
+    mut text_colors: Query<&mut TextColor>,
 ) {
     let entity = trigger.target();
-    if let Ok(button) = buttons.get(entity) {
-        if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
-            // Don't apply hover effect if disabled or loading
-            if button.disabled || button.loading {
-                return;
-            }
-
-            // Apply hover effect based on button variant
-            *bg_color = match button.variant {
-                ButtonVariant::Solid => BackgroundColor(button.color.step08),
-                ButtonVariant::Ghost => BackgroundColor(button.color.step02),
-                ButtonVariant::Soft | ButtonVariant::Outline => {
-                    BackgroundColor(button.color.step04)
-                }
-            };
+    if let Ok(mut button) = buttons.get_mut(entity) {
+        if button.disabled || button.loading {
+            return;
         }
+
+        button.current_state = ButtonState::Hover;
+        apply_button_styling(
+            entity,
+            &button,
+            ButtonState::Hover,
+            &mut bg_colors,
+            &mut text_colors,
+        );
     }
 }
 
 fn on_button_hover_out(
     trigger: Trigger<Pointer<Out>>,
-    buttons: Query<&Button>,
+    mut buttons: Query<&mut Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
+    mut text_colors: Query<&mut TextColor>,
 ) {
     let entity = trigger.target();
-    if let Ok(button) = buttons.get(entity) {
-        if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
-            let mut bg = match button.variant {
-                (ButtonVariant::Solid) => BackgroundColor(button.color.step09),
-                (ButtonVariant::Ghost) => BackgroundColor(button.color.step01),
-                (ButtonVariant::Soft) | (ButtonVariant::Outline) => {
-                    BackgroundColor(button.color.step03)
-                }
-            };
+    if let Ok(mut button) = buttons.get_mut(entity) {
+        button.current_state = ButtonState::Normal;
+        apply_button_styling(
+            entity,
+            &button,
+            ButtonState::Normal,
+            &mut bg_colors,
+            &mut text_colors,
+        );
+    }
+}
 
-            // Apply disabled state
-            if button.disabled {
-                let srgba = bg.0.to_srgba();
-                bg.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.6);
-            }
-
-            *bg_color = bg;
+fn on_button_pressed(
+    trigger: Trigger<Pointer<Pressed>>,
+    mut buttons: Query<&mut Button>,
+    mut bg_colors: Query<&mut BackgroundColor>,
+    mut text_colors: Query<&mut TextColor>,
+) {
+    let entity = trigger.target();
+    if let Ok(mut button) = buttons.get_mut(entity) {
+        if button.disabled || button.loading {
+            return;
         }
+
+        button.current_state = ButtonState::Active;
+        apply_button_styling(
+            entity,
+            &button,
+            ButtonState::Active,
+            &mut bg_colors,
+            &mut text_colors,
+        );
+    }
+}
+
+fn on_button_released(
+    trigger: Trigger<Pointer<Released>>,
+    mut buttons: Query<&mut Button>,
+    mut bg_colors: Query<&mut BackgroundColor>,
+    mut text_colors: Query<&mut TextColor>,
+) {
+    let entity = trigger.target();
+    if let Ok(mut button) = buttons.get_mut(entity) {
+        if button.disabled || button.loading {
+            return;
+        }
+
+        button.current_state = ButtonState::Hover;
+        apply_button_styling(
+            entity,
+            &button,
+            ButtonState::Hover,
+            &mut bg_colors,
+            &mut text_colors,
+        );
     }
 }

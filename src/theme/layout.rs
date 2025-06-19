@@ -1,5 +1,5 @@
 // crates/forge_ui/src/theme/layout.rs
-
+use crate::plugin::FONT_SIZE_BASE;
 use bevy::reflect::Reflect;
 
 #[derive(Debug, Clone, Reflect)]
@@ -74,14 +74,14 @@ impl Default for UiLayout {
                 x5l: 9.0,
             },
             radius: UiRadius {
-                xs: 0.125,
-                sm: 0.25,
-                base: 0.375,
-                lg: 0.5,
-                xl: 0.75,
-                x2l: 1.0,
-                x3l: 1.5,
-                x4l: 2.0,
+                xs: 0.125 * FONT_SIZE_BASE,
+                sm: 0.25 * FONT_SIZE_BASE,
+                base: 0.375 * FONT_SIZE_BASE,
+                lg: 0.5 * FONT_SIZE_BASE,
+                xl: 0.75 * FONT_SIZE_BASE,
+                x2l: 1.0 * FONT_SIZE_BASE,
+                x3l: 1.5 * FONT_SIZE_BASE,
+                x4l: 2.0 * FONT_SIZE_BASE,
                 full: f32::MAX,
             },
             border: UiSpacing {
