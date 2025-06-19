@@ -26,7 +26,7 @@ pub struct Button {
     pub size: ButtonSize,
     pub color: UiColorPalette,
     pub high_contrast: bool,
-    pub radius: Option<Val>,
+    pub radius: ButtonRadius,
     pub loading: bool,
     pub disabled: bool,
     pub current_state: ButtonState,
@@ -39,7 +39,7 @@ impl Default for Button {
             size: ButtonSize::Default,
             color: accent_palette(),
             high_contrast: false,
-            radius: None,
+            radius: ButtonRadius::None,
             loading: false,
             disabled: false,
             current_state: ButtonState::Normal,
@@ -92,9 +92,14 @@ pub enum ButtonSize {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ButtonRadius {
     None,
+    ExtraSmall,
     Small,
-    Medium,
+    Base,
     Large,
+    ExtraLarge,
+    Extra2Large,
+    Extra3Large,
+    Extra4Large,
     Full,
 }
 
@@ -141,8 +146,8 @@ impl ButtonBuilder {
         self
     }
 
-    pub fn radius(mut self, radius: Val) -> Self {
-        self.button.radius = Some(radius);
+    pub fn radius(mut self, radius: ButtonRadius) -> Self {
+        self.button.radius = radius;
         self
     }
 
@@ -172,11 +177,18 @@ impl ButtonBuilder {
         let node = self.calculate_style();
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();
-        let border_radius = BorderRadius::all(
-            self.button
-                .radius
-                .unwrap_or(Val::Px(UiLayout::default().radius.base)),
-        );
+        let border_radius = match self.button.radius {
+            ButtonRadius::None => Val::Px(0.0),
+            ButtonRadius::ExtraSmall => Val::Px(UiLayout::default().radius.xs),
+            ButtonRadius::Small => Val::Px(UiLayout::default().radius.sm),
+            ButtonRadius::Base => Val::Px(UiLayout::default().radius.base),
+            ButtonRadius::Large => Val::Px(UiLayout::default().radius.lg),
+            ButtonRadius::ExtraLarge => Val::Px(UiLayout::default().radius.xl),
+            ButtonRadius::Extra2Large => Val::Px(UiLayout::default().radius.x2l),
+            ButtonRadius::Extra3Large => Val::Px(UiLayout::default().radius.x3l),
+            ButtonRadius::Extra4Large => Val::Px(UiLayout::default().radius.x4l),
+            ButtonRadius::Full => Val::Px(UiLayout::default().radius.full),
+        };
         let text_color = self.calculate_text_color();
         let display_text = self.text.unwrap_or_default();
         let is_loading = self.button.loading;
@@ -186,7 +198,12 @@ impl ButtonBuilder {
             self.button,
             node,
             border_color,
-            border_radius,
+            BorderRadius {
+                top_left: border_radius,
+                top_right: border_radius,
+                bottom_left: border_radius,
+                bottom_right: border_radius,
+            },
             background_color,
             Pickable::default(),
             Children::spawn(SpawnWith(move |parent: &mut ChildSpawner| {

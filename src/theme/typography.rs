@@ -1,5 +1,5 @@
 // z.B. in crates/forge_ui/src/theme/typography.rs
-use crate::plugin::FONT_SIZE_BASE;
+use crate::plugin::{FONT_SIZE_BASE, SCALING};
 use bevy::asset::Asset;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -38,19 +38,19 @@ pub struct FontSize {
 impl Default for FontSize {
     fn default() -> Self {
         Self {
-            xs: 0.75 * FONT_SIZE_BASE, // Es ist oft besser, absolute Pixelgrößen zu definieren
-            sm: 0.875 * FONT_SIZE_BASE, // oder die Multiplikation später in der UI-Logik durchzuführen.
-            base: 1.0 * FONT_SIZE_BASE, // Annahme: base = 16px
-            lg: 1.125 * FONT_SIZE_BASE,
-            xl: 1.25 * FONT_SIZE_BASE,
-            x2l: 1.5 * FONT_SIZE_BASE,
-            x3l: 1.875 * FONT_SIZE_BASE,
-            x4l: 2.25 * FONT_SIZE_BASE,
-            x5l: 3.0 * FONT_SIZE_BASE,
-            x6l: 3.75 * FONT_SIZE_BASE,
-            x7l: 4.5 * FONT_SIZE_BASE,
-            x8l: 6.0 * FONT_SIZE_BASE,
-            x9l: 8.0 * FONT_SIZE_BASE,
+            xs: 0.75 * FONT_SIZE_BASE * SCALING,
+            sm: 0.875 * FONT_SIZE_BASE * SCALING,
+            base: 1.0 * FONT_SIZE_BASE * SCALING,
+            lg: 1.125 * FONT_SIZE_BASE * SCALING,
+            xl: 1.25 * FONT_SIZE_BASE * SCALING,
+            x2l: 1.5 * FONT_SIZE_BASE * SCALING,
+            x3l: 1.875 * FONT_SIZE_BASE * SCALING,
+            x4l: 2.25 * FONT_SIZE_BASE * SCALING,
+            x5l: 3.0 * FONT_SIZE_BASE * SCALING,
+            x6l: 3.75 * FONT_SIZE_BASE * SCALING,
+            x7l: 4.5 * FONT_SIZE_BASE * SCALING,
+            x8l: 6.0 * FONT_SIZE_BASE * SCALING,
+            x9l: 8.0 * FONT_SIZE_BASE * SCALING,
         }
     }
 }

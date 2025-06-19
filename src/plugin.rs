@@ -14,9 +14,9 @@ pub enum UiState {
 }
 
 pub(crate) const FONT_SIZE_BASE: f32 = 16.0;
-const SPACING_FACTOR: f32 = 0.25;
-const HIGH_CONTRAST: bool = false;
-const SCALING: f32 = 1.0;
+pub(crate) const SPACING_FACTOR: f32 = 0.25;
+pub(crate) const HIGH_CONTRAST: bool = false;
+pub(crate) const SCALING: f32 = 1.0;
 
 pub struct ForgeUiPlugin;
 
