@@ -1,96 +1,78 @@
 use bevy::prelude::*;
-use bevy_project::{
-    AccentColor, ButtonBuilder, ButtonClickEvent, ButtonSize, ButtonVariant, RadixUIPlugin,
-    ThemeTokens, ThemeMode,
-};
-
+use bevy_project::components::{ButtonBuilder, ButtonClickEvent, ButtonVariant};
+use bevy_project::plugin::ForgeUiPlugin;
+use bevy_project::theme::color::{UiColorPalette, UiColorPalettes};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(RadixUIPlugin)
+        .add_plugins(ForgeUiPlugin)
         // Set theme mode at startup - change this to ThemeMode::Dark for dark theme
-        .insert_resource(ThemeMode::Light)
         .add_systems(Startup, setup)
         .add_systems(Update, handle_button_events)
         .run();
 }
 
-fn setup(mut commands: Commands, tokens: Res<ThemeTokens>, theme_mode: Res<ThemeMode>) {
+fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 
     // Demo verschiedener Button-Features using new theme system
     let solid_button = ButtonBuilder::new("Solid")
         .variant(ButtonVariant::Solid)
-        .size(ButtonSize::Size2)
         .text("Primary Solid")
-        .build_with_theme(&tokens);
+        .build();
 
     let secondary_button = ButtonBuilder::new("Secondary")
         .variant(ButtonVariant::Soft)
-        .size(ButtonSize::Size2)
         .text("Secondary Soft")
-        .build_with_theme(&tokens);
+        .build();
 
     let disabled_button = ButtonBuilder::new("Disabled")
         .variant(ButtonVariant::Solid)
-        .size(ButtonSize::Size2)
         .text("Disabled Button")
         .disabled()
-        .build_with_theme(&tokens);
+        .build();
 
     let loading_button = ButtonBuilder::new("Loading")
-        .variant(ButtonVariant::Surface)
-        .size(ButtonSize::Size2)
+        .variant(ButtonVariant::Soft)
         .text("Loading Button")
         .loading()
-        .build_with_theme(&tokens);
+        .build();
 
     let outline_button = ButtonBuilder::new("Outline")
         .variant(ButtonVariant::Outline)
-        .size(ButtonSize::Size3)
-        .color(AccentColor::Blue)
+        .color(UiColorPalettes::default().amber)
         .text("Outline Button")
-        .build_with_theme(&tokens);
+        .build();
 
     let ghost_button = ButtonBuilder::new("Ghost")
         .variant(ButtonVariant::Ghost)
-        .size(ButtonSize::Size1)
         .text("Ghost Button")
-        .build_with_theme(&tokens);
+        .build();
 
     // Destructive button example
     let destructive_button = ButtonBuilder::new("Destructive")
         .variant(ButtonVariant::Solid)
-        .size(ButtonSize::Size2)
-        .color(AccentColor::Red)
+        .color(UiColorPalettes::default().red)
         .text("Delete")
-        .build_with_theme(&tokens);
+        .build();
 
     // Container für die Buttons with themed background
     commands
-        .spawn((
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Px(16.0),
-                padding: UiRect::all(Val::Px(24.0)),
-                ..default()
-            },
-            BackgroundColor(tokens.semantic.background),
-        ))
+        .spawn((Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(16.0),
+            padding: UiRect::all(Val::Px(24.0)),
+            ..default()
+        },))
         .with_children(|parent| {
             // Title
             parent.spawn((
-                Text::new(format!("Game UI Demo - {} Theme", 
-                    match *theme_mode {
-                        ThemeMode::Light => "Light",
-                        ThemeMode::Dark => "Dark",
-                    }
-                )),
-                TextColor(tokens.semantic.foreground),
+                Text::new(format!("Game UI Demo")),
+                TextColor(UiColorPalettes::default().black.step11),
                 Node {
                     margin: UiRect::bottom(Val::Px(32.0)),
                     ..default()
@@ -98,52 +80,35 @@ fn setup(mut commands: Commands, tokens: Res<ThemeTokens>, theme_mode: Res<Theme
             ));
 
             // Button Grid - Main Actions
-            parent.spawn((
-                Node {
+            parent
+                .spawn((Node {
                     flex_direction: FlexDirection::Row,
                     column_gap: Val::Px(12.0),
                     margin: UiRect::bottom(Val::Px(16.0)),
                     ..default()
-                },
-            )).with_children(|row| {
-                row.spawn(solid_button);
-                row.spawn(secondary_button);
-                row.spawn(outline_button);
-            });
+                },))
+                .with_children(|row| {
+                    row.spawn(solid_button);
+                    row.spawn(secondary_button);
+                    row.spawn(outline_button);
+                });
 
             // Button Grid - States
-            parent.spawn((
-                Node {
+            parent
+                .spawn((Node {
                     flex_direction: FlexDirection::Row,
                     column_gap: Val::Px(12.0),
                     margin: UiRect::bottom(Val::Px(16.0)),
                     ..default()
-                },
-            )).with_children(|row| {
-                row.spawn(disabled_button);
-                row.spawn(loading_button);
-                row.spawn(ghost_button);
-            });
+                },))
+                .with_children(|row| {
+                    row.spawn(disabled_button);
+                    row.spawn(loading_button);
+                    row.spawn(ghost_button);
+                });
 
             // Destructive action
             parent.spawn(destructive_button);
-
-            // Info Text
-            parent.spawn((
-                Text::new(format!(
-                    "🎮 Game-Ready Theme System ({})\n• Consistent button variants\n• Proper disabled & loading states\n• Semantic color tokens\n• Change ThemeMode in main() to switch themes", 
-                    match *theme_mode {
-                        ThemeMode::Light => "Light Mode",
-                        ThemeMode::Dark => "Dark Mode",
-                    }
-                )),
-                TextColor(tokens.semantic.muted_foreground),
-                Node {
-                    margin: UiRect::top(Val::Px(24.0)),
-                    max_width: Val::Px(500.0),
-                    ..default()
-                },
-            ));
         });
 }
 

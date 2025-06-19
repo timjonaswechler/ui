@@ -1,4 +1,10 @@
-use crate::theme::*;
+use crate::{
+    plugin::ACCENT_COLOR_PALETTE,
+    theme::{
+        color::{UiColorPalette, UiColorPaletteBasic, UiColorPalettes},
+        layout::UiLayout,
+    },
+};
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer};
 
@@ -12,9 +18,9 @@ pub struct ButtonClickEvent {
 pub struct Button {
     pub variant: ButtonVariant,
     pub size: ButtonSize,
-    pub color: Option<AccentColor>,
+    pub color: UiColorPalette,
     pub high_contrast: bool,
-    pub radius: Option<ButtonRadius>,
+    pub radius: Option<Val>,
     pub loading: bool,
     pub disabled: bool,
 }
@@ -23,8 +29,8 @@ impl Default for Button {
     fn default() -> Self {
         Self {
             variant: ButtonVariant::Solid,
-            size: ButtonSize::Size2,
-            color: None,
+            size: ButtonSize::Default,
+            color: ACCENT_COLOR_PALETTE.clone(),
             high_contrast: false,
             radius: None,
             loading: false,
@@ -33,21 +39,46 @@ impl Default for Button {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// Defines the visual style variant of a button
+///
+/// Buttons can have different visual styles which affect their background,
+/// border, and text colors. Each variant provides a different level of
+/// visual prominence and purpose.
+///
+/// # Variants
+/// * `Solid` - Full background color with high contrast text (default)
+/// * `Soft` - Light background color with darker text
+/// * `Outline` - Transparent background with border and dark text
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Component)]
 pub enum ButtonVariant {
-    Classic,
+    /// Full background color with high contrast text (default)
+    #[default]
     Solid,
+    /// Light background color with darker text
     Soft,
-    Surface,
+    /// Transparent background with border and dark text
     Outline,
     Ghost,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// Defines the size variant of a button
+///
+/// Buttons can have different size presets that affect their padding,
+/// text size, and overall dimensions.
+///
+/// # Variants
+/// * `Default` - Standard size for most scenarios (default)
+/// * `Small` - Compact size for space-constrained areas
+/// * `Large` - Expanded size for emphasis or improved touch targets
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Component)]
 pub enum ButtonSize {
-    Size1,
-    Size2,
-    Size3,
+    /// Standard size for most scenarios (default)
+    #[default]
+    Default,
+    /// Compact size for space-constrained areas
+    Small,
+    /// Expanded size for emphasis or improved touch targets
+    Large,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -86,8 +117,8 @@ impl ButtonBuilder {
         self
     }
 
-    pub fn color(mut self, color: AccentColor) -> Self {
-        self.button.color = Some(color);
+    pub fn color(mut self, color: UiColorPalette) -> Self {
+        self.button.color = color;
         self
     }
 
@@ -96,7 +127,7 @@ impl ButtonBuilder {
         self
     }
 
-    pub fn radius(mut self, radius: ButtonRadius) -> Self {
+    pub fn radius(mut self, radius: Val) -> Self {
         self.button.radius = Some(radius);
         self
     }
@@ -124,23 +155,18 @@ impl ButtonBuilder {
 
 impl ButtonBuilder {
     pub fn build(self) -> impl Bundle {
-        let default_tokens = ThemeTokens::default();
-        self.build_with_theme(&default_tokens)
-    }
-    
-    pub fn build_with_theme(self, tokens: &ThemeTokens) -> impl Bundle {
-        let style = self.calculate_style(tokens);
-        let background_color = self.calculate_background_color(tokens);
-        let border_color = self.calculate_border_color(tokens);
-        let border_radius = self.calculate_border_radius(tokens);
-        let text_color = self.calculate_text_color(tokens);
+        let node = self.calculate_style();
+        let background_color = self.calculate_background_color();
+        let border_color = self.calculate_border_color();
+        let border_radius = BorderRadius::all(self.button.radius.unwrap_or(Val::Px(0.0)));
+        let text_color = self.calculate_text_color();
         let display_text = self.text.unwrap_or_default();
         let is_loading = self.button.loading;
-        
+
         (
             Name::new(format!("{}_Button", self.name)),
             self.button,
-            style,
+            node,
             border_color,
             border_radius,
             background_color,
@@ -172,18 +198,14 @@ impl ButtonBuilder {
 }
 
 impl ButtonBuilder {
-    fn calculate_style(&self, tokens: &ThemeTokens) -> Node {
-        let (width, height, padding_size) = match self.button.size {
-            ButtonSize::Size1 => (Val::Auto, Val::Px(24.0), SpacingSize::Sm),
-            ButtonSize::Size2 => (Val::Auto, Val::Px(32.0), SpacingSize::Md),
-            ButtonSize::Size3 => (Val::Auto, Val::Px(40.0), SpacingSize::Lg),
-        };
-
-        let padding = self.themed_padding(&tokens.spacing, padding_size);
+    fn calculate_style(&self) -> Node {
+        let padding = UiRect::all(Val::Px(match self.button.size {
+            ButtonSize::Default => UiLayout::default().padding.base,
+            ButtonSize::Small => UiLayout::default().padding.sm,
+            ButtonSize::Large => UiLayout::default().padding.lg,
+        }));
 
         Node {
-            width,
-            height,
             padding,
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
@@ -192,76 +214,41 @@ impl ButtonBuilder {
         }
     }
 
-    fn calculate_background_color(&self, tokens: &ThemeTokens) -> BackgroundColor {
-        let variant = match self.button.variant {
-            ButtonVariant::Classic => BackgroundVariant::Primary,
-            ButtonVariant::Solid => BackgroundVariant::Primary,
-            ButtonVariant::Soft => BackgroundVariant::Secondary,
-            ButtonVariant::Surface => BackgroundVariant::Muted,
-            ButtonVariant::Outline => BackgroundVariant::Transparent,
-            ButtonVariant::Ghost => BackgroundVariant::Transparent,
+    fn calculate_background_color(&self) -> BackgroundColor {
+        let mut bg_color = match self.button.variant {
+            (ButtonVariant::Solid) => BackgroundColor(self.button.color.step09),
+            (ButtonVariant::Ghost) => BackgroundColor(self.button.color.step01),
+            (ButtonVariant::Soft) | (ButtonVariant::Outline) => {
+                BackgroundColor(self.button.color.step03)
+            }
         };
-
-        let mut bg_color = self.themed_background_color(&tokens.semantic, variant);
 
         // Apply disabled state
         if self.button.disabled {
             let srgba = bg_color.0.to_srgba();
-            bg_color.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
+            bg_color.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.6);
         }
 
         bg_color
     }
 
-    fn calculate_border_color(&self, tokens: &ThemeTokens) -> BorderColor {
-        let variant = match self.button.variant {
-            ButtonVariant::Outline => BorderVariant::Default,
-            _ => BorderVariant::Default, // Will be transparent since no border for other variants
-        };
-
-        let mut border_color = self.themed_border_color(&tokens.semantic, variant);
-
-        // Make border transparent for non-outline variants
-        if !matches!(self.button.variant, ButtonVariant::Outline) {
-            border_color.0 = Color::NONE;
+    fn calculate_border_color(&self) -> BorderColor {
+        match (self.button.variant) {
+            (ButtonVariant::Solid) | (ButtonVariant::Soft) | (ButtonVariant::Ghost) => {
+                BorderColor(Color::NONE)
+            }
+            (ButtonVariant::Outline) => BorderColor(self.button.color.step11),
         }
-
-        border_color
-    }
-    fn calculate_border_radius(&self, tokens: &ThemeTokens) -> BorderRadius {
-        let radius_size = match self.button.radius {
-            Some(ButtonRadius::None) => RadiusSize::None,
-            Some(ButtonRadius::Small) => RadiusSize::Sm,
-            Some(ButtonRadius::Medium) => RadiusSize::Md,
-            Some(ButtonRadius::Large) => RadiusSize::Lg,
-            Some(ButtonRadius::Full) => RadiusSize::Full,
-            None => RadiusSize::Md,
-        };
-
-        self.themed_border_radius(&tokens.radius, radius_size)
     }
 
-    fn calculate_text_color(&self, tokens: &ThemeTokens) -> TextColor {
-        let variant = match self.button.variant {
-            ButtonVariant::Classic | ButtonVariant::Solid => TextVariant::Primary,
-            ButtonVariant::Soft | ButtonVariant::Surface => TextVariant::Default,
-            ButtonVariant::Outline | ButtonVariant::Ghost => TextVariant::Default,
-        };
-
-        let mut text_color = self.themed_text_color(&tokens.semantic, variant);
+    fn calculate_text_color(&self) -> TextColor {
+        let mut text_color = self.button.color.step01;
 
         if self.button.disabled {
-            let srgba = text_color.0.to_srgba();
-            text_color.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
+            text_color = text_color.mix(&UiColorPalettes::default().black.step08, 0.5);
         }
 
-        text_color
-    }
-
-    // Backward compatibility method for the old build()
-    fn calculate_style_default(&self) -> Node {
-        let default_tokens = ThemeTokens::default();
-        self.calculate_style(&default_tokens)
+        TextColor(text_color)
     }
 }
 
@@ -284,8 +271,8 @@ pub fn setup_button_interactions(mut commands: Commands, buttons: Query<Entity, 
         commands
             .entity(entity)
             .observe(on_button_click)
-            .observe(on_button_hover)
-            .observe(on_button_hover_out);
+            .observe(on_button_hover);
+        // .observe(on_button_hover_out);
     }
 }
 
@@ -346,7 +333,6 @@ fn on_button_hover(
     trigger: Trigger<Pointer<Over>>,
     buttons: Query<&Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
-    tokens: Res<ThemeTokens>,
 ) {
     let entity = trigger.target();
     if let Ok(button) = buttons.get(entity) {
@@ -358,7 +344,7 @@ fn on_button_hover(
 
             // Apply hover effect based on button variant
             let hover_color = match button.variant {
-                ButtonVariant::Classic | ButtonVariant::Solid => {
+                ButtonVariant::Solid => {
                     // Slightly darker primary color
                     let current = bg_color.0;
                     let srgba = current.to_srgba();
@@ -368,8 +354,8 @@ fn on_button_hover(
                         (srgba.blue * 0.9).max(0.0),
                         srgba.alpha,
                     )
-                },
-                ButtonVariant::Soft | ButtonVariant::Surface => {
+                }
+                ButtonVariant::Soft => {
                     // Slightly more opaque secondary color
                     let current = bg_color.0;
                     let srgba = current.to_srgba();
@@ -379,11 +365,11 @@ fn on_button_hover(
                         srgba.blue,
                         (srgba.alpha + 0.1).min(1.0),
                     )
-                },
+                }
                 ButtonVariant::Outline | ButtonVariant::Ghost => {
                     // Add subtle background for outline/ghost variants
-                    tokens.semantic.muted
-                },
+                    Color::NONE
+                }
             };
 
             bg_color.0 = hover_color;
@@ -402,10 +388,8 @@ fn on_button_hover_out(
         if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
             // Restore original background color using theme tokens
             let variant = match button.variant {
-                ButtonVariant::Classic => BackgroundVariant::Primary,
                 ButtonVariant::Solid => BackgroundVariant::Primary,
                 ButtonVariant::Soft => BackgroundVariant::Secondary,
-                ButtonVariant::Surface => BackgroundVariant::Muted,
                 ButtonVariant::Outline => BackgroundVariant::Transparent,
                 ButtonVariant::Ghost => BackgroundVariant::Transparent,
             };
