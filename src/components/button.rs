@@ -1,9 +1,6 @@
-use crate::{
-    plugin::ACCENT_COLOR_PALETTE,
-    theme::{
-        color::{UiColorPalette, UiColorPaletteBasic, UiColorPalettes},
-        layout::UiLayout,
-    },
+use crate::theme::{
+    color::{UiColorPalette, UiColorPalettes, ACCENT_COLOR_PALETTE},
+    layout::UiLayout,
 };
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer};
@@ -158,7 +155,7 @@ impl ButtonBuilder {
         let node = self.calculate_style();
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();
-        let border_radius = BorderRadius::all(self.button.radius.unwrap_or(Val::Px(0.0)));
+        let border_radius = BorderRadius::all(self.button.radius.unwrap_or(Val::Px(10.0)));
         let text_color = self.calculate_text_color();
         let display_text = self.text.unwrap_or_default();
         let is_loading = self.button.loading;
@@ -271,8 +268,8 @@ pub fn setup_button_interactions(mut commands: Commands, buttons: Query<Entity, 
         commands
             .entity(entity)
             .observe(on_button_click)
-            .observe(on_button_hover);
-        // .observe(on_button_hover_out);
+            .observe(on_button_hover)
+            .observe(on_button_hover_out);
     }
 }
 
@@ -343,36 +340,13 @@ fn on_button_hover(
             }
 
             // Apply hover effect based on button variant
-            let hover_color = match button.variant {
-                ButtonVariant::Solid => {
-                    // Slightly darker primary color
-                    let current = bg_color.0;
-                    let srgba = current.to_srgba();
-                    Color::srgba(
-                        (srgba.red * 0.9).max(0.0),
-                        (srgba.green * 0.9).max(0.0),
-                        (srgba.blue * 0.9).max(0.0),
-                        srgba.alpha,
-                    )
-                }
-                ButtonVariant::Soft => {
-                    // Slightly more opaque secondary color
-                    let current = bg_color.0;
-                    let srgba = current.to_srgba();
-                    Color::srgba(
-                        srgba.red,
-                        srgba.green,
-                        srgba.blue,
-                        (srgba.alpha + 0.1).min(1.0),
-                    )
-                }
-                ButtonVariant::Outline | ButtonVariant::Ghost => {
-                    // Add subtle background for outline/ghost variants
-                    Color::NONE
+            *bg_color = match button.variant {
+                ButtonVariant::Solid => BackgroundColor(button.color.step08),
+                ButtonVariant::Ghost => BackgroundColor(button.color.step02),
+                ButtonVariant::Soft | ButtonVariant::Outline => {
+                    BackgroundColor(button.color.step04)
                 }
             };
-
-            bg_color.0 = hover_color;
         }
     }
 }
@@ -381,36 +355,25 @@ fn on_button_hover_out(
     trigger: Trigger<Pointer<Out>>,
     buttons: Query<&Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
-    tokens: Res<ThemeTokens>,
 ) {
     let entity = trigger.target();
     if let Ok(button) = buttons.get(entity) {
         if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
-            // Restore original background color using theme tokens
-            let variant = match button.variant {
-                ButtonVariant::Solid => BackgroundVariant::Primary,
-                ButtonVariant::Soft => BackgroundVariant::Secondary,
-                ButtonVariant::Outline => BackgroundVariant::Transparent,
-                ButtonVariant::Ghost => BackgroundVariant::Transparent,
-            };
-
-            let original_color = match variant {
-                BackgroundVariant::Primary => tokens.semantic.primary,
-                BackgroundVariant::Secondary => tokens.semantic.secondary,
-                BackgroundVariant::Muted => tokens.semantic.muted,
-                BackgroundVariant::Transparent => Color::NONE,
-                _ => tokens.semantic.background,
+            let mut bg = match button.variant {
+                (ButtonVariant::Solid) => BackgroundColor(button.color.step09),
+                (ButtonVariant::Ghost) => BackgroundColor(button.color.step01),
+                (ButtonVariant::Soft) | (ButtonVariant::Outline) => {
+                    BackgroundColor(button.color.step03)
+                }
             };
 
             // Apply disabled state
-            let final_color = if button.disabled {
-                let srgba = original_color.to_srgba();
-                Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5)
-            } else {
-                original_color
-            };
+            if button.disabled {
+                let srgba = bg.0.to_srgba();
+                bg.0 = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.6);
+            }
 
-            bg_color.0 = final_color;
+            *bg_color = bg;
         }
     }
 }

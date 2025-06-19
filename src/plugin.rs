@@ -1,10 +1,8 @@
 use crate::assets::IconAssets;
 use crate::components::ComponentsPlugin;
-use crate::theme::color::{UiColorPalette, UiColorPalettes};
 use crate::theme::typography::TypographyAssets;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
-use once_cell::sync::Lazy;
 
 #[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum UiState {
@@ -15,8 +13,6 @@ pub enum UiState {
     HotReload,
 }
 
-pub static ACCENT_COLOR_PALETTE: Lazy<UiColorPalette> =
-    Lazy::new(|| UiColorPalettes::default().indigo);
 pub(crate) const FONT_SIZE_BASE: f32 = 16.0;
 const SPACING_FACTOR: f32 = 0.25;
 const HIGH_CONTRAST: bool = false;

@@ -1,5 +1,9 @@
 // src/theme/runtime/color.rs
 use bevy::{prelude::*, text::cosmic_text::ttf_parser::feat};
+use once_cell::sync::Lazy;
+
+pub static ACCENT_COLOR_PALETTE: Lazy<UiColorPalette> =
+    Lazy::new(|| UiColorPalettes::default().indigo);
 
 #[derive(Debug, Clone)]
 pub struct UiAccentColorPalette(pub UiColorPalette);
@@ -34,11 +38,6 @@ pub struct UiColorPalettes {
     pub gold: UiColorPalette,
     pub brown: UiColorPalette,
     pub orange: UiColorPalette,
-    pub amber: UiColorPalette,
-    pub yellow: UiColorPalette,
-    pub lime: UiColorPalette,
-    pub mint: UiColorPalette,
-    pub sky: UiColorPalette,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -179,6 +178,9 @@ impl UiColorPalettes {
                 step12_a: Color::srgba(0.007843138, 0.0, 0.03137255, 0.8784314),
                 indicator: Color::srgba(0.5568628, 0.54901963, 0.6, 1.0),
                 track: Color::srgba(0.5568628, 0.54901963, 0.6, 1.0),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 1.000000, 1.000000, 0.8000),       // #ffffffcc
             },
             slate: UiColorPalette {
                 step01: Color::srgba(0.9882353, 0.9882353, 0.99215686, 1.0),
@@ -207,6 +209,9 @@ impl UiColorPalettes {
                 step12_a: Color::srgba(0.0, 0.019607844, 0.03529412, 0.8901961),
                 indicator: Color::srgba(0.54509807, 0.5529412, 0.59607846, 1.0),
                 track: Color::srgba(0.54509807, 0.5529412, 0.59607846, 1.0),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 1.000000, 1.000000, 0.8000),       // #ffffffcc
             },
             sage: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99215686, 0.9882353, 1.0),
@@ -235,6 +240,9 @@ impl UiColorPalettes {
                 step12_a: Color::srgba(0.0, 0.03137255, 0.019607844, 0.8980392),
                 indicator: Color::srgba(0.5254902, 0.5568628, 0.54509807, 1.0),
                 track: Color::srgba(0.5254902, 0.5568628, 0.54509807, 1.0),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 1.000000, 1.000000, 0.8000),       // #ffffffcc
             },
             olive: UiColorPalette {
                 step01: Color::srgba(0.9882353, 0.99215686, 0.9882353, 1.0),
@@ -263,6 +271,9 @@ impl UiColorPalettes {
                 step12_a: Color::srgba(0.003921569, 0.023529412, 0.0, 0.8901961),
                 indicator: Color::srgba(0.5372549, 0.5568628, 0.5294118, 1.0),
                 track: Color::srgba(0.5372549, 0.5568628, 0.5294118, 1.0),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 1.000000, 1.000000, 0.8000),       // #ffffffcc
             },
             sand: UiColorPalette {
                 step01: Color::srgba(0.99215686, 0.99215686, 0.9882353, 1.0),
@@ -291,6 +302,9 @@ impl UiColorPalettes {
                 step12_a: Color::srgba(0.023529412, 0.019607844, 0.0, 0.8901961),
                 indicator: Color::srgba(0.5529412, 0.5529412, 0.5254902, 1.0),
                 track: Color::srgba(0.5529412, 0.5529412, 0.5254902, 1.0),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 1.000000, 1.000000, 0.8000),       // #ffffffcc
             },
             tomato: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.9882353, 1.0),
@@ -319,6 +333,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.84313726, 0.14117648, 0.0, 0.85490197),
                 step11_a: Color::srgba(0.8039216, 0.13333334, 0.0, 0.91764706),
                 step12_a: Color::srgba(0.27450982, 0.03529412, 0.0, 0.8784314),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 0.964706, 0.960784, 0.8000),       // #fff6f5cc
             },
             red: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.9882353, 1.0),
@@ -347,6 +364,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.81960785, 0.0, 0.019607844, 0.75686276),
                 step11_a: Color::srgba(0.76862746, 0.0, 0.023529412, 0.827451),
                 step12_a: Color::srgba(0.33333334, 0.0, 0.050980393, 0.9098039),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 0.960784, 0.960784, 0.8000),       // #fff5f5cc
             },
             ruby: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.99215686, 1.0),
@@ -375,6 +395,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.8235294, 0.0, 0.17254902, 0.76862746),
                 step11_a: Color::srgba(0.75686276, 0.0, 0.1882353, 0.85882354),
                 step12_a: Color::srgba(0.33333334, 0.0, 0.08627451, 0.9098039),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 0.960784, 0.964706, 0.8000),       // #fff5f6cc
             },
             crimson: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.99215686, 1.0),
@@ -403,6 +426,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.84313726, 0.0, 0.3372549, 0.79607844),
                 step11_a: Color::srgba(0.76862746, 0.0, 0.30980393, 0.8862745),
                 step12_a: Color::srgba(0.3254902, 0.0, 0.14901961, 0.9137255),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.996078, 0.960784, 0.972549, 0.8000),       // #fef5f8cc
             },
             pink: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.99607843, 1.0),
@@ -431,6 +457,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.7607843, 0.0, 0.47843137, 0.78039217),
                 step11_a: Color::srgba(0.7137255, 0.0, 0.45490196, 0.8392157),
                 step12_a: Color::srgba(0.34901962, 0.0, 0.23137255, 0.92941177),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.996078, 0.960784, 0.980392, 0.8000),       // #fef5facc
             },
             plum: UiColorPalette {
                 step01: Color::srgba(0.99607843, 0.9882353, 1.0, 1.0),
@@ -459,6 +488,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.49803922, 0.0, 0.57254905, 0.73333335),
                 step11_a: Color::srgba(0.4509804, 0.0, 0.5254902, 0.75686276),
                 step12_a: Color::srgba(0.2509804, 0.0, 0.29411766, 0.9019608),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.992157, 0.960784, 0.992157, 0.8000),       // #fdf5fdcc
             },
             purple: UiColorPalette {
                 step01: Color::srgba(0.99607843, 0.9882353, 0.99607843, 1.0),
@@ -487,6 +519,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.3254902, 0.0, 0.61960787, 0.72156864),
                 step11_a: Color::srgba(0.32156864, 0.0, 0.6039216, 0.7294118),
                 step12_a: Color::srgba(0.14509805, 0.0, 0.28627452, 0.8745098),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.980392, 0.960784, 0.996078, 0.8000),       // #faf5fecc
             },
             violet: UiColorPalette {
                 step01: Color::srgba(0.99215686, 0.9882353, 0.99607843, 1.0),
@@ -515,6 +550,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.13725491, 0.0, 0.67058825, 0.69803923),
                 step11_a: Color::srgba(0.12156863, 0.0, 0.6, 0.6862745),
                 step12_a: Color::srgba(0.043137256, 0.0, 0.2627451, 0.8509804),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.976471, 0.964706, 1.000000, 0.8000),       // #f9f6ffcc
             },
             iris: UiColorPalette {
                 step01: Color::srgba(0.99215686, 0.99215686, 1.0, 1.0),
@@ -543,6 +581,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.0, 0.7137255, 0.68235296),
                 step11_a: Color::srgba(0.023529412, 0.0, 0.67058825, 0.6745098),
                 step12_a: Color::srgba(0.0, 0.007843138, 0.27450982, 0.84705883),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.964706, 0.964706, 1.000000, 0.8000),       // #f6f6ffcc
             },
             indigo: UiColorPalette {
                 step01: Color::srgba(0.99215686, 0.99215686, 0.99607843, 1.0),
@@ -571,6 +612,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.18039216, 0.7882353, 0.8),
                 step11_a: Color::srgba(0.0, 0.16862746, 0.7176471, 0.77254903),
                 step12_a: Color::srgba(0.0, 0.0627451, 0.27450982, 0.8784314),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.960784, 0.972549, 1.000000, 0.8000),       // #f5f8ffcc
             },
             blue: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99215686, 1.0, 1.0),
@@ -629,6 +673,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.5803922, 0.7176471, 0.972549),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.5686275, 0.9372549),
                 step12_a: Color::srgba(0.0, 0.19607843, 0.24313726, 0.9490196),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.937255, 0.976471, 0.980392, 0.8000),       // #eff9facc
             },
             teal: UiColorPalette {
                 step01: Color::srgba(0.98039216, 0.99607843, 0.99215686, 1.0),
@@ -657,6 +704,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.5882353, 0.5176471, 0.9490196),
                 step11_a: Color::srgba(0.0, 0.52156866, 0.4509804, 1.0),
                 step12_a: Color::srgba(0.0, 0.2, 0.1764706, 0.9490196),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.941176, 0.980392, 0.972549, 0.8000),       // #f0faf8cc
             },
             jade: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99607843, 0.99215686, 1.0),
@@ -685,6 +735,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.5294118, 0.39215687, 0.8509804),
                 step11_a: Color::srgba(0.0, 0.44313726, 0.32156864, 0.8745098),
                 step12_a: Color::srgba(0.0, 0.13333334, 0.09019608, 0.8862745),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.945098, 0.980392, 0.960784, 0.8000),       // #f1faf5cc
             },
             green: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99607843, 0.9882353, 1.0),
@@ -713,6 +766,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.5254902, 0.2784314, 0.83137256),
                 step11_a: Color::srgba(0.0, 0.44313726, 0.24705882, 0.87058824),
                 step12_a: Color::srgba(0.0, 0.14901961, 0.08627451, 0.9019608),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.945098, 0.980392, 0.956863, 0.8000),       // #f1faf4cc
             },
             grass: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99607843, 0.9843137, 1.0),
@@ -741,6 +797,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.48235294, 0.09019608, 0.75686276),
                 step11_a: Color::srgba(0.0, 0.39607844, 0.078431375, 0.8352941),
                 step12_a: Color::srgba(0.0, 0.1254902, 0.023529412, 0.8745098),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.952941, 0.980392, 0.952941, 0.8000),       // #f3faf3cc
             },
             bronze: UiColorPalette {
                 step01: Color::srgba(0.99215686, 0.9882353, 0.9882353, 1.0),
@@ -799,6 +858,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.28627452, 0.1764706, 0.0, 0.6313726),
                 step11_a: Color::srgba(0.21176471, 0.12941177, 0.0, 0.7058824),
                 step12_a: Color::srgba(0.07450981, 0.047058824, 0.0, 0.83137256),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.976471, 0.972549, 0.937255, 0.8000),       // #f9f8efcc
             },
             brown: UiColorPalette {
                 step01: Color::srgba(0.99607843, 0.99215686, 0.9882353, 1.0),
@@ -827,6 +889,8 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.44705883, 0.2, 0.0, 0.6745098),
                 step11_a: Color::srgba(0.32156864, 0.12941177, 0.0, 0.7254902),
                 step12_a: Color::srgba(0.078431375, 0.023529412, 0.0, 0.81960785),
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.984314, 0.972549, 0.956863, 0.8000),       // #fbf8f4cc
             },
             orange: UiColorPalette {
                 step01: Color::srgba(0.99607843, 0.9882353, 0.9843137, 1.0),
@@ -855,6 +919,8 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.9372549, 0.37254903, 0.0, 1.0),
                 step11_a: Color::srgba(0.8, 0.30588236, 0.0, 1.0),
                 step12_a: Color::srgba(0.2627451, 0.07058824, 0.0, 0.8862745),
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(1.000000, 0.960784, 0.913725, 0.8000),       // #fff5e9cc
             },
         }
     }
@@ -919,6 +985,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(1.00000000, 1.00000000, 1.00000000, 0.68627451),
                 step12: Color::srgba(0.93333333, 0.93333333, 0.93333333, 1.00000000),
                 step12_a: Color::srgba(1.00000000, 1.00000000, 1.00000000, 0.92941176),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.129412, 0.129412, 0.129412, 0.5020),       // #21212180
             },
             mauve: UiColorPalette {
                 step01: Color::srgba(0.07058824, 0.06666667, 0.07450980, 1.00000000),
@@ -947,6 +1016,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.96078431, 0.94509804, 1.00000000, 0.71764706),
                 step12: Color::srgba(0.93333333, 0.93333333, 0.94117647, 1.00000000),
                 step12_a: Color::srgba(0.99215686, 0.99215686, 1.00000000, 0.93725490),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.133333, 0.129412, 0.137255, 0.5020),       // #22212380
             },
             slate: UiColorPalette {
                 step01: Color::srgba(0.06666667, 0.06666667, 0.07450980, 1.00000000),
@@ -975,6 +1047,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.94509804, 0.96862745, 0.99607843, 0.70980392),
                 step12: Color::srgba(0.92941176, 0.93333333, 0.94117647, 1.00000000),
                 step12_a: Color::srgba(0.98823529, 0.99215686, 1.00000000, 0.93725490),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.121569, 0.129412, 0.137255, 0.5020),       // #1f212380
             },
             sage: UiColorPalette {
                 step01: Color::srgba(0.06274510, 0.07058824, 0.06666667, 1.00000000),
@@ -1003,6 +1078,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.95686275, 0.99607843, 0.98431373, 0.69019608),
                 step12: Color::srgba(0.92549020, 0.93333333, 0.92941176, 1.00000000),
                 step12_a: Color::srgba(0.99215686, 1.00000000, 0.99607843, 0.92941176),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.117647, 0.125490, 0.121569, 0.5020),       // #1e201f80
             },
             olive: UiColorPalette {
                 step01: Color::srgba(0.06666667, 0.07058824, 0.06274510, 1.00000000),
@@ -1031,6 +1109,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.96470588, 0.99607843, 0.95686275, 0.69019608),
                 step12: Color::srgba(0.92549020, 0.93333333, 0.92549020, 1.00000000),
                 step12_a: Color::srgba(0.99215686, 1.00000000, 0.99215686, 0.92941176),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.121569, 0.125490, 0.117647, 0.5020),       // #1f201e80
             },
             sand: UiColorPalette {
                 step01: Color::srgba(0.06666667, 0.06666667, 0.06274510, 1.00000000),
@@ -1059,6 +1140,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(1.00000000, 0.98823529, 0.95686275, 0.69019608),
                 step12: Color::srgba(0.93333333, 0.93333333, 0.92549020, 1.00000000),
                 step12_a: Color::srgba(1.00000000, 1.00000000, 0.99215686, 0.92941176),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.129412, 0.129412, 0.125490, 0.5020),       // #21212080
             },
             tomato: UiColorPalette {
                 step01: Color::srgba(0.09411765, 0.06666667, 0.06666667, 1.00000000),
@@ -1087,6 +1171,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(1.00000000, 0.59215686, 0.49019608, 1.00000000),
                 step12: Color::srgba(0.98431373, 0.82745098, 0.79607843, 1.00000000),
                 step12_a: Color::srgba(1.00000000, 0.83921569, 0.80784314, 0.98431373),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.176471, 0.098039, 0.082353, 0.5020),       // #2d191580
             },
             red: UiColorPalette {
                 step01: Color::srgba(0.09803922, 0.06666667, 0.06666667, 1.00000000),
@@ -1115,6 +1202,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(1.00000000, 0.58431373, 0.57254902, 1.00000000),
                 step12: Color::srgba(1.00000000, 0.81960784, 0.85098039, 1.00000000),
                 step12_a: Color::srgba(1.00000000, 0.81960784, 0.85098039, 1.00000000),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.184314, 0.082353, 0.090196, 0.5020),       // #2f151780
             },
             ruby: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.99215686, 1.0),
@@ -1143,6 +1233,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.8235294, 0.0, 0.17254902, 0.76862746),
                 step11_a: Color::srgba(0.75686276, 0.0, 0.1882353, 0.85882354),
                 step12_a: Color::srgba(0.33333334, 0.0, 0.08627451, 0.9098039),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.168627, 0.098039, 0.113725, 0.5020),       // #2b191d80
             },
             crimson: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.99215686, 1.0),
@@ -1171,6 +1264,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.84313726, 0.0, 0.3372549, 0.79607844),
                 step11_a: Color::srgba(0.76862746, 0.0, 0.30980393, 0.8862745),
                 step12_a: Color::srgba(0.3254902, 0.0, 0.14901961, 0.9137255),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.184314, 0.082353, 0.121569, 0.5020),       // #2f151f80
             },
             pink: UiColorPalette {
                 step01: Color::srgba(1.0, 0.9882353, 0.99607843, 1.0),
@@ -1199,6 +1295,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.7607843, 0.0, 0.47843137, 0.78039217),
                 step11_a: Color::srgba(0.7137255, 0.0, 0.45490196, 0.8392157),
                 step12_a: Color::srgba(0.34901962, 0.0, 0.23137255, 0.92941177),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.192157, 0.074510, 0.160784, 0.5020),       // #31132980
             },
             plum: UiColorPalette {
                 step01: Color::srgba(0.99607843, 0.9882353, 1.0, 1.0),
@@ -1227,6 +1326,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.49803922, 0.0, 0.57254905, 0.73333335),
                 step11_a: Color::srgba(0.4509804, 0.0, 0.5254902, 0.75686276),
                 step12_a: Color::srgba(0.2509804, 0.0, 0.29411766, 0.9019608),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.184314, 0.082353, 0.184314, 0.5020),       // #2f152f80
             },
             purple: UiColorPalette {
                 step01: Color::srgba(0.09411765, 0.06666667, 0.10588235, 1.00000000),
@@ -1255,6 +1357,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.81960784, 0.61568627, 1.00000000, 1.00000000),
                 step12: Color::srgba(0.92549020, 0.85098039, 0.98039216, 1.00000000),
                 step12_a: Color::srgba(0.94509804, 0.86666667, 1.00000000, 0.98039216),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.168627, 0.090196, 0.207843, 0.5020),       // #2b173580
             },
             violet: UiColorPalette {
                 step01: Color::srgba(0.09411765, 0.06666667, 0.12156863, 1.00000000),
@@ -1283,6 +1388,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.72941176, 0.65490196, 1.00000000, 1.00000000),
                 step12: Color::srgba(0.88627451, 0.86666667, 0.99607843, 1.00000000),
                 step12_a: Color::srgba(0.89019608, 0.87058824, 1.00000000, 0.99607843),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.145098, 0.098039, 0.223529, 0.5020),       // #25193980
             },
             iris: UiColorPalette {
                 step01: Color::srgba(0.07450980, 0.07450980, 0.11764706, 1.00000000),
@@ -1311,6 +1419,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.69411765, 0.66274510, 1.00000000, 1.00000000),
                 step12: Color::srgba(0.87843137, 0.87450980, 0.99607843, 1.00000000),
                 step12_a: Color::srgba(0.88235294, 0.87843137, 1.00000000, 0.99607843),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.113725, 0.105882, 0.223529, 0.5020),       // #1d1b3980
             },
             indigo: UiColorPalette {
                 step01: Color::srgba(0.06666667, 0.07450980, 0.12156863, 1.00000000),
@@ -1339,6 +1450,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.61960784, 0.69411765, 1.00000000, 1.00000000),
                 step12: Color::srgba(0.83921569, 0.88235294, 1.00000000, 1.00000000),
                 step12_a: Color::srgba(0.83921569, 0.88235294, 1.00000000, 1.00000000),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.090196, 0.113725, 0.231373, 0.5020),       // #171d3b80
             },
             blue: UiColorPalette {
                 step01: Color::srgba(0.05098039, 0.08235294, 0.12549020, 1.00000000),
@@ -1369,6 +1483,9 @@ impl UiColorPalettes {
                 surface: Color::srgba(0.066667, 0.129412, 0.239216, 0.5020),
                 indicator: Color::srgba(0.00000000, 0.56470588, 1.00000000, 1.00000000),
                 track: Color::srgba(0.00000000, 0.56470588, 1.00000000, 1.00000000),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.066667, 0.129412, 0.239216, 0.5020),       // #11213d80
             },
             cyan: UiColorPalette {
                 step01: Color::srgba(0.04313725, 0.08627451, 0.10196078, 1.00000000),
@@ -1397,6 +1514,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.32156863, 0.88235294, 0.99607843, 0.89803922),
                 step12: Color::srgba(0.71372549, 0.92549020, 0.96862745, 1.00000000),
                 step12_a: Color::srgba(0.73333333, 0.95294118, 0.99607843, 0.96862745),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.066667, 0.145098, 0.176471, 0.5020),       // #11252d80
             },
             teal: UiColorPalette {
                 step01: Color::srgba(0.05098039, 0.08235294, 0.07843137, 1.00000000),
@@ -1425,6 +1545,9 @@ impl UiColorPalettes {
                 step11_a: Color::srgba(0.03921569, 0.99607843, 0.83529412, 0.83921569),
                 step12: Color::srgba(0.67843137, 0.94117647, 0.86666667, 1.00000000),
                 step12_a: Color::srgba(0.72156863, 1.00000000, 0.92156863, 0.93725490),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.074510, 0.152941, 0.145098, 0.5020),       // #13272580
             },
             jade: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99607843, 0.99215686, 1.0),
@@ -1453,6 +1576,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.5294118, 0.39215687, 0.8509804),
                 step11_a: Color::srgba(0.0, 0.44313726, 0.32156864, 0.8745098),
                 step12_a: Color::srgba(0.0, 0.13333334, 0.09019608, 0.8862745),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.074510, 0.152941, 0.121569, 0.5020),       // #13271f80
             },
             green: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99607843, 0.9882353, 1.0),
@@ -1481,6 +1607,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.5254902, 0.2784314, 0.83137256),
                 step11_a: Color::srgba(0.0, 0.44313726, 0.24705882, 0.87058824),
                 step12_a: Color::srgba(0.0, 0.14901961, 0.08627451, 0.9019608),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.082353, 0.145098, 0.113725, 0.5020),       // #15251d80
             },
             grass: UiColorPalette {
                 step01: Color::srgba(0.9843137, 0.99607843, 0.9843137, 1.0),
@@ -1509,6 +1638,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.48235294, 0.09019608, 0.75686276),
                 step11_a: Color::srgba(0.0, 0.39607844, 0.078431375, 0.8352941),
                 step12_a: Color::srgba(0.0, 0.1254902, 0.023529412, 0.8745098),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.098039, 0.137255, 0.105882, 0.5020),       // #19231b80
             },
             bronze: UiColorPalette {
                 step01: Color::srgba(0.99215686, 0.9882353, 0.9882353, 1.0),
@@ -1539,6 +1671,9 @@ impl UiColorPalettes {
                 surface: Color::srgba(0.152941, 0.129412, 0.113725, 0.5020),
                 indicator: Color::srgba(0.6313726, 0.5019608, 0.44705883, 1.0),
                 track: Color::srgba(0.6313726, 0.5019608, 0.44705883, 1.0),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.152941, 0.129412, 0.113725, 0.5020),       // #27211d80
             },
             gold: UiColorPalette {
                 step01: Color::srgba(0.99215686, 0.99215686, 0.9882353, 1.0),
@@ -1567,6 +1702,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.28627452, 0.1764706, 0.0, 0.6313726),
                 step11_a: Color::srgba(0.21176471, 0.12941177, 0.0, 0.7058824),
                 step12_a: Color::srgba(0.07450981, 0.047058824, 0.0, 0.83137256),
+
+                high_contrast: Color::srgba(1.000000, 1.000000, 1.000000, 1.0000), // white
+                surface: Color::srgba(0.145098, 0.137255, 0.113725, 0.5020),       // #25231d80
             },
             sky: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 1.0, 1.0),
@@ -1595,6 +1733,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7372549, 0.9529412, 0.54509807),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.61960787, 1.0),
                 step12_a: Color::srgba(0.0, 0.14509805, 0.2509804, 0.8862745),
+
+                high_contrast: Color::srgba(0.109804, 0.125490, 0.141176, 1.0000), // #1c2024
+                surface: Color::srgba(0.074510, 0.137255, 0.231373, 0.5020),       // #13233b80
             },
             mint: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 0.99215686, 1.0),
@@ -1623,6 +1764,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7647059, 0.6, 0.50980395),
                 step11_a: Color::srgba(0.0, 0.46666667, 0.3882353, 0.99215686),
                 step12_a: Color::srgba(0.0, 0.19215687, 0.16470589, 0.9137255),
+
+                high_contrast: Color::srgba(0.101961, 0.129412, 0.117647, 1.0000), // #1a211e
+                surface: Color::srgba(0.082353, 0.152941, 0.152941, 0.5020),       // #15272780
             },
             sky: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 1.0, 1.0),
@@ -1651,6 +1795,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7372549, 0.9529412, 0.54509807),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.61960787, 1.0),
                 step12_a: Color::srgba(0.0, 0.14509805, 0.2509804, 0.8862745),
+
+                high_contrast: Color::srgba(0.109804, 0.125490, 0.141176, 1.0000), // #1c2024
+                surface: Color::srgba(0.074510, 0.137255, 0.231373, 0.5020),       // #13233b80
             },
             mint: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 0.99215686, 1.0),
@@ -1679,6 +1826,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7647059, 0.6, 0.50980395),
                 step11_a: Color::srgba(0.0, 0.46666667, 0.3882353, 0.99215686),
                 step12_a: Color::srgba(0.0, 0.19215687, 0.16470589, 0.9137255),
+
+                high_contrast: Color::srgba(0.101961, 0.129412, 0.117647, 1.0000), // #1a211e
+                surface: Color::srgba(0.082353, 0.152941, 0.152941, 0.5020),       // #15272780
             },
             sky: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 1.0, 1.0),
@@ -1707,6 +1857,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7372549, 0.9529412, 0.54509807),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.61960787, 1.0),
                 step12_a: Color::srgba(0.0, 0.14509805, 0.2509804, 0.8862745),
+
+                high_contrast: Color::srgba(0.109804, 0.125490, 0.141176, 1.0000), // #1c2024
+                surface: Color::srgba(0.074510, 0.137255, 0.231373, 0.5020),       // #13233b80
             },
             mint: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 0.99215686, 1.0),
@@ -1735,6 +1888,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7647059, 0.6, 0.50980395),
                 step11_a: Color::srgba(0.0, 0.46666667, 0.3882353, 0.99215686),
                 step12_a: Color::srgba(0.0, 0.19215687, 0.16470589, 0.9137255),
+
+                high_contrast: Color::srgba(0.101961, 0.129412, 0.117647, 1.0000), // #1a211e
+                surface: Color::srgba(0.082353, 0.152941, 0.152941, 0.5020),       // #15272780
             },
             sky: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 1.0, 1.0),
@@ -1763,6 +1919,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7372549, 0.9529412, 0.54509807),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.61960787, 1.0),
                 step12_a: Color::srgba(0.0, 0.14509805, 0.2509804, 0.8862745),
+
+                high_contrast: Color::srgba(0.109804, 0.125490, 0.141176, 1.0000), // #1c2024
+                surface: Color::srgba(0.074510, 0.137255, 0.231373, 0.5020),       // #13233b80
             },
             mint: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 0.99215686, 1.0),
@@ -1791,6 +1950,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7647059, 0.6, 0.50980395),
                 step11_a: Color::srgba(0.0, 0.46666667, 0.3882353, 0.99215686),
                 step12_a: Color::srgba(0.0, 0.19215687, 0.16470589, 0.9137255),
+
+                high_contrast: Color::srgba(0.101961, 0.129412, 0.117647, 1.0000), // #1a211e
+                surface: Color::srgba(0.082353, 0.152941, 0.152941, 0.5020),       // #15272780
             },
             sky: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 1.0, 1.0),
@@ -1819,6 +1981,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7372549, 0.9529412, 0.54509807),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.61960787, 1.0),
                 step12_a: Color::srgba(0.0, 0.14509805, 0.2509804, 0.8862745),
+
+                high_contrast: Color::srgba(0.109804, 0.125490, 0.141176, 1.0000), // #1c2024
+                surface: Color::srgba(0.074510, 0.137255, 0.231373, 0.5020),       // #13233b80
             },
             mint: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 0.99215686, 1.0),
@@ -1847,6 +2012,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7647059, 0.6, 0.50980395),
                 step11_a: Color::srgba(0.0, 0.46666667, 0.3882353, 0.99215686),
                 step12_a: Color::srgba(0.0, 0.19215687, 0.16470589, 0.9137255),
+
+                high_contrast: Color::srgba(0.101961, 0.129412, 0.117647, 1.0000), // #1a211e
+                surface: Color::srgba(0.082353, 0.152941, 0.152941, 0.5020),       // #15272780
             },
             sky: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 1.0, 1.0),
@@ -1875,6 +2043,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7372549, 0.9529412, 0.54509807),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.61960787, 1.0),
                 step12_a: Color::srgba(0.0, 0.14509805, 0.2509804, 0.8862745),
+
+                high_contrast: Color::srgba(0.109804, 0.125490, 0.141176, 1.0000), // #1c2024
+                surface: Color::srgba(0.074510, 0.137255, 0.231373, 0.5020),       // #13233b80
             },
             mint: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 0.99215686, 1.0),
@@ -1903,6 +2074,9 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7647059, 0.6, 0.50980395),
                 step11_a: Color::srgba(0.0, 0.46666667, 0.3882353, 0.99215686),
                 step12_a: Color::srgba(0.0, 0.19215687, 0.16470589, 0.9137255),
+
+                high_contrast: Color::srgba(0.101961, 0.129412, 0.117647, 1.0000), // #1a211e
+                surface: Color::srgba(0.082353, 0.152941, 0.152941, 0.5020),       // #15272780
             },
             sky: UiColorPalette {
                 step01: Color::srgba(0.9764706, 0.99607843, 1.0, 1.0),
@@ -1931,6 +2105,8 @@ impl UiColorPalettes {
                 step10_a: Color::srgba(0.0, 0.7372549, 0.9529412, 0.54509807),
                 step11_a: Color::srgba(0.0, 0.45490196, 0.61960787, 1.0),
                 step12_a: Color::srgba(0.0, 0.14509805, 0.2509804, 0.8862745),
+                high_contrast: Color::srgba(0.109804, 0.125490, 0.141176, 1.0000), // #1c2024
+                surface: Color::srgba(0.074510, 0.137255, 0.231373, 0.5020),       // #13233b80
             },
         }
     }

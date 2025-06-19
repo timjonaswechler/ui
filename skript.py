@@ -1,5 +1,5 @@
-
-content= """
+import re
+CONTENT= """
 // amber.css
 high_contrast: Color::srgba(0.129412, 0.125490, 0.109804, 1.0000), // #21201c
 light_surface: Color::srgba(0.996078, 0.980392, 0.894118, 0.8000),       // #fefae4cc
@@ -156,19 +156,44 @@ light_surface: Color::srgba(0.996078, 0.984314, 0.894118, 0.8000),       // #fef
 dark_surface: Color::srgba(0.137255, 0.121569, 0.074510, 0.5020),       // #231f1380
 """
 ### Read content an split the content into chucks bei "//"
-content = content.strip().split("\n\n")
-print(content)
-for color_group in content:
-    lines = color_group.strip().split("\n")
-    for line in lines:
-        # search for xxx.css
-        if line.strip().endswith(".css"):
-            # extract the name of the css file
-            css_name = line.strip().split(".")[0]
-            print(f"Processing {css_name}...")
-        elif line.startswith("high_contrast:"):
-            print(f"Found high_contrast for {css_name}")
-        elif line.startswith("light_surface:"):
-            print(f"Found light_surface for {css_name}")
-        elif line.startswith("dark_surface:"):
-            print(f"Found dark_surface for {css_name}")
+# content = content.strip().split("\n\n")
+# print(content)
+# for color_group in content:
+#     lines = color_group.strip().split("\n")
+#     for line in lines:
+#         # search for xxx.css
+
+files_content = ""
+with open(f"src/theme/color.rs", "r") as f:
+    files_content = f.read()
+all_blocks = files_content.split("impl UiColorPalettes {")
+
+light = "impl UiColorPalettes {"+all_blocks[1]
+dark = "impl UiColorPalettes {"+all_blocks[2]
+
+from pathlib import Path
+import re, textwrap, json
+
+def parse_css_block(raw: str, mode="light"):
+    groups = raw.strip().split("\n\n")
+    result = {}
+    for g in groups:
+        lines = [l.strip() for l in g.splitlines() if l.strip()]
+        scheme = lines[0][3:-4]  # "// amber.css" → "amber"
+        vals = {l.split(":")[0]: l.split(":",1)[1].strip() for l in lines[1:]}
+        result[scheme] = {"high": vals["high_contrast"],
+                          "surface": vals[f"{mode}_surface"].replace(f"{mode}_", "")}
+    return result   # {'amber': {'high': 'Color::srgba(...', 'surface':'Color::srgba(...'}}
+
+def inject(colors, rs_code):
+    def repl(m):
+        name, body = m.groups()
+        extra = f'\n    {colors[name]["high"]}\n    {colors[name]["surface"]}'
+        return f"{name}: UiColorPalette {{{body}{extra}\n}},"
+    return re.sub(r'(\w+): UiColorPalette \{(.*?)\},', repl, rs_code, flags=re.S)
+
+css_colors = parse_css_block(CONTENT, "dark")
+with open("src/theme/color.rs") as f: rs = f.read()
+light, dark = rs.split("impl UiColorPalettes {")[1:]
+darklight = inject(css_colors, dark)
+print(darklight)

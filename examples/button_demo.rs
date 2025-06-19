@@ -40,7 +40,7 @@ fn setup(mut commands: Commands) {
 
     let outline_button = ButtonBuilder::new("Outline")
         .variant(ButtonVariant::Outline)
-        .color(UiColorPalettes::default().amber)
+        .color(UiColorPalettes::default().green)
         .text("Outline Button")
         .build();
 
