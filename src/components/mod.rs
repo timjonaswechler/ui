@@ -19,7 +19,7 @@ impl Plugin for ComponentsPlugin {
                     button::setup_button_interactions,
                     button::setup_spinner_textures,
                     button::animate_loading_spinners,
-                    text::update_text_fonts,
+                    text::apply_text_fonts,
                 ),
             );
     }

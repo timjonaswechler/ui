@@ -86,62 +86,44 @@ pub struct FontFamilies {
     pub mono_bold: Handle<Font>,
 }
 
-#[derive(AssetCollection, Resource, Asset, TypePath, Debug, Clone)]
-pub struct SansVariant {
-    #[asset(path = "fonts/Roboto-Light.ttf")]
-    pub sans_light: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/Roboto-LightItalic.ttf")]
-    pub sans_light_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/Roboto-Regular.ttf")]
-    pub sans_regular: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/Roboto-RegularItalic.ttf")]
-    pub sans_regular_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/Roboto-Medium.ttf")]
-    pub sans_medium: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/Roboto-MediumItalic.ttf")]
-    pub sans_medium_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/Roboto-Bold.ttf")]
-    pub sans_bold: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/Roboto-BoldItalic.ttf")]
-    pub sans_bold_italic: Handle<bevy::prelude::Font>,
+/// Simple font assets resource for direct font loading
+#[derive(Resource, Debug, Clone)]
+pub struct FontAssets {
+    // Sans Familie
+    pub sans_light: Handle<Font>,
+    pub sans_regular: Handle<Font>,
+    pub sans_medium: Handle<Font>,
+    pub sans_bold: Handle<Font>,
+    
+    // Serif Familie
+    pub serif_regular: Handle<Font>,
+    pub serif_bold: Handle<Font>,
+    
+    // Mono Familie  
+    pub mono_regular: Handle<Font>,
+    pub mono_bold: Handle<Font>,
 }
 
-#[derive(AssetCollection, Resource, Asset, TypePath, Debug, Clone)]
-pub struct SerifVariant {
-    #[asset(path = "fonts/NotoSerif-Light.ttf")]
-    pub serif_light: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/NotoSerif-LightItalic.ttf")]
-    pub serif_light_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/NotoSerif-Regular.ttf")]
-    pub serif_regular: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/NotoSerif-RegularItalic.ttf")]
-    pub serif_regular_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/NotoSerif-Medium.ttf")]
-    pub serif_medium: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/NotoSerif-MediumItalic.ttf")]
-    pub serif_medium_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/NotoSerif-Bold.ttf")]
-    pub serif_bold: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/NotoSerif-BoldItalic.ttf")]
-    pub serif_bold_italic: Handle<bevy::prelude::Font>,
-}
-
-#[derive(AssetCollection, Resource, Asset, TypePath, Debug, Clone)]
-pub struct MonoVariant {
-    #[asset(path = "fonts/RobotoMono-Light.ttf")]
-    pub mono_light: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/RobotoMono-LightItalic.ttf")]
-    pub mono_light_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/RobotoMono-Regular.ttf")]
-    pub mono_regular: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/RobotoMono-RegularItalic.ttf")]
-    pub mono_regular_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/RobotoMono-Medium.ttf")]
-    pub mono_medium: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/RobotoMono-MediumItalic.ttf")]
-    pub mono_medium_italic: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/RobotoMono-Bold.ttf")]
-    pub mono_bold: Handle<bevy::prelude::Font>,
-    #[asset(path = "fonts/RobotoMono-BoldItalic.ttf")]
-    pub mono_bold_italic: Handle<bevy::prelude::Font>,
+/// Startup system that loads all font assets directly using the asset server
+pub fn load_font_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
+    info!("Loading font assets...");
+    
+    let font_assets = FontAssets {
+        // Sans Familie laden
+        sans_light: asset_server.load("fonts/Roboto-Light.ttf"),
+        sans_regular: asset_server.load("fonts/Roboto-Regular.ttf"),
+        sans_medium: asset_server.load("fonts/Roboto-Medium.ttf"),
+        sans_bold: asset_server.load("fonts/Roboto-Bold.ttf"),
+        
+        // Serif Familie laden
+        serif_regular: asset_server.load("fonts/NotoSerif-Regular.ttf"),
+        serif_bold: asset_server.load("fonts/NotoSerif-Bold.ttf"),
+        
+        // Mono Familie laden
+        mono_regular: asset_server.load("fonts/RobotoMono-Regular.ttf"),
+        mono_bold: asset_server.load("fonts/RobotoMono-Bold.ttf"),
+    };
+    
+    commands.insert_resource(font_assets);
+    info!("Font assets resource created and inserted");
 }

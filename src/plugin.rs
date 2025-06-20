@@ -1,8 +1,7 @@
 use crate::assets::audio;
 use crate::components::ComponentsPlugin;
-use crate::theme::typography::{TypographyAssets, SansVariant, SerifVariant, MonoVariant};
+use crate::theme::typography::load_font_assets;
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
 
 #[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum UiState {
@@ -29,46 +28,14 @@ impl ForgeUiPlugin {
 impl Plugin for ForgeUiPlugin {
     fn build(&self, app: &mut App) {
         app
-            // region: 1) Initialize UiState and set starting variant
+            // Direct font loading in startup - no complex asset loading states needed
+            .add_systems(Startup, load_font_assets)
+            // Skip directly to Ready state - no need for loading states
             .init_state::<UiState>()
-            .insert_state(UiState::LoadingAssets)
-            // endregion
-            // region: 2) Asset-Loading: load FontAssets and IconAssets, then go to LoadingTheme
-            .add_loading_state(
-                LoadingState::new(UiState::LoadingAssets)
-                    .continue_to_state(UiState::LoadingTheme)
-                    .load_collection::<TypographyAssets>()
-                    .load_collection::<SansVariant>()
-                    .load_collection::<SerifVariant>()
-                    .load_collection::<MonoVariant>(),
-            )
-            // endregion
-            // 3) Theme initialization: check if assets are loaded and go to Ready
-            .add_systems(
-                Update,
-                check_assets_loaded.run_if(in_state(UiState::LoadingTheme)),
-            )
-            // 6) HotReload cycle: detect & trigger in Ready, process in HotReload
-            .add_systems(
-                Update,
-                (|mut _next: ResMut<NextState<UiState>>| {}).run_if(in_state(UiState::Ready)),
-            )
+            .insert_state(UiState::Ready)
             .add_plugins((ComponentsPlugin, audio::plugin));
 
-        info!("ForgeUiPlugin loaded. UiState={:?}", app.plugins_state());
+        info!("ForgeUiPlugin loaded. UiState={:?}", UiState::Ready);
     }
 }
 
-/// System to check if assets are loaded and transition to Ready state
-fn check_assets_loaded(
-    typography_assets: Option<Res<TypographyAssets>>,
-    sans_variant: Option<Res<SansVariant>>,
-    serif_variant: Option<Res<SerifVariant>>,
-    mono_variant: Option<Res<MonoVariant>>,
-    mut next_state: ResMut<NextState<UiState>>,
-) {
-    if typography_assets.is_some() && sans_variant.is_some() && serif_variant.is_some() && mono_variant.is_some() {
-        info!("All font assets loaded, transitioning to Ready state");
-        next_state.set(UiState::Ready);
-    }
-}
