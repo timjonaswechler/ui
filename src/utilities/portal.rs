@@ -154,7 +154,7 @@ pub fn portal_system(
         };
 
         if let Some(target) = target_entity {
-            for &child in children.iter() {
+            for child in children.iter() {
                 // Only move children that haven't been processed yet
                 if portal_content_query.get(child).is_err() {
                     commands.entity(child).insert(PortalContent {

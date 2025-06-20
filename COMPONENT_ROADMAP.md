@@ -28,9 +28,8 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Typography System
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Text | 📋 | Critical | 1 | **REVISED**: Theme wrapper around Bevy's Text2d component |
-| Heading | 📋 | Critical | 0.5 | **REVISED**: Text variant with semantic heading levels |
-| Code | 📋 | High | 0.5 | **REVISED**: Text variant with monospace font |
+| Text | ✅ | Critical | 1 | **COMPLETED**: Theme wrapper around Bevy's UI Text component with full font integration |
+| Heading | ✅ | Critical | 0.5 | **COMPLETED**: Text extension with semantic heading levels (H1-H6) |
 
 ### Layout Fundamentals
 | Component | Status | Priority | Est. Days | Notes |
@@ -40,7 +39,7 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 | Grid | 📋 | High | 1 | **REVISED**: Builder pattern for Bevy's grid system |
 | Container | 📋 | High | 0.5 | **REVISED**: Box variant with max-width constraints |
 
-**Phase 1 Total**: 5.5 days (**REDUCED from 13 days** - Bevy provides core functionality)
+**Phase 1 Total**: 5 days (**REDUCED from 13 days** - Bevy provides core functionality, Code component removed)
 
 ---
 
@@ -222,24 +221,52 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Utilities
 | Component | Status | Completion Date | Notes |
 |-----------|--------|-----------------|-------|
-| Button | ✅ | 2025-06-20 | Base button implementation with theme integration |
 | UIRoot | ✅ | 2025-06-20 | Foundation UI container (document.body equivalent) |
 | Portal | ✅ | 2025-06-20 | Renders UI outside normal hierarchy |
+
+### Components
+| Component | Status | Completion Date | Notes |
+|-----------|--------|-----------------|-------|
+| Button | ✅ | 2025-06-20 | **UPDATED**: Now uses new Text component system with typography integration |
+| Text | ✅ | 2025-06-20 | Theme wrapper around Bevy's UI Text with full font support (Sans/Serif/Mono, weights, italic) |
+| Heading | ✅ | 2025-06-20 | Semantic heading levels (H1-H6) with appropriate sizing and weights |
 
 ---
 
 ## Project Statistics
 - **Start Date**: 2025-06-20
 - **Total Estimated Days**: 128.5 days (~5.1 months) (**REDUCED** after Bevy analysis)
-- **Components Completed**: 3/79 (3.8%)
+- **Components Completed**: 5/79 (6.3%)
 - **Phase 1 Ready**: Typography and Layout foundations
-- **Current Focus**: Text component theme wrapper implementation
+- **Current Focus**: Layout components (Box, Flex, Grid, Container)
 
 ## Key Revision Notes
 - **Major Discovery**: Bevy 0.16 provides comprehensive UI system with text, layout, and styling
 - **Strategy Shift**: Focus on theme integration rather than rebuilding core functionality
 - **Time Savings**: ~7.5 days saved in Phase 1 alone due to Bevy's built-in capabilities
 - **Implementation Approach**: Wrapper pattern around Bevy's existing components
+
+## Recent Achievements (2025-06-20)
+✅ **Text Component Completed**: Full typography system with theme integration
+- Semantic variants (Display, Title, Body, Label, Caption)
+- Complete font family support (Sans, Serif, Mono)
+- All font weights (Light, Regular, Medium, Bold) + Italic support
+- Responsive sizing system (Xs to X9l)
+- Theme-integrated colors
+- Builder pattern with fluent API
+
+✅ **Button Component Enhanced**: Now uses new Text component system
+- Automatic text sizing based on button size (Small→Sm, Default→Base, Large→Lg)
+- Semantic text weights based on button variant
+- Full typography integration with theme colors
+- Maintains all existing button functionality while gaining typography benefits
+
+✅ **Heading Component Completed**: Semantic heading system
+- Six heading levels (H1-H6) with appropriate sizing hierarchy
+- H1: X5l/Bold, H2: X3l/Bold, H3: X2l/Medium, H4: Xl/Medium, H5: Lg/Medium, H6: Base/Medium
+- Convenience methods (Heading::h1(), Heading::h2(), etc.)
+- Extension trait for converting Text to headings
+- Full theme integration through Text component system
 
 ## Dependencies & Blockers
 

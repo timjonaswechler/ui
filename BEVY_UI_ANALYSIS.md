@@ -47,25 +47,24 @@ Bevy 0.16 provides a comprehensive ECS-driven UI framework with built-in support
 ### Text Components ✅ Available
 
 ```rust
-// Bevy's text structure
-Text2d {
-    text: String,
-    font: Handle<Font>,
-    font_size: f32,
-    color: Color,
-    // ... more properties
-}
+// Bevy's UI text structure (NOT Text2d - that's for world objects)
+Text::new("hello world!") // Basic UI text
 
-TextSpan {
-    value: String,
-    style: TextStyle,
-}
-
+// Styling components
 TextFont {
     font: Handle<Font>,
     font_size: f32,
     font_smoothing: FontSmoothing,
 }
+
+TextColor(Color) // UI text color
+
+TextLayout {
+    justify: JustifyText, // Center, Left, Right
+    linebreak: LineBreak,
+}
+
+TextSpan::new("styled text") // Child text spans with different styling
 ```
 
 ### Font Handling ✅ Available

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use bevy_project::components::{ButtonBuilder, ButtonClickEvent, ButtonVariant};
-use bevy_project::plugin::ForgeUiPlugin;
-use bevy_project::theme::color::theme;
+use ui::components::{ButtonBuilder, ButtonClickEvent, ButtonVariant};
+use ui::plugin::ForgeUiPlugin;
+use ui::theme::color::theme;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)

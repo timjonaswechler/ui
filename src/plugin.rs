@@ -37,10 +37,14 @@ impl Plugin for ForgeUiPlugin {
             .add_loading_state(
                 LoadingState::new(UiState::LoadingAssets)
                     .continue_to_state(UiState::LoadingTheme)
-                    .load_collection::<TypographyAssets>()
-                    .load_collection::<IconAssets>(),
+                    .load_collection::<TypographyAssets>(),
             )
             // endregion
+            // 3) Theme initialization: check if assets are loaded and go to Ready
+            .add_systems(
+                Update,
+                check_assets_loaded.run_if(in_state(UiState::LoadingTheme)),
+            )
             // 6) HotReload cycle: detect & trigger in Ready, process in HotReload
             .add_systems(
                 Update,
@@ -49,5 +53,16 @@ impl Plugin for ForgeUiPlugin {
             .add_plugins((ComponentsPlugin, crate::assets::audio::plugin));
 
         info!("ForgeUiPlugin loaded. UiState={:?}", app.plugins_state());
+    }
+}
+
+/// System to check if assets are loaded and transition to Ready state
+fn check_assets_loaded(
+    typography_assets: Option<Res<TypographyAssets>>,
+    mut next_state: ResMut<NextState<UiState>>,
+) {
+    if typography_assets.is_some() {
+        info!("Assets loaded, transitioning to Ready state");
+        next_state.set(UiState::Ready);
     }
 }

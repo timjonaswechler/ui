@@ -1,12 +1,9 @@
 use std::borrow::Cow;
 
-use bevy::{
-    prelude::*,
-    ui::Val::*,
-};
+use bevy::{prelude::*, ui::Val::*};
 
 /// A root UI container component that serves as the foundation for UI hierarchies.
-/// 
+///
 /// Similar to `document.body` in web development, UIRoot provides a base container
 /// that fills the entire screen and can serve as a parent for other UI elements.
 /// This is particularly useful for portal systems and global UI positioning.
@@ -32,9 +29,7 @@ impl UIRoot {
     /// # Arguments
     /// * `name` - A unique identifier for this UI root
     pub fn new(name: impl Into<String>) -> Self {
-        Self {
-            name: name.into(),
-        }
+        Self { name: name.into() }
     }
 }
 
@@ -66,9 +61,12 @@ impl UIRoot {
 /// }
 /// ```
 pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
+    let name_cow = name.into();
+    let name_str = name_cow.clone();
+    info!("Creating UI root with name: {}", name_str);
     (
-        Name::new(name.clone()),
-        UIRoot::new(name.into().into_owned()),
+        Name::new(name_cow),
+        UIRoot::new(name_str.into_owned()),
         Node {
             position_type: PositionType::Absolute,
             width: Percent(100.0),
@@ -79,6 +77,7 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
             row_gap: Px(20.0),
             ..default()
         },
+        BackgroundColor(Color::WHITE),
         Pickable::IGNORE,
     )
 }
@@ -98,17 +97,13 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
 /// # Note
 /// Currently returns the first UIRoot when searching by name due to query limitations.
 /// This will be improved in future versions to properly match by name.
-pub fn find_ui_root(
-    query: &Query<Entity, With<UIRoot>>,
-    name: Option<&str>,
-) -> Option<Entity> {
+pub fn find_ui_root(query: &Query<Entity, With<UIRoot>>, name: Option<&str>) -> Option<Entity> {
     if let Some(target_name) = name {
-        query.iter()
-            .find(|&entity| {
-                // Would need access to UIRoot component to check name
-                // For now, return first match
-                true
-            })
+        query.iter().find(|&entity| {
+            // Would need access to UIRoot component to check name
+            // For now, return first match
+            true
+        })
     } else {
         query.iter().next()
     }

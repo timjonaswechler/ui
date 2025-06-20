@@ -1,9 +1,11 @@
 use crate::{
     assets::audio::{sound_effect, SfxAssets},
+    components::text::{Text, TextColor as TextColorEnum, TextSize, TextWeight},
     theme::{
         color::{accent_palette, TextContrastLevel, UiColorPalette},
         layout::UiLayout,
     },
+    utilities::ComponentBuilder,
 };
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer, Pressed, Released};
@@ -176,6 +178,31 @@ impl ButtonBuilder {
 }
 
 impl ButtonBuilder {
+    /// Get appropriate text size for button size
+    fn get_button_text_size(&self) -> TextSize {
+        match self.button.size {
+            ButtonSize::Small => TextSize::Sm,
+            ButtonSize::Default => TextSize::Base,
+            ButtonSize::Large => TextSize::Lg,
+        }
+    }
+
+    /// Get appropriate text weight for button variant
+    fn get_button_text_weight(&self) -> TextWeight {
+        match self.button.variant {
+            ButtonVariant::Solid => TextWeight::Medium,
+            ButtonVariant::Soft => TextWeight::Regular,
+            ButtonVariant::Outline => TextWeight::Regular,
+            ButtonVariant::Ghost => TextWeight::Regular,
+        }
+    }
+
+    /// Convert button text color to Text component color enum
+    fn get_text_color_enum(&self) -> TextColorEnum {
+        let calculated_color = self.calculate_text_color();
+        TextColorEnum::Custom(calculated_color.0)
+    }
+
     pub fn build(self) -> impl Bundle {
         let node = self.calculate_style();
         let background_color = self.calculate_background_color();
@@ -192,9 +219,11 @@ impl ButtonBuilder {
             ButtonRadius::Extra4Large => Val::Px(UiLayout::default().radius.x4l),
             ButtonRadius::Full => Val::Px(UiLayout::default().radius.full),
         };
-        let text_color = self.calculate_text_color();
-        let display_text = self.text.unwrap_or_default();
+        let display_text = self.text.clone().unwrap_or_default();
         let is_loading = self.button.loading;
+        let text_size = self.get_button_text_size();
+        let text_weight = self.get_button_text_weight();
+        let text_color_enum = self.get_text_color_enum();
 
         (
             Name::new(format!("{}_Button", self.name)),
@@ -212,25 +241,38 @@ impl ButtonBuilder {
             Children::spawn(SpawnWith(move |parent: &mut ChildSpawner| {
                 if is_loading {
                     // Spawn rotating spinner image
-                    parent.spawn((
-                        Name::new("Button Spinner"),
-                        Node {
-                            width: Val::Px(16.0),
-                            height: Val::Px(16.0),
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        Text::new(display_text),
-                        text_color,
-                        SpinnerAnimation::default(),
-                    ));
+                    parent
+                        .spawn((
+                            Name::new("Button Spinner"),
+                            Node {
+                                width: Val::Px(16.0),
+                                height: Val::Px(16.0),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            SpinnerAnimation::default(),
+                        ))
+                        .with_children(|spinner_parent| {
+                            // Add text as child using new Text component
+                            spinner_parent.spawn(
+                                Text::label(display_text.clone())
+                                    .color(text_color_enum)
+                                    .size(text_size)
+                                    .weight(text_weight)
+                                    .center()
+                                    .build(),
+                            );
+                        });
                 } else {
-                    parent.spawn((
-                        Name::new("Button Inner"),
-                        Text::new(display_text),
-                        text_color,
-                    ));
+                    parent.spawn(
+                        Text::label(display_text.clone())
+                            .color(text_color_enum)
+                            .size(text_size)
+                            .weight(text_weight)
+                            .center()
+                            .build(),
+                    );
                 }
             })),
         )

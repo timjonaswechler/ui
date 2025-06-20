@@ -60,15 +60,30 @@ impl Default for FontSize {
 #[derive(AssetCollection, Resource, Debug, Clone, Default)]
 pub struct FontFamilies {
     /// Das Standard-Fallback-Font.
-    #[asset(path = "Roboto-Regular.ttf")]
+    #[asset(path = "fonts/Roboto-Regular.ttf")]
     pub default: Handle<Font>,
 
-    /// Alle Varianten der "sans-serif" Schriftart.
-    pub sans: Handle<SansVariant>,
-    /// Alle Varianten der "serif" Schriftart.
-    pub serif: Handle<SerifVariant>,
-    /// Alle Varianten der "monospace" Schriftart.
-    pub mono: Handle<MonoVariant>,
+    /// Sans fonts
+    #[asset(path = "fonts/Roboto-Light.ttf")]
+    pub sans_light: Handle<Font>,
+    #[asset(path = "fonts/Roboto-Regular.ttf")]
+    pub sans_regular: Handle<Font>,
+    #[asset(path = "fonts/Roboto-Medium.ttf")]
+    pub sans_medium: Handle<Font>,
+    #[asset(path = "fonts/Roboto-Bold.ttf")]
+    pub sans_bold: Handle<Font>,
+    
+    /// Serif fonts
+    #[asset(path = "fonts/NotoSerif-Regular.ttf")]
+    pub serif_regular: Handle<Font>,
+    #[asset(path = "fonts/NotoSerif-Bold.ttf")]
+    pub serif_bold: Handle<Font>,
+    
+    /// Mono fonts
+    #[asset(path = "fonts/RobotoMono-Regular.ttf")]
+    pub mono_regular: Handle<Font>,
+    #[asset(path = "fonts/RobotoMono-Bold.ttf")]
+    pub mono_bold: Handle<Font>,
 }
 
 #[derive(AssetCollection, Resource, Asset, TypePath, Debug, Clone)]
