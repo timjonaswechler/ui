@@ -1,4 +1,4 @@
-use crate::assets::IconAssets;
+use crate::assets::{audio::plugin, IconAssets};
 use crate::components::ComponentsPlugin;
 use crate::theme::typography::TypographyAssets;
 use bevy::prelude::*;
@@ -46,7 +46,7 @@ impl Plugin for ForgeUiPlugin {
                 Update,
                 (|mut _next: ResMut<NextState<UiState>>| {}).run_if(in_state(UiState::Ready)),
             )
-            .add_plugins(ComponentsPlugin);
+            .add_plugins((ComponentsPlugin, crate::assets::audio::plugin));
 
         info!("ForgeUiPlugin loaded. UiState={:?}", app.plugins_state());
     }

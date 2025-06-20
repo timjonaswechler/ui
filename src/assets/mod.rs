@@ -17,3 +17,4 @@
 //
 mod icon_assets;
 pub use icon_assets::IconAssets;
+pub mod audio;

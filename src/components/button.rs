@@ -1,6 +1,9 @@
-use crate::theme::{
-    color::{accent_palette, TextContrastLevel, UiColorPalette},
-    layout::UiLayout,
+use crate::{
+    assets::audio::{sound_effect, SfxAssets},
+    theme::{
+        color::{accent_palette, TextContrastLevel, UiColorPalette},
+        layout::UiLayout,
+    },
 };
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer, Pressed, Released};
@@ -39,7 +42,7 @@ impl Default for Button {
             size: ButtonSize::Default,
             color: accent_palette(),
             high_contrast: false,
-            radius: ButtonRadius::None,
+            radius: ButtonRadius::Base,
             loading: false,
             disabled: false,
             current_state: ButtonState::Normal,
@@ -140,7 +143,7 @@ impl ButtonBuilder {
         self
     }
 
-    pub fn auto_contrast(mut self) -> Self {
+    pub fn auto_contrast(self) -> Self {
         // Aktiviert automatische Kontrastberechnung (ist standardmäßig aktiviert)
         // Diese Methode dient der Klarstellung und kann in Zukunft erweitert werden
         self
@@ -218,6 +221,8 @@ impl ButtonBuilder {
                             align_items: AlignItems::Center,
                             ..default()
                         },
+                        Text::new(display_text),
+                        text_color,
                         SpinnerAnimation::default(),
                     ));
                 } else {
@@ -343,11 +348,18 @@ pub struct ButtonStyling {
 
 impl ButtonBuilder {
     fn calculate_style(&self) -> Node {
-        let padding = UiRect::all(Val::Px(match self.button.size {
-            ButtonSize::Default => UiLayout::default().padding.base,
-            ButtonSize::Small => UiLayout::default().padding.sm,
-            ButtonSize::Large => UiLayout::default().padding.lg,
-        }));
+        let padding = UiRect::axes(
+            Val::Px(match self.button.size {
+                ButtonSize::Default => UiLayout::default().padding.base + 4.0,
+                ButtonSize::Small => UiLayout::default().padding.sm + 2.0,
+                ButtonSize::Large => UiLayout::default().padding.lg + 8.0,
+            }),
+            Val::Px(match self.button.size {
+                ButtonSize::Default => UiLayout::default().padding.base,
+                ButtonSize::Small => UiLayout::default().padding.sm,
+                ButtonSize::Large => UiLayout::default().padding.lg,
+            }),
+        );
 
         Node {
             padding,
@@ -434,6 +446,8 @@ fn on_button_click(
     trigger: Trigger<Pointer<Click>>,
     buttons: Query<&Button>,
     mut events: EventWriter<ButtonClickEvent>,
+    mut commands: Commands,
+    sfx_assets: Res<SfxAssets>,
 ) {
     let entity = trigger.target();
     if let Ok(button) = buttons.get(entity) {
@@ -443,6 +457,9 @@ fn on_button_click(
         }
 
         info!("Button clicked! Variant: {:?}", button.variant);
+
+        // Play tap sound effect
+        commands.spawn(sound_effect(sfx_assets.tap.clone()));
 
         // Send custom event
         events.write(ButtonClickEvent {
