@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    theme::typography::{FontSize, FontAssets},
+    theme::typography::{FontAssets, FontSize},
     utilities::ComponentBuilder,
 };
 
@@ -211,11 +211,7 @@ impl TextBuilder {
     }
 
     /// Get direct font handle using global font assets (will be filled by system)
-    fn get_direct_font_handle(
-        &self,
-        family: FontFamily,
-        weight: TextWeight,
-    ) -> Handle<Font> {
+    fn get_direct_font_handle(&self, family: FontFamily, weight: TextWeight) -> Handle<Font> {
         // This will be updated by a system once FontAssets are loaded
         // For now return default, but we'll add a system to update these
         Handle::<Font>::default()
@@ -235,7 +231,6 @@ impl TextBuilder {
     }
 }
 
-
 impl ComponentBuilder for TextBuilder {
     type Output = (
         bevy::ui::widget::Text,
@@ -254,7 +249,7 @@ impl ComponentBuilder for TextBuilder {
 
         let color = self.map_color(effective_color);
         let font_size = self.get_font_size(&FontSize::default(), effective_size);
-        
+
         // Direct font selection based on family and weight
         let font_handle = self.get_direct_font_handle(effective_family, effective_weight);
 
@@ -385,7 +380,10 @@ pub fn apply_text_fonts(
         return;
     }
 
-    info!("Applying fonts to {} text components using FontAssets", text_count);
+    info!(
+        "Applying fonts to {} text components using FontAssets",
+        text_count
+    );
 
     for (entity, font_info, mut text_font) in text_query.iter_mut() {
         // Direct font selection from FontAssets
@@ -409,16 +407,18 @@ pub fn apply_text_fonts(
                 TextWeight::Bold => font_assets.mono_bold.clone(),
             },
         };
-        
+
         info!(
             "Applying font to entity {:?}: family={:?}, weight={:?}, font_handle={:?}",
-            entity, font_info.family, font_info.weight, font_handle.id()
+            entity,
+            font_info.family,
+            font_info.weight,
+            font_handle.id()
         );
 
         text_font.font = font_handle;
-        
+
         // Remove the marker component to indicate font has been applied
         commands.entity(entity).remove::<TextFontInfo>();
     }
 }
-

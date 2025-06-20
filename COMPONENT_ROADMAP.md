@@ -23,7 +23,7 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 
 **Goal**: Establish the core building blocks for all UI components
 
-**⚠️ UPDATED AFTER BEVY ANALYSIS**: Many core features exist in Bevy - focus on theme integration
+**⚠️ UPDATED AFTER BEVY DOCS ANALYSIS**: Bevy provides comprehensive UI primitives - leverage native components
 
 ### Typography System
 | Component | Status | Priority | Est. Days | Notes |
@@ -34,10 +34,10 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Layout Fundamentals
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Box | 📋 | Critical | 1 | **REVISED**: Theme wrapper around Bevy's Node component |
-| Flex | 📋 | Critical | 1 | **REVISED**: Builder pattern for Bevy's flexbox system |
-| Grid | 📋 | High | 1 | **REVISED**: Builder pattern for Bevy's grid system |
-| Container | 📋 | High | 0.5 | **REVISED**: Box variant with max-width constraints |
+| Box | 📋 | Critical | 1 | **BEVY NATIVE**: `Node` + `BackgroundColor` + `BorderRadius` + `Outline` ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.Node.html)) |
+| Flex | 📋 | Critical | 1 | **BEVY NATIVE**: `Node` + `FlexDirection` + `JustifyContent` + `AlignItems` ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/enum.FlexDirection.html)) |
+| Grid | 📋 | High | 1 | **BEVY NATIVE**: `Node` + `Display::Grid` - Grid layout available! ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/enum.Display.html)) |
+| Container | 📋 | High | 0.5 | **BEVY NATIVE**: `Node` + `UiRect` for max-width constraints ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.UiRect.html)) |
 
 **Phase 1 Total**: 5 days (**REDUCED from 13 days** - Bevy provides core functionality, Code component removed)
 
@@ -50,22 +50,22 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Card System
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Card | 📋 | High | 2 | Content containers with variants (surface, outline, ghost) |
-| Section | 📋 | Medium | 1 | Semantic content sections |
+| Card | 📋 | High | 2 | **BEVY NATIVE**: `Node` + `BackgroundColor` + `BorderRadius` + `BoxShadow` ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.BoxShadow.html)) |
+| Section | 📋 | Medium | 1 | **BEVY NATIVE**: `Node` wrapper for semantic sections |
 
 ### Basic Form Controls
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Checkbox | 📋 | High | 2 | Boolean input with custom styling, accessibility |
-| Switch | 📋 | High | 2 | Toggle component for settings |
-| Radio Group | 📋 | High | 3 | Single-choice selection with keyboard navigation |
+| Checkbox | 📋 | High | 2 | **BEVY NATIVE**: `Button` + `Interaction` + `ButtonInput<MouseButton>` + checkmark graphics ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/widget/struct.Button.html)) |
+| Switch | 📋 | High | 2 | **BEVY NATIVE**: `Button` + `Interaction` + Toggle-State + slide animation |
+| Radio Group | 📋 | High | 3 | **BEVY NATIVE**: Multiple `Button` + `Focusable` + `FocusPolicy` + keyboard nav ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.Focusable.html)) |
 
 ### Visual Indicators
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Badge | 📋 | Medium | 1 | Status and category indicators |
-| Separator | 📋 | Low | 1 | Visual content dividers |
-| Avatar | 📋 | Medium | 2 | User/entity representation with fallbacks |
+| Badge | 📋 | Medium | 1 | **BEVY NATIVE**: `Node` + `Text` + `BorderRadius` for pill shapes |
+| Separator | 📋 | Low | 1 | **BEVY NATIVE**: `Node` + `BackgroundColor` for divider lines |
+| Avatar | 📋 | Medium | 2 | **BEVY NATIVE**: `ImageNode` + `ImageMeasure` + fallback Text ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/widget/struct.ImageNode.html)) |
 
 **Phase 2 Total**: 14 days
 
@@ -78,24 +78,24 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Form Components
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Text Field | 📋 | High | 3 | Text input with validation states, error handling |
-| Text Area | 📋 | High | 2 | Multi-line text input with auto-resize |
-| Select | 📋 | High | 4 | Dropdown selection with search, keyboard navigation |
-| Slider | 📋 | Medium | 3 | Range input component with thumb styling |
+| Text Field | 📋 | High | 3 | **BEVY NATIVE**: `TextMeasure` + `Button` (focus) + `ButtonInput<KeyCode>` for input ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/widget/struct.TextMeasure.html)) |
+| Text Area | 📋 | High | 2 | **BEVY NATIVE**: `Text` + `ScrollPosition` + multi-line handling ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.ScrollPosition.html)) |
+| Select | 📋 | High | 4 | **BEVY NATIVE**: `Button` + `Node` dropdown + `Interaction` + `ui_focus_system` |
+| Slider | 📋 | Medium | 3 | **BEVY NATIVE**: `Button` (thumb) + `Node` (track) + `Axis` values + drag ([docs.rs](https://docs.rs/bevy/latest/bevy/input/struct.Axis.html)) |
 
 ### Navigation
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Tabs | 📋 | High | 3 | Tab navigation with state management, keyboard support |
-| Tab Nav | 📋 | Medium | 2 | Navigation tabs variant |
+| Tabs | 📋 | High | 3 | **BEVY NATIVE**: Multiple `Button` + `Focusable` + state management + keyboard support |
+| Tab Nav | 📋 | Medium | 2 | **BEVY NATIVE**: Tabs variant with navigation styling |
 
 ### Feedback Systems
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Progress | 📋 | Medium | 2 | Progress indicators and loading states |
-| Spinner | 📋 | Low | 1 | Loading animations |
-| Toast | 📋 | Medium | 4 | Temporary notifications with positioning |
-| Skeleton | 📋 | Low | 2 | Loading placeholders |
+| Progress | 📋 | Medium | 2 | **BEVY NATIVE**: `Node` + `BackgroundColor` + width animation for bars |
+| Spinner | 📋 | Low | 1 | **BEVY NATIVE**: `ImageNode` + rotation animation (or animated sprite) |
+| Toast | 📋 | Medium | 4 | **BEVY NATIVE**: `Node` + `PositionType::Absolute` + Portal system for positioning |
+| Skeleton | 📋 | Low | 2 | **BEVY NATIVE**: `Node` + `BackgroundColor` + shimmer animation |
 
 **Phase 3 Total**: 26 days
 
@@ -108,8 +108,8 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Data Display
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Table | 📋 | Medium | 5 | Structured data display with sorting, selection |
-| Data List | 📋 | Low | 2 | Key-value pair display |
+| Table | 📋 | Medium | 5 | **BEVY NATIVE**: `Node` + `Display::Grid` + `ScrollPosition` for large tables ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/enum.Display.html)) |
+| Data List | 📋 | Low | 2 | **BEVY NATIVE**: `Node` + `FlexDirection::Column` for key-value pairs |
 
 ### Advanced Form Controls
 | Component | Status | Priority | Est. Days | Notes |
@@ -129,16 +129,16 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Modal Systems
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Dialog | 📋 | Medium | 4 | Modal dialogs with focus trapping, ESC handling |
-| Alert Dialog | 📋 | Medium | 2 | Confirmation dialogs |
-| Popover | 📋 | Medium | 4 | Positioned overlays with arrow positioning |
+| Dialog | 📋 | Medium | 4 | **BEVY NATIVE**: `Node` + `PositionType::Absolute` + `ui_focus_system` for focus trapping ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/enum.PositionType.html)) |
+| Alert Dialog | 📋 | Medium | 2 | **BEVY NATIVE**: Dialog variant with confirmation buttons |
+| Popover | 📋 | Medium | 4 | **BEVY NATIVE**: `Node` + `PositionType::Absolute` + positioning algorithms |
 
 ### Menu Systems
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Dropdown Menu | 📋 | Medium | 5 | Action menus with submenus, keyboard navigation |
-| Context Menu | 📋 | Low | 3 | Right-click menus |
-| Hover Card | 📋 | Low | 3 | Hover-triggered content |
+| Dropdown Menu | 📋 | Medium | 5 | **BEVY NATIVE**: `Node` + `PositionType::Absolute` + `Interaction` + keyboard nav |
+| Context Menu | 📋 | Low | 3 | **BEVY NATIVE**: Dropdown Menu + right-click detection |
+| Hover Card | 📋 | Low | 3 | **BEVY NATIVE**: `Node` + `PositionType::Absolute` + hover detection |
 
 **Phase 5 Total**: 21 days
 
@@ -151,9 +151,9 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Advanced Interactions
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Tooltip | 📋 | Medium | 3 | Hover information with positioning |
-| Collapsible | 📋 | Medium | 3 | Expandable content sections |
-| Accordion | 📋 | Medium | 4 | Grouped collapsible sections with single/multiple expand |
+| Tooltip | 📋 | Medium | 3 | **BEVY NATIVE**: `Node` + `PositionType::Absolute` + hover detection + positioning |
+| Collapsible | 📋 | Medium | 3 | **BEVY NATIVE**: `Button` + `Node` content + expand/collapse animation |
+| Accordion | 📋 | Medium | 4 | **BEVY NATIVE**: Multiple Collapsible + state management |
 
 ### Complex Forms
 | Component | Status | Priority | Est. Days | Notes |
@@ -181,7 +181,7 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
 | Aspect Ratio | 📋 | Low | 2 | Maintaining aspect ratios for media |
-| Scroll Area | 📋 | Medium | 4 | Custom scrollbars with styling |
+| Scroll Area | 📋 | Medium | 4 | **BEVY NATIVE**: `ScrollPosition` + `Node` + custom scrollbar styling ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.ScrollPosition.html)) |
 | One-Time Password Field | 📋 | Low | 3 | OTP input with auto-focus |
 | Password Toggle Field | 📋 | Low | 2 | Password visibility toggle |
 
@@ -245,6 +245,24 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 - **Strategy Shift**: Focus on theme integration rather than rebuilding core functionality
 - **Time Savings**: ~7.5 days saved in Phase 1 alone due to Bevy's built-in capabilities
 - **Implementation Approach**: Wrapper pattern around Bevy's existing components
+
+## Bevy UI Documentation Analysis (2025-06-20)
+**Sources Analyzed**: 
+- [Bevy UI Module](https://docs.rs/bevy/latest/bevy/ui/index.html)
+- [Bevy UI Widgets](https://docs.rs/bevy/latest/bevy/ui/widget/index.html)  
+- [Bevy Input System](https://docs.rs/bevy/latest/bevy/input/index.html)
+
+**Key Bevy UI Components Available**:
+- **Layout**: `Node`, `Display::Grid`, `FlexDirection`, `PositionType::Absolute`
+- **Styling**: `BackgroundColor`, `BorderRadius`, `BoxShadow`, `Outline`, `BorderColor`
+- **Interaction**: `Button`, `Interaction`, `Focusable`, `FocusPolicy`, `ui_focus_system`
+- **Input**: `ButtonInput<MouseButton>`, `ButtonInput<KeyCode>`, `Axis` for values
+- **Text**: `Text`, `TextMeasure`, `Label` for text handling  
+- **Images**: `ImageNode`, `ImageMeasure` for image display
+- **Scrolling**: `ScrollPosition` for scrollable content
+- **Positioning**: `UiRect`, `Val`, `ContentSize` for layout properties
+
+**Architecture Impact**: Almost all roadmap components can leverage Bevy's native UI primitives instead of custom implementations, significantly reducing development time and improving performance.
 
 ## Recent Achievements (2025-06-20)
 ✅ **Text Component Completed**: Full typography system with theme integration
@@ -325,5 +343,5 @@ Each component must include:
 - Each component should follow the established builder pattern
 - Theme integration is mandatory for all visual components
 
-**Last Updated**: 2025-06-20
+**Last Updated**: 2025-06-20 (with Bevy docs.rs analysis)
 **Next Review**: 2025-06-27
