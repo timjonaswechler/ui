@@ -1,6 +1,6 @@
-use crate::assets::{audio::plugin, IconAssets};
+use crate::assets::audio;
 use crate::components::ComponentsPlugin;
-use crate::theme::typography::TypographyAssets;
+use crate::theme::typography::{TypographyAssets, SansVariant, SerifVariant, MonoVariant};
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
@@ -37,7 +37,10 @@ impl Plugin for ForgeUiPlugin {
             .add_loading_state(
                 LoadingState::new(UiState::LoadingAssets)
                     .continue_to_state(UiState::LoadingTheme)
-                    .load_collection::<TypographyAssets>(),
+                    .load_collection::<TypographyAssets>()
+                    .load_collection::<SansVariant>()
+                    .load_collection::<SerifVariant>()
+                    .load_collection::<MonoVariant>(),
             )
             // endregion
             // 3) Theme initialization: check if assets are loaded and go to Ready
@@ -50,7 +53,7 @@ impl Plugin for ForgeUiPlugin {
                 Update,
                 (|mut _next: ResMut<NextState<UiState>>| {}).run_if(in_state(UiState::Ready)),
             )
-            .add_plugins((ComponentsPlugin, crate::assets::audio::plugin));
+            .add_plugins((ComponentsPlugin, audio::plugin));
 
         info!("ForgeUiPlugin loaded. UiState={:?}", app.plugins_state());
     }
@@ -59,10 +62,13 @@ impl Plugin for ForgeUiPlugin {
 /// System to check if assets are loaded and transition to Ready state
 fn check_assets_loaded(
     typography_assets: Option<Res<TypographyAssets>>,
+    sans_variant: Option<Res<SansVariant>>,
+    serif_variant: Option<Res<SerifVariant>>,
+    mono_variant: Option<Res<MonoVariant>>,
     mut next_state: ResMut<NextState<UiState>>,
 ) {
-    if typography_assets.is_some() {
-        info!("Assets loaded, transitioning to Ready state");
+    if typography_assets.is_some() && sans_variant.is_some() && serif_variant.is_some() && mono_variant.is_some() {
+        info!("All font assets loaded, transitioning to Ready state");
         next_state.set(UiState::Ready);
     }
 }

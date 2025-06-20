@@ -212,6 +212,13 @@ impl TextBuilder {
         }
     }
 
+    /// Get the appropriate font handle based on family, weight, and italic
+    fn get_font_handle(&self, family: FontFamily, weight: TextWeight, italic: bool) -> Handle<Font> {
+        // Try to get from global resources if available
+        // This will be empty if assets aren't loaded yet, but will be updated by the system
+        Handle::<Font>::default()
+    }
+
 
     /// Convert TextColor to actual Color using theme
     fn map_color(&self, color: TextColor) -> Color {
@@ -227,21 +234,17 @@ impl TextBuilder {
     }
 }
 
-/// Component that stores text configuration before assets are loaded
+/// Marker component to identify text that needs font updates when assets load
 #[derive(Component, Debug, Clone)]
-pub struct TextConfig {
-    pub content: String,
-    pub variant: TextVariant,
-    pub size: TextSize,
-    pub weight: TextWeight,
+pub struct TextFontConfig {
     pub family: FontFamily,
-    pub color: TextColor,
+    pub weight: TextWeight,
+    pub size: TextSize,
     pub italic: bool,
-    pub align: JustifyText,
 }
 
 impl ComponentBuilder for TextBuilder {
-    type Output = (bevy::ui::widget::Text, TextConfig, TextFont, bevy::prelude::TextColor, TextLayout, Node);
+    type Output = (bevy::ui::widget::Text, TextFont, bevy::prelude::TextColor, TextLayout, Node, TextFontConfig);
 
     fn build(self) -> Self::Output {
         let effective_size = self.effective_size();
@@ -250,27 +253,25 @@ impl ComponentBuilder for TextBuilder {
         let effective_color = self.effective_color();
 
         let color = self.map_color(effective_color);
+        let font_size = self.get_font_size(&FontSize::default(), effective_size);
+        let font_handle = self.get_font_handle(effective_family, effective_weight, self.italic);
 
         (
-            bevy::ui::widget::Text::new(self.content.clone()),
-            TextConfig {
-                content: self.content,
-                variant: self.variant,
-                size: effective_size,
-                weight: effective_weight,
-                family: effective_family,
-                color: effective_color,
-                italic: self.italic,
-                align: self.align.unwrap_or(JustifyText::Left),
-            },
+            bevy::ui::widget::Text::new(self.content),
             TextFont {
-                font: Handle::<Font>::default(), // Will be updated by system
-                font_size: 16.0, // Will be updated by system
+                font: font_handle,
+                font_size,
                 ..default()
             },
             bevy::prelude::TextColor(color),
             TextLayout::new_with_justify(self.align.unwrap_or(JustifyText::Left)),
             Node::default(),
+            TextFontConfig {
+                family: effective_family,
+                weight: effective_weight,
+                size: effective_size,
+                italic: self.italic,
+            },
         )
     }
 }
@@ -362,61 +363,142 @@ impl Text {
     }
 }
 
-/// System that updates text fonts and sizes when TypographyAssets are available
+/// System that initializes and updates text fonts when TypographyAssets are available
 pub fn update_text_fonts(
-    mut text_query: Query<(&TextConfig, &mut TextFont)>,
+    mut text_query: Query<(&TextFontConfig, &mut TextFont)>,
     typography_assets: Option<Res<TypographyAssets>>,
+    sans_variant: Option<Res<SansVariant>>,
+    serif_variant: Option<Res<SerifVariant>>,
+    mono_variant: Option<Res<MonoVariant>>,
 ) {
     let Some(typography) = typography_assets else {
         return;
     };
-    
-    // Only update if typography assets changed
-    if !typography.is_changed() {
-        return;
-    };
 
+    // Check if we have any text to update
     let text_count = text_query.iter().count();
-    if text_count > 0 {
-        info!("Updating {} text components with typography assets", text_count);
+    if text_count == 0 {
+        return;
     }
 
-    for (config, mut text_font) in text_query.iter_mut() {
-        // Update font handle based on family and weight
-        let font_handle = match (config.family, config.weight) {
-            (FontFamily::Sans, TextWeight::Light) => typography.families.sans_light.clone(),
-            (FontFamily::Sans, TextWeight::Regular) => typography.families.sans_regular.clone(),
-            (FontFamily::Sans, TextWeight::Medium) => typography.families.sans_medium.clone(),
-            (FontFamily::Sans, TextWeight::Bold) => typography.families.sans_bold.clone(),
-            
-            (FontFamily::Serif, TextWeight::Regular) => typography.families.serif_regular.clone(),
-            (FontFamily::Serif, TextWeight::Bold) => typography.families.serif_bold.clone(),
-            (FontFamily::Serif, _) => typography.families.serif_regular.clone(), // fallback
-            
-            (FontFamily::Mono, TextWeight::Regular) => typography.families.mono_regular.clone(),
-            (FontFamily::Mono, TextWeight::Bold) => typography.families.mono_bold.clone(),
-            (FontFamily::Mono, _) => typography.families.mono_regular.clone(), // fallback
-        };
+    // Update all text components - either on asset change or first time setup
+    let should_update = typography.is_changed() || 
+        sans_variant.as_ref().map_or(false, |v| v.is_changed()) ||
+        serif_variant.as_ref().map_or(false, |v| v.is_changed()) ||
+        mono_variant.as_ref().map_or(false, |v| v.is_changed()) ||
+        text_query.iter().any(|(_, font)| font.font == Handle::<Font>::default());
+
+    if should_update {
+        info!("Updating {} text components with typography assets", text_count);
         
-        // Update font size
-        let font_size = match config.size {
-            TextSize::Xs => typography.size.xs,
-            TextSize::Sm => typography.size.sm,
-            TextSize::Base => typography.size.base,
-            TextSize::Lg => typography.size.lg,
-            TextSize::Xl => typography.size.xl,
-            TextSize::X2l => typography.size.x2l,
-            TextSize::X3l => typography.size.x3l,
-            TextSize::X4l => typography.size.x4l,
-            TextSize::X5l => typography.size.x5l,
-            TextSize::X6l => typography.size.x6l,
-            TextSize::X7l => typography.size.x7l,
-            TextSize::X8l => typography.size.x8l,
-            TextSize::X9l => typography.size.x9l,
-        };
-        
-        text_font.font = font_handle;
-        text_font.font_size = font_size;
+        for (config, mut text_font) in text_query.iter_mut() {
+            // Get the correct font handle with italic support
+            let font_handle = get_font_handle_with_italic(
+                config.family,
+                config.weight,
+                config.italic,
+                &typography.families,
+                sans_variant.as_deref(),
+                serif_variant.as_deref(),
+                mono_variant.as_deref(),
+            );
+            
+            // Update font size
+            let font_size = match config.size {
+                TextSize::Xs => typography.size.xs,
+                TextSize::Sm => typography.size.sm,
+                TextSize::Base => typography.size.base,
+                TextSize::Lg => typography.size.lg,
+                TextSize::Xl => typography.size.xl,
+                TextSize::X2l => typography.size.x2l,
+                TextSize::X3l => typography.size.x3l,
+                TextSize::X4l => typography.size.x4l,
+                TextSize::X5l => typography.size.x5l,
+                TextSize::X6l => typography.size.x6l,
+                TextSize::X7l => typography.size.x7l,
+                TextSize::X8l => typography.size.x8l,
+                TextSize::X9l => typography.size.x9l,
+            };
+            
+            text_font.font = font_handle;
+            text_font.font_size = font_size;
+        }
+    }
+}
+
+/// Helper function to get the correct font handle with italic support
+fn get_font_handle_with_italic(
+    family: FontFamily,
+    weight: TextWeight,
+    italic: bool,
+    basic_families: &crate::theme::typography::FontFamilies,
+    sans_variant: Option<&SansVariant>,
+    serif_variant: Option<&SerifVariant>,
+    mono_variant: Option<&MonoVariant>,
+) -> Handle<Font> {
+    match family {
+        FontFamily::Sans => {
+            if let Some(sans) = sans_variant {
+                match (weight, italic) {
+                    (TextWeight::Light, false) => sans.sans_light.clone(),
+                    (TextWeight::Light, true) => sans.sans_light_italic.clone(),
+                    (TextWeight::Regular, false) => sans.sans_regular.clone(),
+                    (TextWeight::Regular, true) => sans.sans_regular_italic.clone(),
+                    (TextWeight::Medium, false) => sans.sans_medium.clone(),
+                    (TextWeight::Medium, true) => sans.sans_medium_italic.clone(),
+                    (TextWeight::Bold, false) => sans.sans_bold.clone(),
+                    (TextWeight::Bold, true) => sans.sans_bold_italic.clone(),
+                }
+            } else {
+                // Fallback to basic families
+                match weight {
+                    TextWeight::Light => basic_families.sans_light.clone(),
+                    TextWeight::Regular => basic_families.sans_regular.clone(),
+                    TextWeight::Medium => basic_families.sans_medium.clone(),
+                    TextWeight::Bold => basic_families.sans_bold.clone(),
+                }
+            }
+        },
+        FontFamily::Serif => {
+            if let Some(serif) = serif_variant {
+                match (weight, italic) {
+                    (TextWeight::Light, false) => serif.serif_light.clone(),
+                    (TextWeight::Light, true) => serif.serif_light_italic.clone(),
+                    (TextWeight::Regular, false) => serif.serif_regular.clone(),
+                    (TextWeight::Regular, true) => serif.serif_regular_italic.clone(),
+                    (TextWeight::Medium, false) => serif.serif_medium.clone(),
+                    (TextWeight::Medium, true) => serif.serif_medium_italic.clone(),
+                    (TextWeight::Bold, false) => serif.serif_bold.clone(),
+                    (TextWeight::Bold, true) => serif.serif_bold_italic.clone(),
+                }
+            } else {
+                // Fallback to basic families
+                match weight {
+                    TextWeight::Regular | TextWeight::Light | TextWeight::Medium => basic_families.serif_regular.clone(),
+                    TextWeight::Bold => basic_families.serif_bold.clone(),
+                }
+            }
+        },
+        FontFamily::Mono => {
+            if let Some(mono) = mono_variant {
+                match (weight, italic) {
+                    (TextWeight::Light, false) => mono.mono_light.clone(),
+                    (TextWeight::Light, true) => mono.mono_light_italic.clone(),
+                    (TextWeight::Regular, false) => mono.mono_regular.clone(),
+                    (TextWeight::Regular, true) => mono.mono_regular_italic.clone(),
+                    (TextWeight::Medium, false) => mono.mono_medium.clone(),
+                    (TextWeight::Medium, true) => mono.mono_medium_italic.clone(),
+                    (TextWeight::Bold, false) => mono.mono_bold.clone(),
+                    (TextWeight::Bold, true) => mono.mono_bold_italic.clone(),
+                }
+            } else {
+                // Fallback to basic families
+                match weight {
+                    TextWeight::Regular | TextWeight::Light | TextWeight::Medium => basic_families.mono_regular.clone(),
+                    TextWeight::Bold => basic_families.mono_bold.clone(),
+                }
+            }
+        },
     }
 }
 
