@@ -55,7 +55,7 @@ impl UIRoot {
 /// fn setup_main_ui(mut commands: Commands) {
 ///     // Create the main UI container
 ///     commands.spawn(ui_root("main_ui"));
-///     
+///
 ///     // Create a modal overlay container
 ///     commands.spawn(ui_root("modal_overlay"));
 /// }
@@ -98,8 +98,8 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
 /// Currently returns the first UIRoot when searching by name due to query limitations.
 /// This will be improved in future versions to properly match by name.
 pub fn find_ui_root(query: &Query<Entity, With<UIRoot>>, name: Option<&str>) -> Option<Entity> {
-    if let Some(target_name) = name {
-        query.iter().find(|&entity| {
+    if let Some(_target_name) = name {
+        query.iter().find(|&_entity| {
             // Would need access to UIRoot component to check name
             // For now, return first match
             true

@@ -1,6 +1,6 @@
 // z.B. in crates/forge_ui/src/theme/typography.rs
 use crate::plugin::{FONT_SIZE_BASE, SCALING};
-use bevy::asset::Asset;
+
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 /// Die zentrale Ressource, die sowohl die geladenen Schriftart-Assets
@@ -72,13 +72,13 @@ pub struct FontFamilies {
     pub sans_medium: Handle<Font>,
     #[asset(path = "fonts/Roboto-Bold.ttf")]
     pub sans_bold: Handle<Font>,
-    
+
     /// Serif fonts
     #[asset(path = "fonts/NotoSerif-Regular.ttf")]
     pub serif_regular: Handle<Font>,
     #[asset(path = "fonts/NotoSerif-Bold.ttf")]
     pub serif_bold: Handle<Font>,
-    
+
     /// Mono fonts
     #[asset(path = "fonts/RobotoMono-Regular.ttf")]
     pub mono_regular: Handle<Font>,
@@ -94,12 +94,12 @@ pub struct FontAssets {
     pub sans_regular: Handle<Font>,
     pub sans_medium: Handle<Font>,
     pub sans_bold: Handle<Font>,
-    
+
     // Serif Familie
     pub serif_regular: Handle<Font>,
     pub serif_bold: Handle<Font>,
-    
-    // Mono Familie  
+
+    // Mono Familie
     pub mono_regular: Handle<Font>,
     pub mono_bold: Handle<Font>,
 }
@@ -107,23 +107,23 @@ pub struct FontAssets {
 /// Startup system that loads all font assets directly using the asset server
 pub fn load_font_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
     info!("Loading font assets...");
-    
+
     let font_assets = FontAssets {
         // Sans Familie laden
         sans_light: asset_server.load("fonts/Roboto-Light.ttf"),
         sans_regular: asset_server.load("fonts/Roboto-Regular.ttf"),
         sans_medium: asset_server.load("fonts/Roboto-Medium.ttf"),
         sans_bold: asset_server.load("fonts/Roboto-Bold.ttf"),
-        
+
         // Serif Familie laden
         serif_regular: asset_server.load("fonts/NotoSerif-Regular.ttf"),
         serif_bold: asset_server.load("fonts/NotoSerif-Bold.ttf"),
-        
+
         // Mono Familie laden
         mono_regular: asset_server.load("fonts/RobotoMono-Regular.ttf"),
         mono_bold: asset_server.load("fonts/RobotoMono-Bold.ttf"),
     };
-    
+
     commands.insert_resource(font_assets);
     info!("Font assets resource created and inserted");
 }

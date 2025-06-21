@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    theme::typography::{FontAssets, FontSize},
+    theme::{
+        color::TextContrastLevel,
+        typography::{FontAssets, FontSize},
+    },
     utilities::ComponentBuilder,
 };
 
@@ -78,6 +81,8 @@ pub struct TextBuilder {
     color: Option<TextColor>,
     italic: bool,
     align: Option<JustifyText>,
+    background_context: Option<Color>,
+    contrast_level: Option<TextContrastLevel>,
 }
 
 impl TextBuilder {
@@ -92,6 +97,8 @@ impl TextBuilder {
             color: None,
             italic: false,
             align: None,
+            background_context: None,
+            contrast_level: None,
         }
     }
 
@@ -145,6 +152,28 @@ impl TextBuilder {
     /// Convenience method for right alignment
     pub fn right(self) -> Self {
         self.align(JustifyText::Right)
+    }
+
+    /// Set background context for intelligent contrast calculation
+    pub fn on_background(mut self, background_color: Color) -> Self {
+        self.background_context = Some(background_color);
+        self
+    }
+
+    /// Set contrast level for accessibility
+    pub fn contrast_level(mut self, level: TextContrastLevel) -> Self {
+        self.contrast_level = Some(level);
+        self
+    }
+
+    /// Convenience method for high contrast text (WCAG AA compliant)
+    pub fn high_contrast(self) -> Self {
+        self.contrast_level(TextContrastLevel::High)
+    }
+
+    /// Convenience method for accessible text (WCAG AAA compliant)
+    pub fn accessible(self) -> Self {
+        self.contrast_level(TextContrastLevel::Accessible)
     }
 
     /// Get the effective text size (variant default or explicit)
@@ -211,46 +240,46 @@ impl TextBuilder {
     }
 
     /// Get direct font handle using global font assets (will be filled by system)
-    fn get_direct_font_handle(&self, family: FontFamily, weight: TextWeight) -> Handle<Font> {
+    fn get_direct_font_handle(&self, _family: FontFamily, _weight: TextWeight) -> Handle<Font> {
         // This will be updated by a system once FontAssets are loaded
         // For now return default, but we'll add a system to update these
         Handle::<Font>::default()
     }
 
-    /// Convert TextColor to actual Color using theme-aware semantic palettes
+    /// Convert TextColor to actual Color using intelligent contrast calculation
     fn map_color(&self, color: TextColor) -> Color {
         use crate::theme::color::{
             accent_palette, error_palette, success_palette, theme, warning_palette,
         };
 
-        match color {
-            TextColor::Default => {
-                // Use theme-aware gray palette for default text
-                let gray_palette = theme().gray;
-                gray_palette.text_contrast // High contrast text
+        // Get the palette for the semantic color
+        let palette = match color {
+            TextColor::Default | TextColor::Muted => theme().gray,
+            TextColor::Accent => accent_palette(),
+            TextColor::Error => error_palette(),
+            TextColor::Warning => warning_palette(),
+            TextColor::Success => success_palette(),
+            TextColor::Custom(c) => return c,
+        };
+
+        // If we have background context, use intelligent contrast calculation
+        if let Some(background) = self.background_context {
+            let contrast_level = self.contrast_level.unwrap_or_else(|| match color {
+                TextColor::Muted => TextContrastLevel::Medium,
+                _ => TextContrastLevel::High,
+            });
+
+            palette.get_text_color_for_contrast_level(&background, contrast_level)
+        } else {
+            // Fallback to palette defaults based on color type
+            match color {
+                TextColor::Default => palette.text_contrast, // High contrast for readability
+                TextColor::Muted => palette.text,            // Medium contrast for secondary text
+                TextColor::Accent | TextColor::Error | TextColor::Warning | TextColor::Success => {
+                    palette.text_contrast // High contrast for semantic colors
+                }
+                TextColor::Custom(c) => c,
             }
-            TextColor::Muted => {
-                // Use theme-aware gray palette for muted text
-                let gray_palette = theme().gray;
-                gray_palette.text // Medium contrast text
-            }
-            TextColor::Accent => {
-                // Use dynamic accent palette
-                accent_palette().text
-            }
-            TextColor::Error => {
-                // Use red palette for errors
-                error_palette().text
-            }
-            TextColor::Warning => {
-                // Use warning palette (should be orange/yellow)
-                warning_palette().text
-            }
-            TextColor::Success => {
-                // Use success palette (green variants)
-                success_palette().text
-            }
-            TextColor::Custom(c) => c,
         }
     }
 }
@@ -387,6 +416,30 @@ impl Text {
     pub fn code(content: impl Into<String>) -> TextBuilder {
         TextBuilder::new(content).family(FontFamily::Mono)
     }
+
+    /// Create text with automatic contrast optimization for given background
+    ///
+    /// # Example
+    /// ```rust
+    /// let text = Text::on_background("Readable text", accent_color).build();
+    /// ```
+    pub fn on_background(content: impl Into<String>, background: Color) -> TextBuilder {
+        TextBuilder::new(content)
+            .on_background(background)
+            .high_contrast()
+    }
+
+    /// Create accessible text (WCAG AAA compliant) for given background
+    ///
+    /// # Example
+    /// ```rust
+    /// let text = Text::accessible("Important text", button_color).build();
+    /// ```
+    pub fn accessible(content: impl Into<String>, background: Color) -> TextBuilder {
+        TextBuilder::new(content)
+            .on_background(background)
+            .accessible()
+    }
 }
 
 /// System that applies fonts directly from FontAssets to text entities
@@ -432,7 +485,7 @@ pub fn apply_text_fonts(
             },
         };
 
-        info!(
+        debug!(
             "Applying font to entity {:?}: family={:?}, weight={:?}, font_handle={:?}",
             entity,
             font_info.family,

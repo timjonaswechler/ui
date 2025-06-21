@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use ui::{
     components::{
         heading::{Heading, HeadingExt, HeadingLevel},
-        text::{FontFamily, Text, TextColor, TextSize, TextWeight},
+        text::{Text, TextColor, TextSize, TextWeight},
         ButtonBuilder,
     },
     plugin::ForgeUiPlugin,

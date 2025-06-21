@@ -19,7 +19,7 @@ use crate::utilities::ui_root::UIRoot;
 /// fn setup_modal(mut commands: Commands) {
 ///     // Create a UI root for modals
 ///     commands.spawn(ui_root("modal_layer"));
-///     
+///
 ///     // Create a portal that renders to the modal layer
 ///     commands.spawn((
 ///         Portal::new()
@@ -133,7 +133,7 @@ pub fn portal_system(
     portal_query: Query<(Entity, &Portal, &Children), Changed<Portal>>,
     ui_root_query: Query<Entity, With<UIRoot>>,
     name_query: Query<&Name>,
-    mut portal_content_query: Query<(Entity, &mut PortalContent)>,
+    portal_content_query: Query<(Entity, &mut PortalContent)>,
 ) {
     for (portal_entity, portal, children) in portal_query.iter() {
         let target_entity = if let Some(container_name) = &portal.container {
@@ -157,10 +157,10 @@ pub fn portal_system(
             for child in children.iter() {
                 // Only move children that haven't been processed yet
                 if portal_content_query.get(child).is_err() {
-                    commands.entity(child).insert(PortalContent {
-                        portal_entity,
-                    });
-                    
+                    commands
+                        .entity(child)
+                        .insert(PortalContent { portal_entity });
+
                     // Move child to the target container
                     commands.entity(target).add_child(child);
                     commands.entity(portal_entity).remove_children(&[child]);
