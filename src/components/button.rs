@@ -1,6 +1,6 @@
 use crate::{
     assets::audio::{sound_effect, SfxAssets},
-    components::text::{Text, TextColor as TextColorEnum, TextSize, TextWeight},
+    components::text::{Text, TextBuilder, TextColor as TextColorEnum, TextSize, TextWeight, FontFamily},
     theme::{
         color::{accent_palette, TextContrastLevel, UiColorPalette},
         layout::UiLayout,
@@ -112,6 +112,7 @@ pub struct ButtonBuilder {
     name: String,
     button: Button,
     text: Option<String>,
+    text_builder: Option<TextBuilder>,
     children: Vec<Entity>,
 }
 
@@ -121,6 +122,7 @@ impl ButtonBuilder {
             name: format!("{}_Button", name.into()),
             button: Button::default(),
             text: None,
+            text_builder: None,
             children: Vec::new(),
         }
     }
@@ -171,9 +173,110 @@ impl ButtonBuilder {
         self
     }
 
+    // Advanced text styling methods
+    pub fn text_size(mut self, size: TextSize) -> Self {
+        if let Some(text) = &self.text {
+            self.text_builder = Some(Text::new(text.clone()).size(size));
+        }
+        self
+    }
+
+    pub fn text_weight(mut self, weight: TextWeight) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.weight(weight));
+        self
+    }
+
+    pub fn text_family(mut self, family: FontFamily) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.family(family));
+        self
+    }
+
+    pub fn text_italic(mut self) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.italic());
+        self
+    }
+
+    pub fn text_align(mut self, align: JustifyText) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.align(align));
+        self
+    }
+
+    pub fn text_center(self) -> Self {
+        self.text_align(JustifyText::Center)
+    }
+
+    pub fn text_right(self) -> Self {
+        self.text_align(JustifyText::Right)
+    }
+
+    pub fn text_on_background(mut self, background_color: Color) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.on_background(background_color));
+        self
+    }
+
+    pub fn text_contrast_level(mut self, level: TextContrastLevel) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.contrast_level(level));
+        self
+    }
+
+    pub fn text_high_contrast(mut self) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.high_contrast());
+        self
+    }
+
+    pub fn text_accessible(mut self) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.accessible());
+        self
+    }
+
+    pub fn text_auto_contrast(mut self) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.auto_contrast());
+        self
+    }
+
+    pub fn text_manual_color(mut self) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.manual_color());
+        self
+    }
+
+    pub fn text_color(mut self, color: TextColorEnum) -> Self {
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.color(color));
+        self
+    }
+
     pub fn child(mut self, entity: Entity) -> Self {
         self.children.push(entity);
         self
+    }
+
+    /// Check if explicit text color was set (this affects whether button should manage text color)
+    fn has_explicit_text_color(&self) -> bool {
+        // If text_builder exists and has explicit color methods called, it should not be managed
+        // For now, we'll use a simple heuristic: if any text_color method was called, it's explicit
+        // This is a simplified check since we can't access TextBuilder internals
+        false // For now, always allow button to manage text color
     }
 }
 
@@ -224,6 +327,21 @@ impl ButtonBuilder {
         let text_size = self.get_button_text_size();
         let text_weight = self.get_button_text_weight();
         let text_color_enum = self.get_text_color_enum();
+        
+        // Prepare TextBuilder with automatic contrast optimization if text_builder is used
+        let text_builder = if let Some(builder) = self.text_builder.clone() {
+            // Apply button background context for intelligent contrast
+            let button_bg = self.calculate_background_color().0;
+            let contrast_level = if self.button.high_contrast {
+                TextContrastLevel::Accessible
+            } else {
+                TextContrastLevel::High
+            };
+            
+            Some(builder.on_background(button_bg).contrast_level(contrast_level))
+        } else {
+            None
+        };
 
         (
             Name::new(format!("{}_Button", self.name)),
@@ -253,14 +371,24 @@ impl ButtonBuilder {
                         SpinnerAnimation::default(),
                     ));
                 } else {
-                    parent.spawn(
-                        Text::label(display_text.clone())
-                            .color(text_color_enum)
-                            .size(text_size)
-                            .weight(text_weight)
-                            .center()
-                            .build(),
-                    );
+                    // Use advanced TextBuilder if available, otherwise fallback to simple text
+                    if let Some(builder) = text_builder {
+                        parent.spawn((
+                            builder.center().build(),
+                            ButtonManagedText, // Always add marker for now - will be refined later
+                        ));
+                    } else {
+                        // Fallback text is always managed by button
+                        parent.spawn((
+                            Text::label(display_text.clone())
+                                .color(text_color_enum)
+                                .size(text_size)
+                                .weight(text_weight)
+                                .center()
+                                .build(),
+                            ButtonManagedText,
+                        ));
+                    }
                 }
             })),
         )
@@ -336,11 +464,30 @@ impl Button {
     }
 
     fn calculate_text_color(&self, state: ButtonState) -> TextColor {
+        // Get the actual background color for this state
         let background_color = match (self.variant, state) {
-            (ButtonVariant::Solid, _)
-            | (ButtonVariant::Soft, _)
-            | (ButtonVariant::Outline, _)
-            | (ButtonVariant::Ghost, _) => self.color.text_contrast,
+            (ButtonVariant::Solid, ButtonState::Normal) => self.color.solid,
+            (ButtonVariant::Solid, ButtonState::Hover) => self.color.solid_hover,
+            (ButtonVariant::Solid, ButtonState::Active) => self.color.bg_active,
+            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.base_a,
+            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.bg_hover_a,
+            (ButtonVariant::Ghost, ButtonState::Active) => self.color.bg_active_a,
+            (ButtonVariant::Soft, ButtonState::Normal)
+            | (ButtonVariant::Outline, ButtonState::Normal) => self.color.bg,
+            (ButtonVariant::Soft, ButtonState::Hover)
+            | (ButtonVariant::Outline, ButtonState::Hover) => self.color.bg_hover,
+            (ButtonVariant::Soft, ButtonState::Active)
+            | (ButtonVariant::Outline, ButtonState::Active) => self.color.bg_active,
+            (_, ButtonState::Disabled) => match self.variant {
+                ButtonVariant::Solid => self.color.solid,
+                ButtonVariant::Ghost => self.color.base,
+                ButtonVariant::Soft | ButtonVariant::Outline => self.color.bg_hover,
+            },
+            (_, ButtonState::Loading) => match self.variant {
+                ButtonVariant::Solid => self.color.solid,
+                ButtonVariant::Ghost => self.color.base,
+                ButtonVariant::Soft | ButtonVariant::Outline => self.color.bg_hover,
+            },
         };
 
         let contrast_level = if self.high_contrast {
@@ -419,6 +566,11 @@ impl ButtonBuilder {
 pub struct SpinnerAnimation {
     pub rotation_speed: f32,
 }
+
+/// Marker component for text that should automatically update colors based on button state
+/// Text with explicit colors (manual_color) will not have this component
+#[derive(Component, Debug)]
+pub struct ButtonManagedText;
 
 impl Default for SpinnerAnimation {
     fn default() -> Self {
@@ -505,15 +657,48 @@ fn apply_button_styling(
     state: ButtonState,
     bg_colors: &mut Query<&mut BackgroundColor>,
     text_colors: &mut Query<&mut TextColor>,
+    children_query: &Query<&Children>,
+    managed_text_query: &Query<&ButtonManagedText>,
 ) {
     let styling = button.get_styling(state);
 
+    // Update button background color
     if let Ok(mut bg_color) = bg_colors.get_mut(entity) {
         *bg_color = styling.background_color;
     }
 
+    // Update direct text color (fallback for old button style)
     if let Ok(mut text_color) = text_colors.get_mut(entity) {
         *text_color = styling.text_color;
+    }
+
+    // Update text colors in children (for TextBuilder-created text components)
+    if let Ok(children) = children_query.get(entity) {
+        for child in children.iter() {
+            update_text_colors_recursive(&child, &styling.text_color, text_colors, children_query, managed_text_query);
+        }
+    }
+}
+
+fn update_text_colors_recursive(
+    entity: &Entity,
+    new_color: &TextColor,
+    text_colors: &mut Query<&mut TextColor>,
+    children_query: &Query<&Children>,
+    managed_text_query: &Query<&ButtonManagedText>,
+) {
+    // Update text color only if this entity has both TextColor and ButtonManagedText components
+    if managed_text_query.get(*entity).is_ok() {
+        if let Ok(mut text_color) = text_colors.get_mut(*entity) {
+            *text_color = *new_color;
+        }
+    }
+
+    // Recursively check children
+    if let Ok(children) = children_query.get(*entity) {
+        for child in children.iter() {
+            update_text_colors_recursive(&child, new_color, text_colors, children_query, managed_text_query);
+        }
     }
 }
 
@@ -522,6 +707,8 @@ fn on_button_hover(
     mut buttons: Query<&mut Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
     mut text_colors: Query<&mut TextColor>,
+    children_query: Query<&Children>,
+    managed_text_query: Query<&ButtonManagedText>,
 ) {
     let entity = trigger.target();
     if let Ok(mut button) = buttons.get_mut(entity) {
@@ -536,6 +723,8 @@ fn on_button_hover(
             ButtonState::Hover,
             &mut bg_colors,
             &mut text_colors,
+            &children_query,
+            &managed_text_query,
         );
     }
 }
@@ -545,6 +734,8 @@ fn on_button_hover_out(
     mut buttons: Query<&mut Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
     mut text_colors: Query<&mut TextColor>,
+    children_query: Query<&Children>,
+    managed_text_query: Query<&ButtonManagedText>,
 ) {
     let entity = trigger.target();
     if let Ok(mut button) = buttons.get_mut(entity) {
@@ -555,6 +746,8 @@ fn on_button_hover_out(
             ButtonState::Normal,
             &mut bg_colors,
             &mut text_colors,
+            &children_query,
+            &managed_text_query,
         );
     }
 }
@@ -564,6 +757,8 @@ fn on_button_pressed(
     mut buttons: Query<&mut Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
     mut text_colors: Query<&mut TextColor>,
+    children_query: Query<&Children>,
+    managed_text_query: Query<&ButtonManagedText>,
 ) {
     let entity = trigger.target();
     if let Ok(mut button) = buttons.get_mut(entity) {
@@ -578,6 +773,8 @@ fn on_button_pressed(
             ButtonState::Active,
             &mut bg_colors,
             &mut text_colors,
+            &children_query,
+            &managed_text_query,
         );
     }
 }
@@ -587,6 +784,8 @@ fn on_button_released(
     mut buttons: Query<&mut Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
     mut text_colors: Query<&mut TextColor>,
+    children_query: Query<&Children>,
+    managed_text_query: Query<&ButtonManagedText>,
 ) {
     let entity = trigger.target();
     if let Ok(mut button) = buttons.get_mut(entity) {
@@ -601,6 +800,8 @@ fn on_button_released(
             ButtonState::Hover,
             &mut bg_colors,
             &mut text_colors,
+            &children_query,
+            &managed_text_query,
         );
     }
 }

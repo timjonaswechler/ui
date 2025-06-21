@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::components::text::{Text, TextBuilder, TextSize, TextWeight, TextColor as TextColorEnum};
+use crate::{
+    components::text::{Text, TextBuilder, TextSize, TextWeight, TextColor as TextColorEnum, FontFamily},
+    theme::color::TextContrastLevel,
+};
 
 /// Semantic heading levels for hierarchical content structure
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -145,22 +148,36 @@ pub trait HeadingExt {
     /// let heading = Text::new("My Title").as_heading(HeadingLevel::H2).build();
     /// ```
     fn as_heading(self, level: HeadingLevel) -> TextBuilder;
+
+    // Advanced text styling methods for headings
+    fn heading_family(self, family: FontFamily) -> TextBuilder;
+    fn heading_italic(self) -> TextBuilder;
+    fn heading_align(self, align: JustifyText) -> TextBuilder;
+    fn heading_center(self) -> TextBuilder;
+    fn heading_right(self) -> TextBuilder;
+    fn heading_on_background(self, background_color: Color) -> TextBuilder;
+    fn heading_contrast_level(self, level: TextContrastLevel) -> TextBuilder;
+    fn heading_high_contrast(self) -> TextBuilder;
+    fn heading_accessible(self) -> TextBuilder;
+    fn heading_auto_contrast(self) -> TextBuilder;
+    fn heading_manual_color(self) -> TextBuilder;
+    fn heading_color(self, color: TextColorEnum) -> TextBuilder;
 }
 
 impl HeadingExt for TextBuilder {
     fn as_heading(self, level: HeadingLevel) -> TextBuilder {
-        match level {
+        let base_builder = match level {
             HeadingLevel::H1 => {
-                self.size(TextSize::X5l).weight(TextWeight::Bold)
+                self.size(TextSize::X5l).weight(TextWeight::Bold).high_contrast()
             },
             HeadingLevel::H2 => {
-                self.size(TextSize::X3l).weight(TextWeight::Bold)
+                self.size(TextSize::X3l).weight(TextWeight::Bold).high_contrast()
             },
             HeadingLevel::H3 => {
-                self.size(TextSize::X2l).weight(TextWeight::Medium)
+                self.size(TextSize::X2l).weight(TextWeight::Medium).high_contrast()
             },
             HeadingLevel::H4 => {
-                self.size(TextSize::Xl).weight(TextWeight::Medium)
+                self.size(TextSize::Xl).weight(TextWeight::Medium).high_contrast()
             },
             HeadingLevel::H5 => {
                 self.size(TextSize::Lg).weight(TextWeight::Medium)
@@ -168,6 +185,64 @@ impl HeadingExt for TextBuilder {
             HeadingLevel::H6 => {
                 self.size(TextSize::Base).weight(TextWeight::Medium)
             },
+        };
+        
+        // Apply semantic-aware defaults for accessibility
+        match level {
+            HeadingLevel::H1 | HeadingLevel::H2 | HeadingLevel::H3 => {
+                base_builder.accessible() // WCAG AAA for important headings
+            },
+            _ => {
+                base_builder.high_contrast() // WCAG AA for smaller headings
+            }
         }
+    }
+
+    fn heading_family(self, family: FontFamily) -> TextBuilder {
+        self.family(family)
+    }
+
+    fn heading_italic(self) -> TextBuilder {
+        self.italic()
+    }
+
+    fn heading_align(self, align: JustifyText) -> TextBuilder {
+        self.align(align)
+    }
+
+    fn heading_center(self) -> TextBuilder {
+        self.center()
+    }
+
+    fn heading_right(self) -> TextBuilder {
+        self.right()
+    }
+
+    fn heading_on_background(self, background_color: Color) -> TextBuilder {
+        self.on_background(background_color)
+    }
+
+    fn heading_contrast_level(self, level: TextContrastLevel) -> TextBuilder {
+        self.contrast_level(level)
+    }
+
+    fn heading_high_contrast(self) -> TextBuilder {
+        self.high_contrast()
+    }
+
+    fn heading_accessible(self) -> TextBuilder {
+        self.accessible()
+    }
+
+    fn heading_auto_contrast(self) -> TextBuilder {
+        self.auto_contrast()
+    }
+
+    fn heading_manual_color(self) -> TextBuilder {
+        self.manual_color()
+    }
+
+    fn heading_color(self, color: TextColorEnum) -> TextBuilder {
+        self.color(color)
     }
 }
