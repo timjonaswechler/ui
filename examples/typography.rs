@@ -2,8 +2,12 @@ use bevy::prelude::*;
 use ui::{
     components::{
         heading::{Heading, HeadingExt, HeadingLevel},
-        text::{Text, TextColor, TextSize, TextWeight},
+        text::Text,
         ButtonBuilder,
+    },
+    theme::{
+        color::TextColor,
+        typography::{FontFamily, TextSize, TextWeight},
     },
     plugin::ForgeUiPlugin,
     utilities::{ui_root, ComponentBuilder},
@@ -49,104 +53,104 @@ fn setup_typography_showcase(mut commands: Commands) {
                 .build()
         );
 
-        // // Headings Section
-        // parent.spawn(
-        //     Heading::h2("Heading Hierarchy")
-        //         .build()
-        // );
+        // Headings Section
+        parent.spawn(
+            Heading::h2("Heading Hierarchy")
+                .build()
+        );
 
-        // // All heading levels
-        // parent.spawn(Heading::h1("Heading 1 - Main Title").build());
-        // parent.spawn(Heading::h2("Heading 2 - Section Title").build());
-        // parent.spawn(Heading::h3("Heading 3 - Subsection").build());
-        // parent.spawn(Heading::h4("Heading 4 - Minor Section").build());
-        // parent.spawn(Heading::h5("Heading 5 - Small Heading").build());
-        // parent.spawn(Heading::h6("Heading 6 - Smallest Heading").build());
+        // All heading levels
+        parent.spawn(Heading::h1("Heading 1 - Main Title").build());
+        parent.spawn(Heading::h2("Heading 2 - Section Title").build());
+        parent.spawn(Heading::h3("Heading 3 - Subsection").build());
+        parent.spawn(Heading::h4("Heading 4 - Minor Section").build());
+        parent.spawn(Heading::h5("Heading 5 - Small Heading").build());
+        parent.spawn(Heading::h6("Heading 6 - Smallest Heading").build());
 
-        // // Text Variants Section
-        // parent.spawn(
-        //     Heading::h2("Text Variants")
-        //         .build()
-        // );
+        // Text Variants Section
+        parent.spawn(
+            Heading::h2("Text Variants")
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::display("Display Text - Hero Content")
-        //         .build()
-        // );
+        parent.spawn(
+            Text::display("Display Text - Hero Content")
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::title("Title Text - Important Sections")
-        //         .build()
-        // );
+        parent.spawn(
+            Text::title("Title Text - Important Sections")
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::body("Body Text - This is the standard text used for most content. It's readable and comfortable for longer passages of text.")
-        //         .build()
-        // );
+        parent.spawn(
+            Text::body("Body Text - This is the standard text used for most content. It's readable and comfortable for longer passages of text.")
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::label("Label Text - Form Labels and Descriptions")
-        //         .build()
-        // );
+        parent.spawn(
+            Text::label("Label Text - Form Labels and Descriptions")
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::caption("Caption Text - Small supplementary information and footnotes")
-        //         .build()
-        // );
+        parent.spawn(
+            Text::caption("Caption Text - Small supplementary information and footnotes")
+                .build()
+        );
 
-        // // Font Families Section
-        // parent.spawn(
-        //     Heading::h2("Font Families")
-        //         .build()
-        // );
+        // Font Families Section
+        parent.spawn(
+            Heading::h2("Font Families")
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::new("Sans-serif font family (default)")
-        //         .family(FontFamily::Sans)
-        //         .build()
-        // );
+        parent.spawn(
+            Text::new("Sans-serif font family (default)")
+                .family(FontFamily::Sans)
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::new("Serif font family for elegant text")
-        //         .family(FontFamily::Serif)
-        //         .build()
-        // );
+        parent.spawn(
+            Text::new("Serif font family for elegant text")
+                .family(FontFamily::Serif)
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::new("Monospace font family for code")
-        //         .family(FontFamily::Mono)
-        //         .build()
-        // );
+        parent.spawn(
+            Text::new("Monospace font family for code")
+                .family(FontFamily::Mono)
+                .build()
+        );
 
-        // // Text Weights Section
-        // parent.spawn(
-        //     Heading::h2("Font Weights")
-        //         .build()
-        // );
+        // Text Weights Section
+        parent.spawn(
+            Heading::h2("Font Weights")
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::new("Light weight text")
-        //         .weight(TextWeight::Light)
-        //         .build()
-        // );
+        parent.spawn(
+            Text::new("Light weight text")
+                .weight(TextWeight::Light)
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::new("Regular weight text (default)")
-        //         .weight(TextWeight::Regular)
-        //         .build()
-        // );
+        parent.spawn(
+            Text::new("Regular weight text (default)")
+                .weight(TextWeight::Regular)
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::new("Medium weight text")
-        //         .weight(TextWeight::Medium)
-        //         .build()
-        // );
+        parent.spawn(
+            Text::new("Medium weight text")
+                .weight(TextWeight::Medium)
+                .build()
+        );
 
-        // parent.spawn(
-        //     Text::new("Bold weight text")
-        //         .weight(TextWeight::Bold)
-        //         .build()
-        // );
+        parent.spawn(
+            Text::new("Bold weight text")
+                .weight(TextWeight::Bold)
+                .build()
+        );
 
         // Italic Text Section
         parent.spawn(

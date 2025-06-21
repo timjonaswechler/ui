@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::text::{TextBuilder, TextSize, TextWeight, FontFamily, TextColor as TextColorEnum},
-    theme::color::TextContrastLevel,
+    theme::{
+        typography::{TextSize, TextWeight, FontFamily, TextVariant},
+        color::{TextColor as TextColorEnum, TextContrastLevel},
+    },
     utilities::ComponentBuilder,
 };
 
@@ -106,96 +108,144 @@ impl<T: TextStyler + Sized> TextStylePresets for T {}
 
 /// Helper function to create a text builder with common styling
 pub fn styled_text(content: impl Into<String>) -> StyledTextBuilder {
-    StyledTextBuilder {
-        builder: crate::components::text::Text::new(content),
-    }
+    StyledTextBuilder::new(content)
 }
 
 /// Wrapper around TextBuilder that implements TextStyler
 pub struct StyledTextBuilder {
-    builder: TextBuilder,
+    content: String,
+    variant: TextVariant,
+    size: Option<TextSize>,
+    weight: Option<TextWeight>,
+    family: Option<FontFamily>,
+    color: Option<TextColorEnum>,
+    italic: bool,
+    align: Option<JustifyText>,
+    background_context: Option<Color>,
+    contrast_level: Option<TextContrastLevel>,
+    explicit_color_set: bool,
 }
 
 impl StyledTextBuilder {
+    pub fn new(content: impl Into<String>) -> Self {
+        Self {
+            content: content.into(),
+            variant: TextVariant::default(),
+            size: None,
+            weight: None,
+            family: None,
+            color: None,
+            italic: false,
+            align: None,
+            background_context: None,
+            contrast_level: Some(TextContrastLevel::High),
+            explicit_color_set: false,
+        }
+    }
     /// Build the final text component
     pub fn build(self) -> impl Bundle {
-        self.builder.build()
-    }
-    
-    /// Get the underlying TextBuilder
-    pub fn into_text_builder(self) -> TextBuilder {
-        self.builder
+        use crate::components::text::Text;
+        
+        let mut builder = Text::new(self.content)
+            .variant(self.variant);
+            
+        if let Some(size) = self.size {
+            builder = builder.size(size);
+        }
+        if let Some(weight) = self.weight {
+            builder = builder.weight(weight);
+        }
+        if let Some(family) = self.family {
+            builder = builder.family(family);
+        }
+        if let Some(color) = self.color {
+            builder = builder.color(color);
+        }
+        if self.italic {
+            builder = builder.italic();
+        }
+        if let Some(align) = self.align {
+            builder = builder.align(align);
+        }
+        if let Some(bg) = self.background_context {
+            builder = builder.on_background(bg);
+        }
+        if let Some(level) = self.contrast_level {
+            builder = builder.contrast_level(level);
+        }
+        if self.explicit_color_set {
+            builder = builder.manual_color();
+        }
+        
+        builder.build()
     }
 }
 
 impl TextStyler for StyledTextBuilder {
     fn text_size(mut self, size: TextSize) -> Self {
-        self.builder = self.builder.size(size);
+        self.size = Some(size);
         self
     }
     
     fn text_weight(mut self, weight: TextWeight) -> Self {
-        self.builder = self.builder.weight(weight);
+        self.weight = Some(weight);
         self
     }
     
     fn text_family(mut self, family: FontFamily) -> Self {
-        self.builder = self.builder.family(family);
+        self.family = Some(family);
         self
     }
     
     fn text_italic(mut self) -> Self {
-        self.builder = self.builder.italic();
+        self.italic = true;
         self
     }
     
     fn text_align(mut self, align: JustifyText) -> Self {
-        self.builder = self.builder.align(align);
+        self.align = Some(align);
         self
     }
     
-    fn text_center(mut self) -> Self {
-        self.builder = self.builder.center();
-        self
+    fn text_center(self) -> Self {
+        self.text_align(JustifyText::Center)
     }
     
-    fn text_right(mut self) -> Self {
-        self.builder = self.builder.right();
-        self
+    fn text_right(self) -> Self {
+        self.text_align(JustifyText::Right)
     }
     
     fn text_on_background(mut self, background_color: Color) -> Self {
-        self.builder = self.builder.on_background(background_color);
+        self.background_context = Some(background_color);
         self
     }
     
     fn text_contrast_level(mut self, level: TextContrastLevel) -> Self {
-        self.builder = self.builder.contrast_level(level);
+        self.contrast_level = Some(level);
         self
     }
     
-    fn text_high_contrast(mut self) -> Self {
-        self.builder = self.builder.high_contrast();
-        self
+    fn text_high_contrast(self) -> Self {
+        self.text_contrast_level(TextContrastLevel::High)
     }
     
-    fn text_accessible(mut self) -> Self {
-        self.builder = self.builder.accessible();
-        self
+    fn text_accessible(self) -> Self {
+        self.text_contrast_level(TextContrastLevel::Accessible)
     }
     
     fn text_auto_contrast(mut self) -> Self {
-        self.builder = self.builder.auto_contrast();
+        self.explicit_color_set = false;
         self
     }
     
     fn text_manual_color(mut self) -> Self {
-        self.builder = self.builder.manual_color();
+        self.explicit_color_set = true;
         self
     }
     
     fn text_color(mut self, color: TextColorEnum) -> Self {
-        self.builder = self.builder.color(color);
+        self.color = Some(color);
+        self.explicit_color_set = true;
         self
     }
 }

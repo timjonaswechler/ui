@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use ui::{
-    components::{text::Text, FontFamily, TextWeight},
+    components::text::Text,
     plugin::ForgeUiPlugin,
+    theme::typography::{FontFamily, TextWeight},
     utilities::{ui_root, ComponentBuilder},
 };
 

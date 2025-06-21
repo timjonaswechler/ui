@@ -1,9 +1,10 @@
 use crate::{
     assets::audio::{sound_effect, SfxAssets},
-    components::text::{Text, TextBuilder, TextColor as TextColorEnum, TextSize, TextWeight, FontFamily},
+    components::text::{Text, TextBuilder},
     theme::{
-        color::{accent_palette, TextContrastLevel, UiColorPalette},
+        color::{accent_palette, TextColor as TextColorEnum, TextContrastLevel, UiColorPalette},
         layout::UiLayout,
+        typography::{FontFamily, TextSize, TextWeight},
     },
     utilities::ComponentBuilder,
 };
@@ -417,9 +418,9 @@ impl Button {
             (ButtonVariant::Solid, ButtonState::Normal) => self.color.solid,
             (ButtonVariant::Solid, ButtonState::Hover) => self.color.solid_hover,
             (ButtonVariant::Solid, ButtonState::Active) => self.color.bg_active,
-            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.base_a,
-            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.bg_hover_a,
-            (ButtonVariant::Ghost, ButtonState::Active) => self.color.bg_active_a,
+            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.bg_subtle,
+            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.bg_hover,
+            (ButtonVariant::Ghost, ButtonState::Active) => self.color.bg_active,
             (ButtonVariant::Soft, ButtonState::Normal)
             | (ButtonVariant::Outline, ButtonState::Normal) => self.color.bg,
             (ButtonVariant::Soft, ButtonState::Hover)
@@ -469,9 +470,9 @@ impl Button {
             (ButtonVariant::Solid, ButtonState::Normal) => self.color.solid,
             (ButtonVariant::Solid, ButtonState::Hover) => self.color.solid_hover,
             (ButtonVariant::Solid, ButtonState::Active) => self.color.bg_active,
-            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.base_a,
-            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.bg_hover_a,
-            (ButtonVariant::Ghost, ButtonState::Active) => self.color.bg_active_a,
+            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.bg_subtle,
+            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.bg_hover,
+            (ButtonVariant::Ghost, ButtonState::Active) => self.color.bg_active,
             (ButtonVariant::Soft, ButtonState::Normal)
             | (ButtonVariant::Outline, ButtonState::Normal) => self.color.bg,
             (ButtonVariant::Soft, ButtonState::Hover)
@@ -496,20 +497,29 @@ impl Button {
             TextContrastLevel::High
         };
 
-        let mut text_color = self
-            .color
-            .get_text_color_for_contrast_level(&background_color, contrast_level);
+        let mut text_color = match self.variant {
+            ButtonVariant::Solid => {
+                // Use text_contrast for solid buttons - this should be consistent
+                self.color.text_contrast
+            }
+            ButtonVariant::Soft => {
+                // Use normal text color for soft buttons
+                self.color.text
+            }
+            ButtonVariant::Outline => {
+                // Use normal text color for outline buttons
+                self.color.text
+            }
+            ButtonVariant::Ghost => {
+                // Use normal text color for ghost buttons
+                self.color.text
+            }
+        };
 
         if state == ButtonState::Disabled {
-            let background_luminance = UiColorPalette::calculate_luminance(&background_color);
-            if background_luminance > 0.5 {
-                text_color = self.color.solid_hover;
-            } else {
-                text_color = self.color.bg;
-            }
-
+            // Keep the same text color but reduce opacity for disabled state
             let srgba = text_color.to_srgba();
-            text_color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.7);
+            text_color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
         }
 
         TextColor(text_color)
@@ -581,7 +591,15 @@ impl Default for SpinnerAnimation {
 }
 
 // System für Button-Interaktionen
-pub fn setup_button_interactions(mut commands: Commands, buttons: Query<Entity, Added<Button>>) {
+pub fn setup_button_interactions(
+    mut commands: Commands, 
+    buttons: Query<Entity, Added<Button>>,
+    button_query: Query<&Button>,
+    mut bg_colors: Query<&mut BackgroundColor>,
+    mut text_colors: Query<&mut TextColor>,
+    children_query: Query<&Children>,
+    managed_text_query: Query<&ButtonManagedText>,
+) {
     for entity in &buttons {
         commands
             .entity(entity)
@@ -590,6 +608,19 @@ pub fn setup_button_interactions(mut commands: Commands, buttons: Query<Entity, 
             .observe(on_button_hover_out)
             .observe(on_button_pressed)
             .observe(on_button_released);
+        
+        // Immediately apply correct styling to ensure consistency
+        if let Ok(button) = button_query.get(entity) {
+            apply_button_styling(
+                entity,
+                button,
+                ButtonState::Normal,
+                &mut bg_colors,
+                &mut text_colors,
+                &children_query,
+                &managed_text_query,
+            );
+        }
     }
 }
 

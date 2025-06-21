@@ -60,14 +60,14 @@ pub enum UiColorPalettesName {
     Green,
     Grass,
     Bronze,
-    // Brown,
+    Brown,
     Gold,
-    // Sky,
-    // Mint,
-    // Lime,
-    // Yellow,
-    // Amber,
-    // Orange,
+    Sky,
+    Mint,
+    Lime,
+    Yellow,
+    Amber,
+    Orange,
 }
 pub struct UiColorPalettesData(pub UiColorPalettes);
 

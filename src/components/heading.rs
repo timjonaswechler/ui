@@ -1,8 +1,11 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::text::{Text, TextBuilder, TextSize, TextWeight, TextColor as TextColorEnum, FontFamily},
-    theme::color::TextContrastLevel,
+    components::text::{Text, TextBuilder},
+    theme::{
+        color::{TextColor as TextColorEnum, TextContrastLevel},
+        typography::{FontFamily, TextSize, TextWeight},
+    },
 };
 
 /// Semantic heading levels for hierarchical content structure

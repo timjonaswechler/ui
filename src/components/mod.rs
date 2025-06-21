@@ -3,12 +3,10 @@ use bevy::prelude::*;
 pub mod button;
 pub mod heading;
 pub mod text;
-pub mod text_styler;
 
 pub use button::*;
 pub use heading::*;
 pub use text::*;
-pub use text_styler::*;
 
 pub struct ComponentsPlugin;
 

@@ -1,20 +1,55 @@
-// z.B. in crates/forge_ui/src/theme/typography.rs
 use crate::plugin::{FONT_SIZE_BASE, SCALING};
-
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
-/// Die zentrale Ressource, die sowohl die geladenen Schriftart-Assets
-/// als auch die Konfiguration für Schriftgrößen enthält.
-///
-/// Diese Struktur wird von `bevy_asset_loader` befüllt und dann als
-/// Bevy-Ressource in die Welt eingefügt.
-#[derive(AssetCollection, Resource, Debug, Clone)]
-pub struct TypographyAssets {
-    pub size: FontSize,
-    pub families: FontFamilies,
+
+/// Text variant defining semantic meaning and default styling
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TextVariant {
+    #[default]
+    Body,
+    Caption,
+    Label,
+    Display,
+    Title,
 }
-/// Datenstruktur nur für die Definition der Schriftgrößen.
-/// Identisch zu Ihrer `UiFontSizeData`.
+
+/// Text size variants for responsive typography
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TextSize {
+    Xs,
+    Sm,
+    #[default]
+    Base,
+    Lg,
+    Xl,
+    X2l,
+    X3l,
+    X4l,
+    X5l,
+    X6l,
+    X7l,
+    X8l,
+    X9l,
+}
+
+/// Text weight variants for font weight control
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TextWeight {
+    Light,
+    #[default]
+    Regular,
+    Medium,
+    Bold,
+}
+
+/// Font family variants
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum FontFamily {
+    #[default]
+    Sans,
+    Serif,
+    Mono,
+}
+/// Font size configuration structure
 #[derive(Debug, Clone)]
 pub struct FontSize {
     pub xs: f32,
@@ -55,38 +90,9 @@ impl Default for FontSize {
     }
 }
 
-/// Enthält die Handles für die verschiedenen Schriftart-Familien (sans, serif, mono).
-/// Dies ist eine verschachtelte AssetCollection.
-#[derive(AssetCollection, Resource, Debug, Clone, Default)]
-pub struct FontFamilies {
-    /// Das Standard-Fallback-Font.
-    #[asset(path = "fonts/Roboto-Regular.ttf")]
-    pub default: Handle<Font>,
 
-    /// Sans fonts
-    #[asset(path = "fonts/Roboto-Light.ttf")]
-    pub sans_light: Handle<Font>,
-    #[asset(path = "fonts/Roboto-Regular.ttf")]
-    pub sans_regular: Handle<Font>,
-    #[asset(path = "fonts/Roboto-Medium.ttf")]
-    pub sans_medium: Handle<Font>,
-    #[asset(path = "fonts/Roboto-Bold.ttf")]
-    pub sans_bold: Handle<Font>,
-
-    /// Serif fonts
-    #[asset(path = "fonts/NotoSerif-Regular.ttf")]
-    pub serif_regular: Handle<Font>,
-    #[asset(path = "fonts/NotoSerif-Bold.ttf")]
-    pub serif_bold: Handle<Font>,
-
-    /// Mono fonts
-    #[asset(path = "fonts/RobotoMono-Regular.ttf")]
-    pub mono_regular: Handle<Font>,
-    #[asset(path = "fonts/RobotoMono-Bold.ttf")]
-    pub mono_bold: Handle<Font>,
-}
-
-/// Simple font assets resource for direct font loading
+/// Unified font assets resource for direct font loading
+/// This replaces the old FontFamilies struct for simplified asset management
 #[derive(Resource, Debug, Clone)]
 pub struct FontAssets {
     // Sans Familie
@@ -102,6 +108,82 @@ pub struct FontAssets {
     // Mono Familie
     pub mono_regular: Handle<Font>,
     pub mono_bold: Handle<Font>,
+}
+
+/// Get font handle based on family and weight
+pub fn get_font_handle(assets: &FontAssets, family: FontFamily, weight: TextWeight) -> Handle<Font> {
+    match family {
+        FontFamily::Sans => match weight {
+            TextWeight::Light => assets.sans_light.clone(),
+            TextWeight::Regular => assets.sans_regular.clone(),
+            TextWeight::Medium => assets.sans_medium.clone(),
+            TextWeight::Bold => assets.sans_bold.clone(),
+        },
+        FontFamily::Serif => match weight {
+            TextWeight::Light | TextWeight::Regular | TextWeight::Medium => {
+                assets.serif_regular.clone()
+            }
+            TextWeight::Bold => assets.serif_bold.clone(),
+        },
+        FontFamily::Mono => match weight {
+            TextWeight::Light | TextWeight::Regular | TextWeight::Medium => {
+                assets.mono_regular.clone()
+            }
+            TextWeight::Bold => assets.mono_bold.clone(),
+        },
+    }
+}
+
+/// Get font size in pixels from FontSize enum
+pub fn get_font_size_pixels(font_size: &FontSize, size: TextSize) -> f32 {
+    match size {
+        TextSize::Xs => font_size.xs,
+        TextSize::Sm => font_size.sm,
+        TextSize::Base => font_size.base,
+        TextSize::Lg => font_size.lg,
+        TextSize::Xl => font_size.xl,
+        TextSize::X2l => font_size.x2l,
+        TextSize::X3l => font_size.x3l,
+        TextSize::X4l => font_size.x4l,
+        TextSize::X5l => font_size.x5l,
+        TextSize::X6l => font_size.x6l,
+        TextSize::X7l => font_size.x7l,
+        TextSize::X8l => font_size.x8l,
+        TextSize::X9l => font_size.x9l,
+    }
+}
+
+/// Get effective text size based on variant defaults
+pub fn get_effective_text_size(variant: TextVariant, explicit_size: Option<TextSize>) -> TextSize {
+    explicit_size.unwrap_or_else(|| match variant {
+        TextVariant::Display => TextSize::X5l,
+        TextVariant::Title => TextSize::X2l,
+        TextVariant::Body => TextSize::Base,
+        TextVariant::Label => TextSize::Sm,
+        TextVariant::Caption => TextSize::Xs,
+    })
+}
+
+/// Get effective text weight based on variant defaults
+pub fn get_effective_text_weight(variant: TextVariant, explicit_weight: Option<TextWeight>) -> TextWeight {
+    explicit_weight.unwrap_or_else(|| match variant {
+        TextVariant::Display => TextWeight::Bold,
+        TextVariant::Title => TextWeight::Medium,
+        TextVariant::Body => TextWeight::Regular,
+        TextVariant::Label => TextWeight::Medium,
+        TextVariant::Caption => TextWeight::Regular,
+    })
+}
+
+/// Get effective font family based on variant defaults
+pub fn get_effective_font_family(variant: TextVariant, explicit_family: Option<FontFamily>) -> FontFamily {
+    explicit_family.unwrap_or_else(|| match variant {
+        TextVariant::Display => FontFamily::Sans,
+        TextVariant::Title => FontFamily::Sans,
+        TextVariant::Body => FontFamily::Sans,
+        TextVariant::Label => FontFamily::Sans,
+        TextVariant::Caption => FontFamily::Sans,
+    })
 }
 
 /// Startup system that loads all font assets directly using the asset server

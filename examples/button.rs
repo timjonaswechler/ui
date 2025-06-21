@@ -1,8 +1,13 @@
 use bevy::prelude::*;
-use ui::components::{ButtonBuilder, ButtonClickEvent, ButtonVariant, text::{Text, TextColor as TextColorEnum}, Heading, HeadingExt, TextWeight, TextSize, FontFamily};
-use ui::plugin::ForgeUiPlugin;
-use ui::theme::color::theme;
-use ui::utilities::ComponentBuilder;
+use ui::{
+    components::{text::Text, ButtonBuilder, ButtonClickEvent, ButtonVariant, Heading, HeadingExt},
+    plugin::ForgeUiPlugin,
+    theme::{
+        color::{theme, TextColor as TextColorEnum},
+        typography::{FontFamily, TextSize, TextWeight},
+    },
+    utilities::ComponentBuilder,
+};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
