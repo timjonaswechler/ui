@@ -217,15 +217,39 @@ impl TextBuilder {
         Handle::<Font>::default()
     }
 
-    /// Convert TextColor to actual Color using theme
+    /// Convert TextColor to actual Color using theme-aware semantic palettes
     fn map_color(&self, color: TextColor) -> Color {
+        use crate::theme::color::{
+            accent_palette, error_palette, success_palette, theme, warning_palette,
+        };
+
         match color {
-            TextColor::Default => Color::srgb(0.1, 0.1, 0.1), // Dark text
-            TextColor::Muted => Color::srgb(0.5, 0.5, 0.5),   // Muted gray
-            TextColor::Accent => Color::srgb(0.2, 0.6, 0.9),  // Blue accent
-            TextColor::Error => Color::srgb(0.9, 0.2, 0.2),   // Red
-            TextColor::Warning => Color::srgb(0.9, 0.7, 0.2), // Orange
-            TextColor::Success => Color::srgb(0.2, 0.8, 0.3), // Green
+            TextColor::Default => {
+                // Use theme-aware gray palette for default text
+                let gray_palette = theme().gray;
+                gray_palette.text_contrast // High contrast text
+            }
+            TextColor::Muted => {
+                // Use theme-aware gray palette for muted text
+                let gray_palette = theme().gray;
+                gray_palette.text // Medium contrast text
+            }
+            TextColor::Accent => {
+                // Use dynamic accent palette
+                accent_palette().text
+            }
+            TextColor::Error => {
+                // Use red palette for errors
+                error_palette().text
+            }
+            TextColor::Warning => {
+                // Use warning palette (should be orange/yellow)
+                warning_palette().text
+            }
+            TextColor::Success => {
+                // Use success palette (green variants)
+                success_palette().text
+            }
             TextColor::Custom(c) => c,
         }
     }

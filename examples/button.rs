@@ -72,7 +72,7 @@ fn setup(mut commands: Commands) {
             // Title
             parent.spawn((
                 Text::new(format!("Game UI Demo")),
-                TextColor(theme().black.step11),
+                TextColor(theme().black.text),
                 Node {
                     margin: UiRect::bottom(Val::Px(32.0)),
                     ..default()

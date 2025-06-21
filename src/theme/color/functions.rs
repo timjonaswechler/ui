@@ -42,16 +42,17 @@ impl UiColorPalette {
         let white_contrast = Self::calculate_contrast_ratio(background_color, &Color::WHITE);
         let black_contrast = Self::calculate_contrast_ratio(background_color, &Color::BLACK);
 
-        // Verwende step12 (dunkelste Farbe) oder step01 (hellste Farbe) der Palette
-        let palette_dark_contrast = Self::calculate_contrast_ratio(background_color, &self.step12);
-        let palette_light_contrast = Self::calculate_contrast_ratio(background_color, &self.step01);
+        // Verwende text_contrast (dunkelste Farbe) oder base (hellste Farbe) der Palette
+        let palette_dark_contrast =
+            Self::calculate_contrast_ratio(background_color, &self.text_contrast);
+        let palette_light_contrast = Self::calculate_contrast_ratio(background_color, &self.base);
 
         // Finde die beste Textfarbe mit höchstem Kontrast
         let candidates = vec![
             (Color::WHITE, white_contrast),
             (Color::BLACK, black_contrast),
-            (self.step12, palette_dark_contrast),
-            (self.step01, palette_light_contrast),
+            (self.text_contrast, palette_dark_contrast),
+            (self.base, palette_light_contrast),
             (
                 self.high_contrast,
                 Self::calculate_contrast_ratio(background_color, &self.high_contrast),
@@ -68,8 +69,8 @@ impl UiColorPalette {
                 vec![
                     (Color::WHITE, white_contrast),
                     (Color::BLACK, black_contrast),
-                    (self.step12, palette_dark_contrast),
-                    (self.step01, palette_light_contrast),
+                    (self.text_contrast, palette_dark_contrast),
+                    (self.base, palette_light_contrast),
                 ]
                 .into_iter()
                 .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
@@ -101,17 +102,17 @@ impl UiColorPalette {
             TextContrastLevel::Low => {
                 // Geringerer Kontrast für sekundären Text
                 if Self::is_light_color(background_color) {
-                    self.step11 // Dunkler, aber nicht maximal
+                    self.text // Dunkler, aber nicht maximal
                 } else {
-                    self.step02 // Heller, aber nicht maximal
+                    self.bg_subtle // Heller, aber nicht maximal
                 }
             }
             TextContrastLevel::Medium => {
                 // Mittlerer Kontrast für normalen Text
                 if Self::is_light_color(background_color) {
-                    self.step12 // Dunkelste Farbe der Palette
+                    self.text_contrast // Dunkelste Farbe der Palette
                 } else {
-                    self.step01 // Hellste Farbe der Palette
+                    self.base // Hellste Farbe der Palette
                 }
             }
             TextContrastLevel::High => {

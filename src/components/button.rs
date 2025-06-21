@@ -241,29 +241,17 @@ impl ButtonBuilder {
             Children::spawn(SpawnWith(move |parent: &mut ChildSpawner| {
                 if is_loading {
                     // Spawn rotating spinner image
-                    parent
-                        .spawn((
-                            Name::new("Button Spinner"),
-                            Node {
-                                width: Val::Px(16.0),
-                                height: Val::Px(16.0),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
-                                ..default()
-                            },
-                            SpinnerAnimation::default(),
-                        ))
-                        .with_children(|spinner_parent| {
-                            // Add text as child using new Text component
-                            spinner_parent.spawn(
-                                Text::label(display_text.clone())
-                                    .color(text_color_enum)
-                                    .size(text_size)
-                                    .weight(text_weight)
-                                    .center()
-                                    .build(),
-                            );
-                        });
+                    parent.spawn((
+                        Name::new("Button Spinner"),
+                        Node {
+                            width: Val::Px(16.0),
+                            height: Val::Px(16.0),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },
+                        SpinnerAnimation::default(),
+                    ));
                 } else {
                     parent.spawn(
                         Text::label(display_text.clone())
@@ -298,27 +286,27 @@ impl Button {
 
     fn calculate_background_color(&self, state: ButtonState) -> BackgroundColor {
         let base_color = match (self.variant, state) {
-            (ButtonVariant::Solid, ButtonState::Normal) => self.color.step09,
-            (ButtonVariant::Solid, ButtonState::Hover) => self.color.step08,
-            (ButtonVariant::Solid, ButtonState::Active) => self.color.step10,
-            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.step01,
-            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.step02,
-            (ButtonVariant::Ghost, ButtonState::Active) => self.color.step03,
+            (ButtonVariant::Solid, ButtonState::Normal) => self.color.solid,
+            (ButtonVariant::Solid, ButtonState::Hover) => self.color.solid_hover,
+            (ButtonVariant::Solid, ButtonState::Active) => self.color.bg_active,
+            (ButtonVariant::Ghost, ButtonState::Normal) => self.color.base_a,
+            (ButtonVariant::Ghost, ButtonState::Hover) => self.color.bg_hover_a,
+            (ButtonVariant::Ghost, ButtonState::Active) => self.color.bg_active_a,
             (ButtonVariant::Soft, ButtonState::Normal)
-            | (ButtonVariant::Outline, ButtonState::Normal) => self.color.step04,
+            | (ButtonVariant::Outline, ButtonState::Normal) => self.color.bg,
             (ButtonVariant::Soft, ButtonState::Hover)
-            | (ButtonVariant::Outline, ButtonState::Hover) => self.color.step06,
+            | (ButtonVariant::Outline, ButtonState::Hover) => self.color.bg_hover,
             (ButtonVariant::Soft, ButtonState::Active)
-            | (ButtonVariant::Outline, ButtonState::Active) => self.color.step07,
+            | (ButtonVariant::Outline, ButtonState::Active) => self.color.bg_active,
             (_, ButtonState::Disabled) => match self.variant {
-                ButtonVariant::Solid => self.color.step09,
-                ButtonVariant::Ghost => self.color.step01,
-                ButtonVariant::Soft | ButtonVariant::Outline => self.color.step04,
+                ButtonVariant::Solid => self.color.solid,
+                ButtonVariant::Ghost => self.color.base,
+                ButtonVariant::Soft | ButtonVariant::Outline => self.color.bg_hover,
             },
             (_, ButtonState::Loading) => match self.variant {
-                ButtonVariant::Solid => self.color.step09,
-                ButtonVariant::Ghost => self.color.step01,
-                ButtonVariant::Soft | ButtonVariant::Outline => self.color.step04,
+                ButtonVariant::Solid => self.color.solid,
+                ButtonVariant::Ghost => self.color.base,
+                ButtonVariant::Soft | ButtonVariant::Outline => self.color.bg_hover,
             },
         };
 
@@ -332,27 +320,27 @@ impl Button {
         bg_color
     }
 
-    fn calculate_border_color(&self, _state: ButtonState) -> BorderColor {
+    fn calculate_border_color(&self, state: ButtonState) -> BorderColor {
         match self.variant {
             ButtonVariant::Solid | ButtonVariant::Soft | ButtonVariant::Ghost => {
                 BorderColor(Color::NONE)
             }
-            ButtonVariant::Outline => BorderColor(self.color.step11),
+            ButtonVariant::Outline => match state {
+                ButtonState::Normal | ButtonState::Active | ButtonState::Loading => {
+                    BorderColor(self.color.border)
+                }
+                ButtonState::Hover => BorderColor(self.color.border_hover),
+                ButtonState::Disabled => BorderColor(self.color.border),
+            },
         }
     }
 
     fn calculate_text_color(&self, state: ButtonState) -> TextColor {
         let background_color = match (self.variant, state) {
-            (ButtonVariant::Solid, ButtonState::Normal) => self.color.step09,
-            (ButtonVariant::Solid, ButtonState::Hover) => self.color.step08,
-            (ButtonVariant::Solid, ButtonState::Active) => self.color.step10,
-            (ButtonVariant::Ghost, _) => self.color.step01,
-            (ButtonVariant::Soft, _) | (ButtonVariant::Outline, _) => self.color.step04,
-            (_, ButtonState::Disabled) | (_, ButtonState::Loading) => match self.variant {
-                ButtonVariant::Solid => self.color.step09,
-                ButtonVariant::Ghost => self.color.step01,
-                ButtonVariant::Soft | ButtonVariant::Outline => self.color.step04,
-            },
+            (ButtonVariant::Solid, _)
+            | (ButtonVariant::Soft, _)
+            | (ButtonVariant::Outline, _)
+            | (ButtonVariant::Ghost, _) => self.color.text_contrast,
         };
 
         let contrast_level = if self.high_contrast {
@@ -368,9 +356,9 @@ impl Button {
         if state == ButtonState::Disabled {
             let background_luminance = UiColorPalette::calculate_luminance(&background_color);
             if background_luminance > 0.5 {
-                text_color = self.color.step10;
+                text_color = self.color.solid_hover;
             } else {
-                text_color = self.color.step03;
+                text_color = self.color.bg;
             }
 
             let srgba = text_color.to_srgba();
