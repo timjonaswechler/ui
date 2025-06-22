@@ -174,38 +174,52 @@ impl ButtonBuilder {
         self
     }
 
-    // Advanced text styling methods
     pub fn text_size(mut self, size: TextSize) -> Self {
-        if let Some(text) = &self.text {
-            self.text_builder = Some(Text::new(text.clone()).size(size));
-        }
+        let text_content = self.text.clone().unwrap_or_default();
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
+        self.text_builder = Some(builder.size(size));
         self
     }
 
     pub fn text_weight(mut self, weight: TextWeight) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.weight(weight));
         self
     }
 
     pub fn text_family(mut self, family: FontFamily) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.family(family));
         self
     }
 
     pub fn text_italic(mut self) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.italic());
         self
     }
 
     pub fn text_align(mut self, align: JustifyText) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.align(align));
         self
     }
@@ -220,49 +234,70 @@ impl ButtonBuilder {
 
     pub fn text_on_background(mut self, background_color: Color) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.on_background(background_color));
         self
     }
 
     pub fn text_contrast_level(mut self, level: TextContrastLevel) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.contrast_level(level));
         self
     }
 
     pub fn text_high_contrast(mut self) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.high_contrast());
         self
     }
 
     pub fn text_accessible(mut self) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.accessible());
         self
     }
 
     pub fn text_auto_contrast(mut self) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.auto_contrast());
         self
     }
 
     pub fn text_manual_color(mut self) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.manual_color());
         self
     }
 
     pub fn text_color(mut self, color: TextColorEnum) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
-        let builder = self.text_builder.take().unwrap_or_else(|| Text::new(text_content));
+        let builder = self
+            .text_builder
+            .take()
+            .unwrap_or_else(|| Text::new(text_content));
         self.text_builder = Some(builder.color(color));
         self
     }
@@ -282,12 +317,18 @@ impl ButtonBuilder {
 }
 
 impl ButtonBuilder {
-    /// Get appropriate text size for button size
+    /// Get appropriate text size for button size (only if no explicit size set)
     fn get_button_text_size(&self) -> TextSize {
-        match self.button.size {
-            ButtonSize::Small => TextSize::Sm,
-            ButtonSize::Default => TextSize::Base,
-            ButtonSize::Large => TextSize::Lg,
+        // If text_builder exists and has explicit size, don't override it
+        if self.text_builder.is_some() {
+            // Return a default - the actual size will be preserved from TextBuilder
+            TextSize::Base
+        } else {
+            match self.button.size {
+                ButtonSize::Small => TextSize::Xs,
+                ButtonSize::Default => TextSize::Base,
+                ButtonSize::Large => TextSize::X2l,
+            }
         }
     }
 
@@ -328,7 +369,7 @@ impl ButtonBuilder {
         let text_size = self.get_button_text_size();
         let text_weight = self.get_button_text_weight();
         let text_color_enum = self.get_text_color_enum();
-        
+
         // Prepare TextBuilder with automatic contrast optimization if text_builder is used
         let text_builder = if let Some(builder) = self.text_builder.clone() {
             // Apply button background context for intelligent contrast
@@ -338,8 +379,12 @@ impl ButtonBuilder {
             } else {
                 TextContrastLevel::High
             };
-            
-            Some(builder.on_background(button_bg).contrast_level(contrast_level))
+
+            Some(
+                builder
+                    .on_background(button_bg)
+                    .contrast_level(contrast_level),
+            )
         } else {
             None
         };
@@ -519,7 +564,7 @@ impl Button {
         if state == ButtonState::Disabled {
             // Keep the same text color but reduce opacity for disabled state
             let srgba = text_color.to_srgba();
-            text_color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.5);
+            text_color = Color::srgba(srgba.red, srgba.green, srgba.blue, 0.8);
         }
 
         TextColor(text_color)
@@ -537,7 +582,7 @@ impl ButtonBuilder {
     fn calculate_style(&self) -> Node {
         let padding = UiRect::axes(
             Val::Px(match self.button.size {
-                ButtonSize::Default => UiLayout::default().padding.base + 4.0,
+                ButtonSize::Default => UiLayout::default().padding.base + 2.0,
                 ButtonSize::Small => UiLayout::default().padding.sm + 2.0,
                 ButtonSize::Large => UiLayout::default().padding.lg + 8.0,
             }),
@@ -592,7 +637,7 @@ impl Default for SpinnerAnimation {
 
 // System für Button-Interaktionen
 pub fn setup_button_interactions(
-    mut commands: Commands, 
+    mut commands: Commands,
     buttons: Query<Entity, Added<Button>>,
     button_query: Query<&Button>,
     mut bg_colors: Query<&mut BackgroundColor>,
@@ -608,7 +653,7 @@ pub fn setup_button_interactions(
             .observe(on_button_hover_out)
             .observe(on_button_pressed)
             .observe(on_button_released);
-        
+
         // Immediately apply correct styling to ensure consistency
         if let Ok(button) = button_query.get(entity) {
             apply_button_styling(
@@ -706,7 +751,13 @@ fn apply_button_styling(
     // Update text colors in children (for TextBuilder-created text components)
     if let Ok(children) = children_query.get(entity) {
         for child in children.iter() {
-            update_text_colors_recursive(&child, &styling.text_color, text_colors, children_query, managed_text_query);
+            update_text_colors_recursive(
+                &child,
+                &styling.text_color,
+                text_colors,
+                children_query,
+                managed_text_query,
+            );
         }
     }
 }
@@ -728,7 +779,13 @@ fn update_text_colors_recursive(
     // Recursively check children
     if let Ok(children) = children_query.get(*entity) {
         for child in children.iter() {
-            update_text_colors_recursive(&child, new_color, text_colors, children_query, managed_text_query);
+            update_text_colors_recursive(
+                &child,
+                new_color,
+                text_colors,
+                children_query,
+                managed_text_query,
+            );
         }
     }
 }

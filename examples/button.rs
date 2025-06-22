@@ -1,9 +1,12 @@
 use bevy::prelude::*;
 use ui::{
-    components::{text::Text, ButtonBuilder, ButtonClickEvent, ButtonVariant, Heading, HeadingExt},
+    components::{
+        button::Button, text::Text, ButtonBuilder, ButtonClickEvent, ButtonSize, ButtonVariant,
+        Heading, HeadingExt,
+    },
     plugin::ForgeUiPlugin,
     theme::{
-        color::{theme, TextColor as TextColorEnum},
+        color::{error_palette, theme, TextColor as TextColorEnum},
         typography::{FontFamily, TextSize, TextWeight},
     },
     utilities::ComponentBuilder,
@@ -17,7 +20,7 @@ fn main() {
         .add_systems(Update, handle_button_events)
         .run();
 }
-// $12o
+
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 
@@ -26,14 +29,13 @@ fn setup(mut commands: Commands) {
         .variant(ButtonVariant::Solid)
         .text("Primary Solid")
         .text_weight(TextWeight::Bold)
-        .text_high_contrast()
+        .text_accessible()
         .build();
 
     let secondary_button = ButtonBuilder::new("Secondary")
         .variant(ButtonVariant::Soft)
         .text("Secondary Soft")
-        .text_size(TextSize::Sm)
-        .text_auto_contrast()
+        .text_accessible()
         .build();
 
     let disabled_button = ButtonBuilder::new("Disabled")
@@ -41,6 +43,7 @@ fn setup(mut commands: Commands) {
         .text("Disabled Button")
         .text_weight(TextWeight::Medium)
         .disabled()
+        .text_accessible()
         .build();
 
     let loading_button = ButtonBuilder::new("Loading")
@@ -54,24 +57,24 @@ fn setup(mut commands: Commands) {
         .variant(ButtonVariant::Outline)
         .color(theme().green)
         .text("Outline Button")
-        .text_family(FontFamily::Sans)
+        .text_family(FontFamily::Serif)
         .text_center()
+        .text_accessible()
         .build();
 
     let ghost_button = ButtonBuilder::new("Ghost")
         .variant(ButtonVariant::Ghost)
         .text("Ghost Button")
-        .text_size(TextSize::Base)
+        .size(ButtonSize::Large)
         .text_accessible()
         .build();
 
     // Destructive button example with enhanced text styling
     let destructive_button = ButtonBuilder::new("Destructive")
         .variant(ButtonVariant::Solid)
-        .color(theme().red)
-        .text("⚠ Delete")
+        .color(error_palette())
+        .text("Delete")
         .text_weight(TextWeight::Bold)
-        .text_size(TextSize::Lg)
         .text_accessible()
         .build();
 
@@ -80,7 +83,14 @@ fn setup(mut commands: Commands) {
         .variant(ButtonVariant::Outline)
         .text("console.log()")
         .text_family(FontFamily::Mono)
-        .text_size(TextSize::Sm)
+        .size(ButtonSize::Large)
+        .build();
+
+    // Test text_size method
+    let size_test_button = ButtonBuilder::new("SizeTest")
+        .variant(ButtonVariant::Solid)
+        .text("Custom Size X4l")
+        .size(ButtonSize::Small) // Button size small but text should be X4l
         .build();
 
     // Container für die Buttons with themed background
@@ -165,6 +175,7 @@ fn setup(mut commands: Commands) {
                 },))
                 .with_children(|row| {
                     row.spawn(code_button);
+                    row.spawn(size_test_button);
                 });
 
             // Destructive action
