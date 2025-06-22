@@ -17,7 +17,7 @@ fn main() {
         .add_systems(Update, handle_button_events)
         .run();
 }
-
+// $12o
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 
