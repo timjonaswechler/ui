@@ -35,49 +35,49 @@ impl Heading {
     /// # Example
     /// ```rust
     /// use your_crate::components::Heading;
-    /// 
+    ///
     /// let heading = Heading::new(HeadingLevel::H1, "Main Title").build();
     /// ```
     pub fn new(level: HeadingLevel, content: impl Into<String>) -> TextBuilder {
         let content = content.into();
-        
+
         match level {
             HeadingLevel::H1 => {
                 Text::new(content)
-                    .size(TextSize::X5l)      // Largest heading
+                    .size(TextSize::X5l) // Largest heading
                     .weight(TextWeight::Bold)
                     .color(TextColorEnum::Default)
-            },
+            }
             HeadingLevel::H2 => {
                 Text::new(content)
-                    .size(TextSize::X3l)      // Large heading
+                    .size(TextSize::X3l) // Large heading
                     .weight(TextWeight::Bold)
                     .color(TextColorEnum::Default)
-            },
+            }
             HeadingLevel::H3 => {
                 Text::new(content)
-                    .size(TextSize::X2l)      // Medium-large heading
+                    .size(TextSize::X2l) // Medium-large heading
                     .weight(TextWeight::Medium)
                     .color(TextColorEnum::Default)
-            },
+            }
             HeadingLevel::H4 => {
                 Text::new(content)
-                    .size(TextSize::Xl)       // Medium heading
+                    .size(TextSize::Xl) // Medium heading
                     .weight(TextWeight::Medium)
                     .color(TextColorEnum::Default)
-            },
+            }
             HeadingLevel::H5 => {
                 Text::new(content)
-                    .size(TextSize::Lg)       // Small heading
+                    .size(TextSize::Lg) // Small heading
                     .weight(TextWeight::Medium)
                     .color(TextColorEnum::Default)
-            },
+            }
             HeadingLevel::H6 => {
                 Text::new(content)
-                    .size(TextSize::Base)     // Smallest heading
+                    .size(TextSize::Base) // Smallest heading
                     .weight(TextWeight::Medium)
                     .color(TextColorEnum::Default)
-            },
+            }
         }
     }
 
@@ -170,31 +170,31 @@ pub trait HeadingExt {
 impl HeadingExt for TextBuilder {
     fn as_heading(self, level: HeadingLevel) -> TextBuilder {
         let base_builder = match level {
-            HeadingLevel::H1 => {
-                self.size(TextSize::X5l).weight(TextWeight::Bold).high_contrast()
-            },
-            HeadingLevel::H2 => {
-                self.size(TextSize::X3l).weight(TextWeight::Bold).high_contrast()
-            },
-            HeadingLevel::H3 => {
-                self.size(TextSize::X2l).weight(TextWeight::Medium).high_contrast()
-            },
-            HeadingLevel::H4 => {
-                self.size(TextSize::Xl).weight(TextWeight::Medium).high_contrast()
-            },
-            HeadingLevel::H5 => {
-                self.size(TextSize::Lg).weight(TextWeight::Medium)
-            },
-            HeadingLevel::H6 => {
-                self.size(TextSize::Base).weight(TextWeight::Medium)
-            },
+            HeadingLevel::H1 => self
+                .size(TextSize::X5l)
+                .weight(TextWeight::Bold)
+                .high_contrast(),
+            HeadingLevel::H2 => self
+                .size(TextSize::X3l)
+                .weight(TextWeight::Bold)
+                .high_contrast(),
+            HeadingLevel::H3 => self
+                .size(TextSize::X2l)
+                .weight(TextWeight::Medium)
+                .high_contrast(),
+            HeadingLevel::H4 => self
+                .size(TextSize::Xl)
+                .weight(TextWeight::Medium)
+                .high_contrast(),
+            HeadingLevel::H5 => self.size(TextSize::Lg).weight(TextWeight::Medium),
+            HeadingLevel::H6 => self.size(TextSize::Base).weight(TextWeight::Medium),
         };
-        
+
         // Apply semantic-aware defaults for accessibility
         match level {
             HeadingLevel::H1 | HeadingLevel::H2 | HeadingLevel::H3 => {
                 base_builder.accessible() // WCAG AAA for important headings
-            },
+            }
             _ => {
                 base_builder.high_contrast() // WCAG AA for smaller headings
             }

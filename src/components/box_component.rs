@@ -30,13 +30,53 @@ impl Default for BoxComponent {
     }
 }
 
+/// Container size presets following Radix UI specifications
+///
+/// Provides standardized max-width constraints for content containers:
+/// - Size1: 448px (mobile-first, compact content)
+/// - Size2: 688px (tablet, medium content)
+/// - Size3: 880px (desktop, standard content)
+/// - Size4: 1136px (wide desktop, large content)
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ContainerSize {
+    /// 448px max-width for mobile-first, compact content
+    Size1,
+    /// 688px max-width for tablet, medium content
+    Size2,
+    /// 880px max-width for desktop, standard content
+    Size3,
+    /// 1136px max-width for wide desktop, large content
+    Size4,
+}
+
+impl ContainerSize {
+    /// Convert container size to pixel value
+    pub fn to_pixels(self) -> f32 {
+        match self {
+            ContainerSize::Size1 => CONTAINER_SIZE_1,
+            ContainerSize::Size2 => CONTAINER_SIZE_2,
+            ContainerSize::Size3 => CONTAINER_SIZE_3,
+            ContainerSize::Size4 => CONTAINER_SIZE_4,
+        }
+    }
+}
+
+/// Container size constants following Radix UI specifications
+pub const CONTAINER_SIZE_1: f32 = 448.0;
+pub const CONTAINER_SIZE_2: f32 = 688.0;
+pub const CONTAINER_SIZE_3: f32 = 880.0;
+pub const CONTAINER_SIZE_4: f32 = 1136.0;
+
 /// Visual appearance variants for Box component
 ///
 /// Each variant provides different levels of visual prominence:
 /// - Surface: Subtle background for content areas
 /// - Panel: More prominent background for grouped content  
 /// - Card: Elevated appearance with shadow for standalone content
+/// - Classic: Enhanced border and background for prominent cards
+/// - Ghost: Transparent with hover background for minimal cards
 /// - Outline: Border-only appearance for lightweight containers
+/// - Container: Max-width constrained layout containers
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum BoxVariant {
     /// Subtle background for content areas (default)
@@ -46,8 +86,14 @@ pub enum BoxVariant {
     Panel,
     /// Elevated appearance with shadow for standalone content
     Card,
+    /// Enhanced border and background for prominent cards
+    Classic,
+    /// Transparent with hover background for minimal cards
+    Ghost,
     /// Border-only appearance for lightweight containers
     Outline,
+    /// Max-width constrained layout container
+    Container(ContainerSize),
 }
 
 /// Styling configuration for Box component
@@ -139,6 +185,33 @@ struct ExplicitColors {
     border: Option<Color>,
 }
 
+impl BoxComponent {
+    /// Create a new Box component builder
+    pub fn new(name: impl Into<String>) -> BoxBuilder {
+        BoxBuilder::new(name)
+    }
+
+    /// Create a container with Size1 (448px max-width)
+    pub fn container_1(name: impl Into<String>) -> BoxBuilder {
+        Self::new(name).container(ContainerSize::Size1)
+    }
+
+    /// Create a container with Size2 (688px max-width)
+    pub fn container_2(name: impl Into<String>) -> BoxBuilder {
+        Self::new(name).container(ContainerSize::Size2)
+    }
+
+    /// Create a container with Size3 (880px max-width)
+    pub fn container_3(name: impl Into<String>) -> BoxBuilder {
+        Self::new(name).container(ContainerSize::Size3)
+    }
+
+    /// Create a container with Size4 (1136px max-width)
+    pub fn container_4(name: impl Into<String>) -> BoxBuilder {
+        Self::new(name).container(ContainerSize::Size4)
+    }
+}
+
 impl BoxBuilder {
     pub fn new(name: impl Into<String>) -> Self {
         Self {
@@ -175,9 +248,47 @@ impl BoxBuilder {
         self.variant(BoxVariant::Card)
     }
 
+    /// Use classic variant (enhanced border and background)
+    pub fn classic(self) -> Self {
+        self.variant(BoxVariant::Classic)
+    }
+
+    /// Use ghost variant (transparent with hover)
+    pub fn ghost(self) -> Self {
+        self.variant(BoxVariant::Ghost)
+    }
+
     /// Use outline variant (border only)
     pub fn outline(self) -> Self {
         self.variant(BoxVariant::Outline)
+    }
+
+    /// Use container variant with specified size
+    pub fn container(mut self, size: ContainerSize) -> Self {
+        self.box_config.variant = BoxVariant::Container(size);
+        self.node.max_width = Val::Px(size.to_pixels());
+        self.node.width = Val::Percent(100.0);
+        self
+    }
+
+    /// Use container variant with Size1 (448px max-width)
+    pub fn container_1(self) -> Self {
+        self.container(ContainerSize::Size1)
+    }
+
+    /// Use container variant with Size2 (688px max-width)
+    pub fn container_2(self) -> Self {
+        self.container(ContainerSize::Size2)
+    }
+
+    /// Use container variant with Size3 (880px max-width)
+    pub fn container_3(self) -> Self {
+        self.container(ContainerSize::Size3)
+    }
+
+    /// Use container variant with Size4 (1136px max-width)
+    pub fn container_4(self) -> Self {
+        self.container(ContainerSize::Size4)
     }
 
     // =========================================================================
@@ -216,7 +327,11 @@ impl BoxBuilder {
         self.node.max_height = max_height;
         self
     }
-
+    /// Set maximum width
+    pub fn max_width(mut self, max_width: Val) -> Self {
+        self.node.max_width = max_width;
+        self
+    }
     /// Make box square with given size
     pub fn square(self, size: Val) -> Self {
         self.size(size, size)
@@ -664,6 +779,17 @@ impl BoxBuilder {
     }
 
     // =========================================================================
+    // PICKING METHODS
+    // =========================================================================
+
+    /// Make the box pickable (enables interaction)
+    pub fn pickable(mut self) -> Self {
+        self.box_config.styling_config.has_shadow = true; // Ensure shadow is enabled for pickable boxes
+        Pickable::default(); // Default pickable component
+        self
+    }
+
+    // =========================================================================
     // BUILD METHOD
     // =========================================================================
 
@@ -683,9 +809,21 @@ impl BoxBuilder {
                 styling.background_alpha = styling.background_alpha.max(0.8);
                 styling.has_shadow = true;
             }
+            BoxVariant::Classic => {
+                styling.background_alpha = styling.background_alpha.max(0.9);
+                styling.border_width = Some(styling.border_width.unwrap_or(2.0));
+                styling.has_shadow = true;
+            }
+            BoxVariant::Ghost => {
+                styling.background_alpha = 0.0;
+            }
             BoxVariant::Outline => {
                 styling.background_alpha = 0.0;
                 styling.border_width = Some(styling.border_width.unwrap_or(1.0));
+            }
+            BoxVariant::Container(_) => {
+                // Container uses surface-level styling as default
+                styling.background_alpha = styling.background_alpha.max(0.1);
             }
         }
 
@@ -703,7 +841,10 @@ impl BoxBuilder {
             BoxVariant::Surface => self.box_config.color_palette.bg_subtle,
             BoxVariant::Panel => self.box_config.color_palette.bg,
             BoxVariant::Card => self.box_config.color_palette.bg,
+            BoxVariant::Classic => self.box_config.color_palette.bg,
+            BoxVariant::Ghost => self.box_config.color_palette.bg_subtle,
             BoxVariant::Outline => Color::NONE,
+            BoxVariant::Container(_) => self.box_config.color_palette.bg_subtle,
         };
 
         let mut color = base_color.with_alpha(styling.background_alpha);
@@ -721,6 +862,7 @@ impl BoxBuilder {
         }
 
         match self.box_config.variant {
+            BoxVariant::Classic => BorderColor(self.box_config.color_palette.border_hover),
             BoxVariant::Outline => BorderColor(self.box_config.color_palette.border),
             _ if self.box_config.styling_config.border_width.is_some() => {
                 BorderColor(self.box_config.color_palette.border)
@@ -773,10 +915,3 @@ impl ComponentBuilder for BoxBuilder {
 
 // Convenience type alias
 pub type Box = BoxComponent;
-
-// Convenience constructor
-impl BoxComponent {
-    pub fn new(name: impl Into<String>) -> BoxBuilder {
-        BoxBuilder::new(name)
-    }
-}
