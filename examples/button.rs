@@ -1,13 +1,12 @@
 use bevy::prelude::*;
 use ui::{
     components::{
-        button::Button, text::Text, ButtonBuilder, ButtonClickEvent, ButtonSize, ButtonVariant,
-        Heading, HeadingExt,
+        text::Text, ButtonBuilder, ButtonClickEvent, ButtonSize, ButtonVariant, Heading, HeadingExt,
     },
     plugin::ForgeUiPlugin,
     theme::{
         color::{error_palette, theme, TextColor as TextColorEnum},
-        typography::{FontFamily, TextSize, TextWeight},
+        typography::{FontFamily, TextWeight},
     },
     utilities::ComponentBuilder,
 };

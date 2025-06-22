@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 
+pub mod box_component;
 pub mod button;
 pub mod heading;
 pub mod text;
 
+pub use box_component::*;
 pub use button::*;
 pub use heading::*;
 pub use text::*;

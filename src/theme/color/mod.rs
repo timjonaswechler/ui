@@ -16,3 +16,16 @@ pub use success::*;
 pub use text::*;
 pub use theme_mode::*;
 pub use warning::*;
+
+// Convenience palette functions
+pub fn blue_palette() -> UiColorPalette {
+    theme_mode::theme().blue
+}
+
+pub fn green_palette() -> UiColorPalette {
+    success_palette()
+}
+
+pub fn red_palette() -> UiColorPalette {
+    error_palette()
+}
