@@ -6,6 +6,7 @@ pub mod card;
 pub mod flex;
 pub mod grid;
 pub mod heading;
+pub mod section;
 pub mod text;
 
 pub use box_component::*;
@@ -14,6 +15,7 @@ pub use card::*;
 pub use flex::*;
 pub use grid::*;
 pub use heading::*;
+pub use section::*;
 pub use text::*;
 
 pub struct ComponentsPlugin;
