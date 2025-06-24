@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+pub mod badge;
 pub mod box_component;
 pub mod button;
 pub mod card;
@@ -9,9 +10,11 @@ pub mod grid;
 pub mod heading;
 pub mod radio;
 pub mod section;
+pub mod separator;
 pub mod switch;
 pub mod text;
 
+pub use badge::*;
 pub use box_component::*;
 pub use button::*;
 pub use card::*;
@@ -21,6 +24,7 @@ pub use grid::*;
 pub use heading::*;
 pub use radio::*;
 pub use section::*;
+pub use separator::*;
 pub use switch::*;
 pub use text::*;
 
