@@ -518,10 +518,10 @@ pub fn load_icon_atlases(
     ));
 
     commands.insert_resource(IconAtlases {
-        texture_16: asset_server.load("ui/texture_atlas_20x16_16px.png"),
-        texture_24: asset_server.load("ui/texture_atlas_20x16_24px.png"),
-        texture_32: asset_server.load("ui/texture_atlas_20x16_32px.png"),
-        texture_64: asset_server.load("ui/texture_atlas_20x16_64px.png"),
+        texture_16: asset_server.load("ui/icons/generic/texture_atlas_20x16_16px.png"),
+        texture_24: asset_server.load("ui/icons/generic/texture_atlas_20x16_24px.png"),
+        texture_32: asset_server.load("ui/icons/generic/texture_atlas_20x16_32px.png"),
+        texture_64: asset_server.load("ui/icons/generic/texture_atlas_20x16_64px.png"),
         layout_16,
         layout_24,
         layout_32,

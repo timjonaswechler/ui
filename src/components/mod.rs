@@ -7,6 +7,7 @@ pub mod checkbox;
 pub mod flex;
 pub mod grid;
 pub mod heading;
+pub mod radio;
 pub mod section;
 pub mod switch;
 pub mod text;
@@ -18,6 +19,7 @@ pub use checkbox::*;
 pub use flex::*;
 pub use grid::*;
 pub use heading::*;
+pub use radio::*;
 pub use section::*;
 pub use switch::*;
 pub use text::*;
@@ -28,6 +30,8 @@ impl Plugin for ComponentsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<button::ButtonClickEvent>()
             .add_event::<checkbox::CheckboxChangeEvent>()
+            .add_event::<radio::RadioChangeEvent>()
+            .add_event::<radio::RadioGroupValueChangeEvent>()
             .add_event::<switch::SwitchChangeEvent>()
             .add_systems(
                 Update,
@@ -39,6 +43,12 @@ impl Plugin for ComponentsPlugin {
                     checkbox::handle_checkbox_interactions,
                     checkbox::spawn_checkmarks,
                     checkbox::update_checkmarks,
+                    radio::handle_radio_interactions,
+                    radio::update_radio_groups,
+                    radio::spawn_radio_indicators,
+                    radio::update_radio_indicators,
+                    radio::setup_radio_interactions,
+                    radio::link_radios_to_groups,
                     switch::setup_switch_interactions,
                     switch::spawn_switch_children,
                     switch::update_switch_styling,
