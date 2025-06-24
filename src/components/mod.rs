@@ -8,9 +8,11 @@ pub mod checkbox;
 pub mod flex;
 pub mod grid;
 pub mod heading;
+pub mod progress;
 pub mod radio;
 pub mod section;
 pub mod separator;
+pub mod slider;
 pub mod switch;
 pub mod text;
 
@@ -22,9 +24,11 @@ pub use checkbox::*;
 pub use flex::*;
 pub use grid::*;
 pub use heading::*;
+pub use progress::*;
 pub use radio::*;
 pub use section::*;
 pub use separator::*;
+pub use slider::*;
 pub use switch::*;
 pub use text::*;
 
@@ -36,6 +40,8 @@ impl Plugin for ComponentsPlugin {
             .add_event::<checkbox::CheckboxChangeEvent>()
             .add_event::<radio::RadioChangeEvent>()
             .add_event::<radio::RadioGroupValueChangeEvent>()
+            .add_event::<slider::SliderValueChangeEvent>()
+            .add_event::<slider::SliderValueCommitEvent>()
             .add_event::<switch::SwitchChangeEvent>()
             .add_systems(
                 Update,
@@ -56,6 +62,17 @@ impl Plugin for ComponentsPlugin {
                     switch::setup_switch_interactions,
                     switch::spawn_switch_children,
                     switch::update_switch_styling,
+                ),
+            )
+            .add_systems(
+                Update,
+                (
+                    progress::setup_progress_components,
+                    progress::animate_indeterminate_progress,
+                    progress::update_progress_values,
+                    slider::handle_slider_drag,
+                    slider::handle_track_click,
+                    slider::update_slider_visuals,
                     crate::assets::icon::icon_interaction_system,
                 ),
             );
