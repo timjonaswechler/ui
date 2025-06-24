@@ -20,7 +20,7 @@ impl FromWorld for SfxAssets {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
         Self {
-            tap: asset_server.load("audio/sound_effects/tap.ogg"),
+            tap: asset_server.load("audio/sfx/tap.ogg"),
         }
     }
 }

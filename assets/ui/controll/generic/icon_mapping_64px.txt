@@ -1,0 +1,40 @@
+# Texture Atlas Mapping
+# Auflösung (px): 64
+# Spalten: 20  Zeilen: 2
+# Format: ID	Name	Col	Row
+  0	generic_button	0	0
+  1	generic_button_circle	1	0
+  2	generic_button_circle_fill	2	0
+  3	generic_button_circle_outline	3	0
+  4	generic_button_finger	4	0
+  5	generic_button_finger_pressed	5	0
+  6	generic_button_pressed	6	0
+  7	generic_button_square	7	0
+  8	generic_button_square_fill	8	0
+  9	generic_button_square_outline	9	0
+ 10	generic_button_trigger_a	10	0
+ 11	generic_button_trigger_a_fill	11	0
+ 12	generic_button_trigger_a_outline	12	0
+ 13	generic_button_trigger_b	13	0
+ 14	generic_button_trigger_b_fill	14	0
+ 15	generic_button_trigger_b_outline	15	0
+ 16	generic_button_trigger_c	16	0
+ 17	generic_button_trigger_c_fill	17	0
+ 18	generic_button_trigger_c_outline	18	0
+ 19	generic_joystick	19	0
+ 20	generic_joystick_horizontal	0	1
+ 21	generic_joystick_left	1	1
+ 22	generic_joystick_red	2	1
+ 23	generic_joystick_red_horizontal	3	1
+ 24	generic_joystick_red_left	4	1
+ 25	generic_joystick_red_right	5	1
+ 26	generic_joystick_right	6	1
+ 27	generic_stick	7	1
+ 28	generic_stick_down	8	1
+ 29	generic_stick_horizontal	9	1
+ 30	generic_stick_left	10	1
+ 31	generic_stick_press	11	1
+ 32	generic_stick_right	12	1
+ 33	generic_stick_side	13	1
+ 34	generic_stick_up	14	1
+ 35	generic_stick_vertical	15	1

@@ -1,137 +1,169 @@
 #!/usr/bin/env python3
 """
-SVG Texture Atlas Generator
-Converts SVG icons to white and creates a texture atlas in a 20x15 grid
+SVG‑Atlas‑Generator mit Mapping‑TXT
+====================================
+
+Erstellt pro Kategorie und Icon‑Größe einen Texture‑Atlas **und** eine
+entsprechende Mapping‑Datei, die für jedes Original‑SVG den Index sowie
+Grid‑ und Pixel‑Positionen im Atlas enthält.
+
+Quelle:
+* `controll/source/<Kategorie>/Vector/*.svg`
+* `icons/source/<Kategorie>/Vector/*.svg`
+
+Ausgaben:
+```
+controll/<slug>/texture_atlas_<COLS>x<ROWS>_<SIZE>px.png
+controll/<slug>/icon_mapping_<SIZE>px.txt
+icons/<slug>/texture_atlas_<COLS>x<ROWS>_<SIZE>px.png
+icons/<slug>/icon_mapping_<SIZE>px.txt
+```
+
+Voraussetzungen: Python ≥ 3.9 · Pillow ≥ 10 · CairoSVG ≥ 2.7
 """
 
-import os
-import glob
-from PIL import Image, ImageDraw
-import cairosvg
+from __future__ import annotations
+
 import io
+import math
+import os
+import re
+import sys
+from pathlib import Path
+from typing import Iterable, List
 
-def svg_to_white_png(svg_path, size=64):
-    """Convert SVG to white PNG with transparent background"""
+import cairosvg
+from PIL import Image
+
+# ------------------------------------------------------------
+# Konfiguration
+# ------------------------------------------------------------
+
+ICON_SIZES: List[int] = [16, 24, 32, 64]   # px
+GRID_COLS: int = 20                        # Spalten im Atlas
+OVERSAMPLE: int = 4                        # Supersampling‑Faktor
+
+# SVG‑Suchpfade
+SOURCE_ROOTS: List[Path] = [
+    Path("controll/source"),
+    Path("icons/source"),
+]
+
+# ------------------------------------------------------------
+# Utility‑Funktionen
+# ------------------------------------------------------------
+
+def slugify(name: str) -> str:
+    """Konvertiert Ordnernamen → slug (z. B. "Nintendo WiiU" → "nintendo_wiiu")."""
+    slug = re.sub(r"[&/]", " ", name).lower().strip()
+    slug = re.sub(r"[^a-z0-9]+", "_", slug)
+    return slug.strip("_")
+
+
+def svg_to_white_png(svg_path: Path, size: int, oversample: int = OVERSAMPLE) -> Image.Image:
+    """Rendert SVG monochrom‑weiß zu RGBA‑PNG der Zielgröße."""
+    png_bytes = cairosvg.svg2png(url=str(svg_path), scale=oversample)
+    img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+    img = img.resize((size, size), Image.Resampling.LANCZOS)
+
+    pix = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b, a = pix[x, y]
+            if a:
+                pix[x, y] = (255, 255, 255, a)
+    return img
+
+
+def _pretty(path: Path) -> str:
+    """Relative Pfadangabe (Fallback: absolut)."""
     try:
-        # Read SVG content
-        with open(svg_path, 'r', encoding='utf-8') as f:
-            svg_content = f.read()
+        return str(path.resolve().relative_to(Path.cwd()))
+    except ValueError:
+        return str(path)
 
-        # Replace any fill colors with white, but preserve 'none'
-        svg_content = svg_content.replace('fill="black"', 'fill="white"')
-        svg_content = svg_content.replace('fill="#000"', 'fill="white"')
-        svg_content = svg_content.replace('fill="#000000"', 'fill="white"')
-        svg_content = svg_content.replace('stroke="black"', 'stroke="white"')
-        svg_content = svg_content.replace('stroke="#000"', 'stroke="white"')
-        svg_content = svg_content.replace('stroke="#000000"', 'stroke="white"')
+# ------------------------------------------------------------
+# Atlas‑Erstellung
+# ------------------------------------------------------------
 
-        # Add white fill to paths that don't have explicit fills
-        if 'fill=' not in svg_content and '<path' in svg_content:
-            svg_content = svg_content.replace('<path', '<path fill="white"')
+def create_texture_atlas(svg_folder: Path, output_folder: Path, icon_size: int) -> None:
+    """Erzeugt einen Atlas & Mapping‑TXT (ID, Name, Col, Row)"""
+    svg_files = sorted(svg_folder.glob("*.svg"))
+    if not svg_files:
+        print(f"⚠️  [skip] Keine SVGs in {svg_folder}")
+        return
 
-        # Convert SVG to PNG bytes
-        png_bytes = cairosvg.svg2png(
-            bytestring=svg_content.encode('utf-8'),
-            output_width=size,
-            output_height=size
-        )
+    total_icons = len(svg_files)
+    grid_rows = math.ceil(total_icons / GRID_COLS)
+    atlas_w, atlas_h = GRID_COLS * icon_size, grid_rows * icon_size
 
-        # Create PIL Image from bytes
-        img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+    atlas = Image.new("RGBA", (atlas_w, atlas_h), (0, 0, 0, 0))
+    mapping_lines: list[str] = []
 
-        # Create white version with preserved alpha
-        white_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-        pixels = img.load()
-        white_pixels = white_img.load()
+    for idx, svg_file in enumerate(svg_files):
+        col, row = idx % GRID_COLS, idx // GRID_COLS
+        x, y = col * icon_size, row * icon_size
+        icon_img = svg_to_white_png(svg_file, icon_size)
+        atlas.paste(icon_img, (x, y), icon_img)
 
-        for y in range(img.height):
-            for x in range(img.width):
-                r, g, b, a = pixels[x, y]
-                if a > 0:  # If pixel is not transparent
-                    white_pixels[x, y] = (255, 255, 255, a)  # Make it white but keep alpha
+        mapping_lines.append(f"{idx:3d}	{svg_file.stem}	{col}	{row}\n")
 
-        return white_img
+    output_folder.mkdir(parents=True, exist_ok=True)
 
-    except Exception as e:
-        print(f"Error processing {svg_path}: {e}")
-        # Return a blank white square as fallback
-        fallback = Image.new("RGBA", (size, size), (255, 255, 255, 255))
-        return fallback
+    # Atlas speichern
+    atlas_path = output_folder / f"texture_atlas_{GRID_COLS}x{grid_rows}_{icon_size}px.png"
+    atlas.save(atlas_path)
 
-def create_texture_atlas(svg_folder, output_folder, icon_size=64, grid_cols=20, grid_rows=15):
-    """Create texture atlas from SVG icons"""
+    # Mapping speicher
+    map_path = output_folder / f"icon_mapping_{icon_size}px.txt"
+    with map_path.open("w", encoding="utf-8") as fh:
+        fh.write("# Texture Atlas Mapping\n")
+        fh.write(f"# Auflösung (px): {icon_size}\n")
+        fh.write(f"# Spalten: {GRID_COLS}  Zeilen: {grid_rows}\n")
+        fh.write("# Format: ID	Name	Col	Row\n")
+        fh.write("".join(mapping_lines))
 
-    # Create output folder if it doesn't exist
-    os.makedirs(output_folder, exist_ok=True)
+    print(f"✅ Atlas {icon_size}px → {_pretty(atlas_path)}  ✏️ Mapping → {_pretty(map_path)}")
 
-    # Get all SVG files
-    svg_files = glob.glob(os.path.join(svg_folder, "*.svg"))
-    svg_files.sort()  # Sort for consistent ordering
 
-    # Limit to grid capacity
-    max_icons = grid_cols * grid_rows
-    svg_files = svg_files[:max_icons]
 
-    print(f"Processing {len(svg_files)} SVG files...")
-    print(f"Creating {grid_cols}x{grid_rows} texture atlas with {icon_size}x{icon_size} icons")
+# ------------------------------------------------------------
+# Pfad‑Hilfen & Generatoren
+# ------------------------------------------------------------
 
-    # Calculate atlas dimensions
-    atlas_width = grid_cols * icon_size
-    atlas_height = grid_rows * icon_size
+def iter_vector_folders(root: Path) -> Iterable[Path]:
+    for dirpath, dirnames, _ in os.walk(root):
+        path = Path(dirpath)
+        if path.name.lower() == "vector":
+            yield path
 
-    # Create the atlas image
-    atlas = Image.new("RGBA", (atlas_width, atlas_height), (0, 0, 0, 0))
 
-    # Process each SVG and place in atlas
-    for i, svg_file in enumerate(svg_files):
-        print(f"Processing {i+1}/{len(svg_files)}: {os.path.basename(svg_file)}")
+def project_root_from_vector(vector_dir: Path) -> Path:
+    for parent in vector_dir.parents:
+        if parent.name == "source":
+            return parent.parent
+    return vector_dir.parents[-1]
 
-        # Convert SVG to white PNG
-        icon = svg_to_white_png(svg_file, icon_size)
+# ------------------------------------------------------------
+# Main
+# ------------------------------------------------------------
 
-        # Calculate position in grid
-        col = i % grid_cols
-        row = i // grid_cols
+def main() -> None:
+    for src_root in SOURCE_ROOTS:
+        if not src_root.exists():
+            continue
+        for vector_dir in iter_vector_folders(src_root):
+            category_name = vector_dir.parent.name
+            slug = slugify(category_name)
+            project_root = project_root_from_vector(vector_dir)
+            atlas_out = project_root / slug
 
-        # Calculate pixel position
-        x = col * icon_size
-        y = row * icon_size
-
-        # Paste icon into atlas
-        atlas.paste(icon, (x, y), icon)
-
-    # Save the texture atlas
-    atlas_path = os.path.join(output_folder, f"texture_atlas_{grid_cols}x{grid_rows}_{icon_size}px.png")
-    atlas.save(atlas_path, "PNG")
-
-    print(f"Texture atlas saved to: {atlas_path}")
-    print(f"Atlas dimensions: {atlas_width}x{atlas_height} pixels")
-    info_file_name = f"icon_mapping_{icon_size}.txt"
-    # Create a mapping file for reference
-    mapping_path = os.path.join(output_folder, info_file_name)
-    with open(mapping_path, 'w') as f:
-        f.write(f"Texture Atlas Icon Mapping ({grid_cols}x{grid_rows})\n")
-        f.write(f"Icon size: {icon_size}x{icon_size} pixels\n")
-        f.write(f"Atlas size: {atlas_width}x{atlas_height} pixels\n")
-        f.write("-" * 50 + "\n")
-
-        for i, svg_file in enumerate(svg_files):
-            col = i % grid_cols
-            row = i // grid_cols
-            x = col * icon_size
-            y = row * icon_size
-            icon_name = os.path.splitext(os.path.basename(svg_file))[0]
-            f.write(f"Index {i:3d}: {icon_name:<30} | Grid: ({col:2d},{row:2d}) | Pixel: ({x:3d},{y:3d})\n")
-
-    print(f"Icon mapping saved to: {mapping_path}")
+            print(f"\n=== {project_root.name.upper()}: {category_name} ===")
+            for size in ICON_SIZES:
+                create_texture_atlas(vector_dir, atlas_out, size)
 
 if __name__ == "__main__":
-    # Configuration
-    SVG_FOLDER = "/Users/tim-jonaswechler/GitHub-Projekte/test/ui/assets/ui/svg"
-    OUTPUT_FOLDER = "/Users/tim-jonaswechler/GitHub-Projekte/test/ui/assets/ui"
-    ICON_SIZE = 16  # Size of each icon in pixels
-    GRID_COLS = 20  # Number of columns
-    GRID_ROWS = 16  # Number of rows
-
-    # Create texture atlas
-    create_texture_atlas(SVG_FOLDER, OUTPUT_FOLDER, ICON_SIZE, GRID_COLS, GRID_ROWS)
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit("⏹️  Abbruch durch Nutzer")

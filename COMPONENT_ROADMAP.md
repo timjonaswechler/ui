@@ -34,10 +34,10 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Layout Fundamentals
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Box |  ✅ | Critical | 1 | **BEVY NATIVE**: `Node` + `BackgroundColor` + `BorderRadius` + `Outline` ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.Node.html)) |
+| Box | ✅ | Critical | 1 | **COMPLETED**: Layout foundation with Surface/Panel/Card/Classic/Ghost/Outline/Container variants, theme integration, and comprehensive styling |
 | Flex | ✅ | Critical | 1 | **COMPLETED**: Flexbox layout component with builder pattern, theme integration, and comprehensive flex properties |
-| Grid | ✅ | High | 1 | **BEVY NATIVE**: `Node` + `Display::Grid` - Grid layout available! ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/enum.Display.html)) |
-| Container | ✅ | High | 0.5 | **BEVY NATIVE**: `Node` + `UiRect` for max-width constraints ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.UiRect.html)) |
+| Grid | ✅ | High | 1 | **COMPLETED**: CSS Grid layout component with builder pattern, template columns/rows, gap control, and theme integration |
+| Container | ✅ | High | 0.5 | **COMPLETED**: Integrated into BoxComponent with ContainerSize enum (Size1-4) and max-width constraints |
 
 **Phase 1 Total**: 5 days (**REDUCED from 13 days** - Bevy provides core functionality, Code component removed)
 
@@ -51,13 +51,13 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
 | Card | ✅ | High | 2 | **COMPLETED**: Content container with Surface/Classic/Ghost variants, size options, and theme integration |
-| Section | ✅ | Medium | 1 | **BEVY NATIVE**: `Node` wrapper for semantic sections |
+| Section | ✅ | Medium | 1 | **COMPLETED**: Semantic content container with vertical rhythm, size variants (Size1-4), and theme integration |
 
 ### Basic Form Controls
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Checkbox | 📋 | High | 2 | **BEVY NATIVE**: `Button` + `Interaction` + `ButtonInput<MouseButton>` + checkmark graphics ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/widget/struct.Button.html)) |
-| Switch | 📋 | High | 2 | **BEVY NATIVE**: `Button` + `Interaction` + Toggle-State + slide animation |
+| Checkbox | ✅ | High | 2 | **COMPLETED**: Binary selection control with icon atlas checkmarks, size variants (Size1-3), theme integration, and interaction events |
+| Switch | ✅ | High | 2 | **COMPLETED**: Toggle control with Observer pattern, instant feedback, and proper state management |
 | Radio Group | 📋 | High | 3 | **BEVY NATIVE**: Multiple `Button` + `Focusable` + `FocusPolicy` + keyboard nav ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.Focusable.html)) |
 
 ### Visual Indicators
@@ -231,21 +231,26 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 | Text | ✅ | 2025-06-20 | Theme wrapper around Bevy's UI Text with full font support (Sans/Serif/Mono, weights, italic) |
 | Heading | ✅ | 2025-06-20 | Semantic heading levels (H1-H6) with appropriate sizing and weights |
 | Box | ✅ | 2025-06-20 | Layout foundation with theme integration and comprehensive styling options |
-| Flex | ✅ | 2025-06-22 | **NEW**: Flexbox layout component with builder pattern, gap control, and flex properties |
-| Card | ✅ | 2025-06-22 | **NEW**: Content container with Surface/Classic/Ghost variants, size system (1-3), interactive support |
+| Flex | ✅ | 2025-06-22 | Flexbox layout component with builder pattern, gap control, and flex properties |
+| Card | ✅ | 2025-06-22 | Content container with Surface/Classic/Ghost variants, size system (1-3), interactive support |
+| Grid | ✅ | 2025-06-23 | CSS Grid layout component with comprehensive grid properties, template support, and theme integration |
+| Section | ✅ | 2025-06-23 | Semantic content container with vertical rhythm, size variants (Size1-4), and flex layout support |
+| Checkbox | ✅ | 2025-06-23 | Binary selection control with icon atlas checkmarks, size variants (Size1-3), theme integration, and CheckboxChangeEvent system |
+| Switch | ✅ | 2025-06-24 | Toggle control with Observer pattern for click detection, three size variants (Size1-3), three visual variants (Surface/Classic/Soft), comprehensive color palette support, instant position updates, and SwitchChangeEvent system |
+
 
 ---
 
 ## Project Statistics
 - **Start Date**: 2025-06-20
-- **Current Date**: 2025-06-22 (Day 3)
+- **Current Date**: 2025-06-24 (Day 5)
 - **Total Estimated Days**: 127.5 days (~5.1 months) (**REDUCED** after Bevy analysis & optimizations)
-- **Components Completed**: 8/79 (10.1%) - **AHEAD OF SCHEDULE**
-- **Phase 1 Progress**: 4/4 Critical components complete (Box ✅, Flex ✅, Text ✅, Heading ✅)
-- **Phase 2 Progress**: 1/6 components complete (Card ✅)
-- **Current Focus**: Remaining Phase 1 (Grid, Container) → Phase 2 (Form Controls, Visual Indicators)
+- **Components Completed**: 12/79 (15.2%) - **AHEAD OF SCHEDULE**
+- **Phase 1 Progress**: 6/6 Critical components complete (Box ✅, Flex ✅, Grid ✅, Container ✅, Text ✅, Heading ✅)
+- **Phase 2 Progress**: 5/6 components complete (Card ✅, Section ✅, Container integration ✅, Checkbox ✅, Switch ✅)
+- **Current Focus**: Phase 2 (Form Controls, Visual Indicators) - Phase 1 COMPLETE!
 - **Days Saved**: 1.0 day (Flex component implemented faster than estimated)
-- **Velocity**: 2.33 components/day (projected: 1.58 components/day)
+- **Velocity**: 2.4 components/day (projected: 1.58 components/day)
 
 ## Key Revision Notes
 - **Major Discovery**: Bevy 0.16 provides comprehensive UI system with text, layout, and styling
@@ -331,12 +336,9 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 - Accessibility framework → All interactive components
 
 ## Accessibility Goals
-
 Each component must include:
-- **WAI-ARIA compliance** - Proper aria labels and roles
 - **Keyboard navigation** - Full keyboard accessibility
 - **Focus management** - Logical focus flow
-- **Screen reader support** - Meaningful announcements
 - **High contrast** support - Theme-aware contrast ratios
 
 ## Testing Strategy
@@ -348,11 +350,6 @@ Each component must include:
 - **Performance tests** for render efficiency
 
 ## Next Actions
-
-1. **Immediate (Next 2 days - 2025-06-23/24)**:
-   - Implement Grid component (CSS Grid layout)
-   - Implement Container component (max-width constraints)
-   - **Complete Phase 1** - All layout foundations ready
 
 2. **This Week (2025-06-25-27)**:
    - Begin Phase 2: Card component implementation
@@ -374,5 +371,5 @@ Each component must include:
 - Each component should follow the established builder pattern
 - Theme integration is mandatory for all visual components
 
-**Last Updated**: 2025-06-22 (Flex component completion + progress update)
-**Next Review**: 2025-06-29 (Phase 1 completion milestone)
+**Last Updated**: 2025-06-24 (Switch component completion + statistics update)
+**Next Review**: 2025-06-29 (Phase 2 mid-point assessment)

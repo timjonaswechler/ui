@@ -1,0 +1,32 @@
+# Texture Atlas Mapping
+# Auflösung (px): 32
+# Spalten: 20  Zeilen: 2
+# Format: ID	Name	Col	Row
+  0	touch_finger_one	0	0
+  1	touch_finger_two	1	0
+  2	touch_hand_closed	2	0
+  3	touch_hand_open	3	0
+  4	touch_rotate_left	4	0
+  5	touch_rotate_right	5	0
+  6	touch_swipe_down	6	0
+  7	touch_swipe_horizontal	7	0
+  8	touch_swipe_left	8	0
+  9	touch_swipe_move	9	0
+ 10	touch_swipe_right	10	0
+ 11	touch_swipe_two_down	11	0
+ 12	touch_swipe_two_horizontal	12	0
+ 13	touch_swipe_two_left	13	0
+ 14	touch_swipe_two_move	14	0
+ 15	touch_swipe_two_right	15	0
+ 16	touch_swipe_two_up	16	0
+ 17	touch_swipe_two_vertical	17	0
+ 18	touch_swipe_up	18	0
+ 19	touch_swipe_vertical	19	0
+ 20	touch_tap	0	1
+ 21	touch_tap_double	1	1
+ 22	touch_tap_hold	2	1
+ 23	touch_two	3	1
+ 24	touch_two_double	4	1
+ 25	touch_two_hold	5	1
+ 26	touch_zoom_in	6	1
+ 27	touch_zoom_out	7	1
