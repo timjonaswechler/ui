@@ -2,10 +2,10 @@ use bevy::prelude::*;
 use ui::{
     components::{
         heading::Heading,
-        slider::{SliderBuilder, SliderComponent, SliderOrientation, SliderSize, SliderValueChangeEvent, SliderValueCommitEvent},
+        slider::{SliderBuilder, SliderComponent, SliderValueChangeEvent, SliderValueCommitEvent},
         text::Text,
     },
-    plugin::ForgeUiPlugin,
+    plugin::{ForgeUiPlugin, UiState},
     theme::color::{accent_palette, theme_mode, ThemeMode, UiColorPalettes},
     utilities::{ui_root::ui_root, ComponentBuilder},
 };
@@ -14,7 +14,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup_ui)
+        .add_systems(OnEnter(UiState::Ready), setup_ui)
         .add_systems(Update, handle_slider_events)
         .run();
 }
@@ -208,7 +208,10 @@ fn setup_ui(mut commands: Commands) {
 
             // Interactive demonstration
             parent.spawn(Heading::h2("Interactive Demonstration").build());
-            parent.spawn(Text::body("Try dragging the sliders above to see value changes in the console").build());
+            parent.spawn(
+                Text::body("Try dragging the sliders above to see value changes in the console")
+                    .build(),
+            );
 
             // Practical use cases
             parent.spawn(Heading::h2("Practical Use Cases").build());
@@ -232,7 +235,7 @@ fn setup_ui(mut commands: Commands) {
                 ))
                 .with_children(|parent| {
                     parent.spawn(Text::label("Audio Settings").build());
-                    
+
                     // Master Volume
                     parent.spawn(Text::body("Master Volume").build());
                     parent.spawn(

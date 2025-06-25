@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use ui::{
     components::text::Text,
-    plugin::ForgeUiPlugin,
+    plugin::{ForgeUiPlugin, UiState},
     theme::typography::{FontFamily, TextWeight},
     utilities::{ui_root, ComponentBuilder},
 };
@@ -10,7 +10,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin::new())
-        .add_systems(Startup, setup_font_test)
+        .add_systems(OnEnter(UiState::Ready), setup_font_test)
         .run();
 }
 

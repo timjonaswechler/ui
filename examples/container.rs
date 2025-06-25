@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use ui::{
     components::{text::Text, BoxComponent, ContainerSize, FlexComponent},
-    plugin::ForgeUiPlugin,
+    plugin::{ForgeUiPlugin, UiState},
     theme::typography::TextSize,
     utilities::{ui_root, ComponentBuilder},
 };
@@ -10,7 +10,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup_ui)
+        .add_systems(OnEnter(UiState::Ready), setup_ui)
         .run();
 }
 
@@ -166,7 +166,7 @@ fn setup_ui(mut commands: Commands) {
                                         // Card-like sections within container
                                         for (i, section_title) in [
                                             "Introduction",
-                                            "Main Content", 
+                                            "Main Content",
                                             "Conclusion"
                                         ].iter().enumerate() {
                                             content
@@ -246,4 +246,3 @@ fn setup_ui(mut commands: Commands) {
                     });
         });
 }
-

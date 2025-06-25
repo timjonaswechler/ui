@@ -173,8 +173,7 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 ### Accessibility Utilities
 | Component | Status | Priority | Est. Days | Notes |
 |-----------|--------|----------|-----------|-------|
-| Accessible Icon | ⏸️ | Medium | 2 | Screen reader friendly icons |
-| Visually Hidden | 📋 | Medium | 1 | Screen reader only content |
+| Accessible Icon | ✅ | Medium | 2 | Screen reader friendly icons |
 | Portal | ✅ | High | 0 | Already implemented - renders outside component tree |
 
 ### Specialized Components

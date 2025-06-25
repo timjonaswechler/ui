@@ -1,11 +1,7 @@
 use bevy::prelude::*;
 use ui::{
-    components::{
-        heading::Heading,
-        separator::{SeparatorBuilder, SeparatorOrientation},
-        text::Text,
-    },
-    plugin::ForgeUiPlugin,
+    components::{heading::Heading, separator::SeparatorBuilder, text::Text},
+    plugin::{ForgeUiPlugin, UiState},
     theme::color::{accent_palette, theme_mode, ThemeMode, UiColorPalettes},
     utilities::{ui_root::ui_root, ComponentBuilder},
 };
@@ -14,7 +10,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup_ui)
+        .add_systems(OnEnter(UiState::Ready), setup_ui)
         .run();
 }
 

@@ -1,13 +1,12 @@
-use bevy::ecs::hierarchy::ChildSpawner;
 use bevy::prelude::*;
 use ui::{
     components::{
         button::{ButtonBuilder, ButtonVariant},
         card::{CardBuilder, CardVariant},
-        heading::{Heading, HeadingLevel},
+        heading::Heading,
         text::TextBuilder,
     },
-    plugin::ForgeUiPlugin,
+    plugin::{ForgeUiPlugin, UiState},
     theme::{
         color::theme,
         typography::{TextSize, TextWeight},
@@ -19,11 +18,11 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup_card_demo)
+        .add_systems(OnEnter(UiState::Ready), setup)
         .run();
 }
 
-fn setup_card_demo(mut commands: Commands) {
+fn setup(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2d);
 
@@ -40,7 +39,7 @@ fn setup_card_demo(mut commands: Commands) {
         ).with_children(|parent| {
             // Title
             parent.spawn(
-                Heading::h1("Card Component Demo")                   
+                Heading::h1("Card Component Demo")
                     .size(TextSize::X6l)
                     .weight(TextWeight::Bold)
                     .build()

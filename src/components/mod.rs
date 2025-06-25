@@ -73,7 +73,7 @@ impl Plugin for ComponentsPlugin {
                     slider::handle_slider_drag,
                     slider::handle_track_click,
                     slider::update_slider_visuals,
-                    crate::assets::icon::icon_interaction_system,
+                    // Icon interaction system removed - handled by individual icon systems
                 ),
             );
     }

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use ui::{
-    components::{text::Text, BoxComponent, FlexComponent, SpacingLevel},
-    plugin::ForgeUiPlugin,
+    components::{text::Text, BoxComponent, FlexComponent},
+    plugin::{ForgeUiPlugin, UiState},
     theme::typography::TextSize,
     utilities::{ui_root, ComponentBuilder},
 };
@@ -10,7 +10,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup)
+        .add_systems(OnEnter(UiState::Ready), setup)
         .run();
 }
 

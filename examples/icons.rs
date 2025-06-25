@@ -1,282 +1,429 @@
 use bevy::prelude::*;
 use ui::{
-    assets::icon::{Icon, IconAtlases, IconBuilder, IconId},
-    plugin::ForgeUiPlugin,
+    assets::icons::{
+        controllers::{
+            GenericAtlases, KeyboardMouseAtlases, NintendoSwitchAtlases, PlayStationAtlases,
+            XboxAtlases,
+        },
+        interface::InterfaceAtlases,
+        GenericButton, GenericJoystick, GenericStick, InterfaceAvatar, InterfaceChevronDown,
+        InterfaceGear, InterfaceHome, KeyboardA, KeyboardD, KeyboardS, KeyboardW, Mouse,
+        PlayStationCircle, PlayStationCross, PlayStationSquare, PlayStationTriangle, SwitchButtonA,
+        SwitchButtonB, SwitchButtonX, SwitchButtonY, XboxA, XboxB, XboxX, XboxY,
+    },
+    components::{heading::Heading, text::Text},
+    plugin::{ForgeUiPlugin, UiState},
+    theme::{
+        color::{theme, TextColor as TextColorEnum},
+        typography::{TextSize, TextWeight},
+    },
+    utilities::{ui_root, ComponentBuilder},
 };
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(ForgeUiPlugin::new())
-        .add_systems(Startup, setup_camera)
-        .add_systems(Update, setup_icon_demo)
+        .add_plugins(ForgeUiPlugin)
+        .add_systems(OnEnter(UiState::Ready), (setup_icon_demo).chain())
         .run();
-}
-
-fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2d);
 }
 
 fn setup_icon_demo(
     mut commands: Commands,
-    atlases: Option<Res<IconAtlases>>,
-    mut setup_done: Local<bool>,
+    generic_atlases: Option<Res<GenericAtlases>>,
+    keyboard_mouse_atlases: Option<Res<KeyboardMouseAtlases>>,
+    xbox_atlases: Option<Res<XboxAtlases>>,
+    playstation_atlases: Option<Res<PlayStationAtlases>>,
+    switch_atlases: Option<Res<NintendoSwitchAtlases>>,
+    interface_atlases: Option<Res<InterfaceAtlases>>,
 ) {
-    // Only run once when atlases are available
-    if *setup_done {
-        return;
-    }
-    
-    // Wait for atlases to load
-    let Some(atlases) = atlases else {
-        return;
-    };
-    
-    *setup_done = true;
+    // Camera
+    commands.spawn(Camera2d);
 
-    // Root container
-    commands
-        .spawn((
+    // UI Root
+    commands.spawn(ui_root("Icons_Root")).with_children(|parent| {
+        // Main container with scrolling
+        parent.spawn((
             Node {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 flex_direction: FlexDirection::Column,
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                row_gap: Val::Px(20.0),
+                padding: UiRect::all(Val::Px(32.0)),
+                row_gap: Val::Px(32.0),
+                overflow: Overflow::clip_y(),
                 ..default()
             },
-            BackgroundColor(Color::srgb(0.1, 0.1, 0.1)),
+        )).with_children(|parent| {
+            // Title
+            parent.spawn(
+                Heading::h1("Icon System Demo")
+                    .size(TextSize::X6l)
+                    .weight(TextWeight::Bold)
+                    .build()
+            );
+
+            parent.spawn(
+                Text::body("Comprehensive showcase of the icon system with multiple categories and sizes")
+                    .color(TextColorEnum::Muted)
+                    .size(TextSize::Lg)
+                    .build()
+            );
+
+            // Icon Size Demo Section
+            create_size_demo_section(parent, generic_atlases.as_deref());
+
+            // Controller Icons Section
+            create_controller_section(
+                parent,
+                generic_atlases.as_deref(),
+                keyboard_mouse_atlases.as_deref(),
+                xbox_atlases.as_deref(),
+                playstation_atlases.as_deref(),
+                switch_atlases.as_deref(),
+            );
+
+            // Interface Icons Section
+            create_interface_section(parent, interface_atlases.as_deref());
+
+            // Color Tinting Demo
+            create_tinting_section(parent, generic_atlases.as_deref());
+        });
+    });
+}
+
+fn create_size_demo_section(
+    parent: &mut ChildSpawnerCommands,
+    generic_atlases: Option<&GenericAtlases>,
+) {
+    parent
+        .spawn((Node {
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(16.0),
+            ..default()
+        },))
+        .with_children(|parent| {
+            // Section title
+            parent.spawn(
+                Heading::h2("Icon Sizes")
+                    .size(TextSize::X3l)
+                    .weight(TextWeight::Medium)
+                    .build(),
+            );
+
+            if let Some(atlases) = generic_atlases {
+                // Size demonstration row
+                parent
+                    .spawn((Node {
+                        flex_direction: FlexDirection::Row,
+                        align_items: AlignItems::Center,
+                        column_gap: Val::Px(24.0),
+                        padding: UiRect::all(Val::Px(16.0)),
+                        ..default()
+                    },))
+                    .with_children(|parent| {
+                        // Small (16px)
+                        parent
+                            .spawn((Node {
+                                flex_direction: FlexDirection::Column,
+                                align_items: AlignItems::Center,
+                                row_gap: Val::Px(8.0),
+                                ..default()
+                            },))
+                            .with_children(|parent| {
+                                parent.spawn(GenericButton::small().bundle(atlases));
+                                parent.spawn(
+                                    Text::caption("Small (16px)")
+                                        .size(TextSize::Xs)
+                                        .color(TextColorEnum::Muted)
+                                        .build(),
+                                );
+                            });
+
+                        // Medium (24px) - Default
+                        parent
+                            .spawn((Node {
+                                flex_direction: FlexDirection::Column,
+                                align_items: AlignItems::Center,
+                                row_gap: Val::Px(8.0),
+                                ..default()
+                            },))
+                            .with_children(|parent| {
+                                parent.spawn(GenericButton::medium().bundle(atlases));
+                                parent.spawn(
+                                    Text::caption("Medium (24px)")
+                                        .size(TextSize::Xs)
+                                        .color(TextColorEnum::Muted)
+                                        .build(),
+                                );
+                            });
+
+                        // Large (32px)
+                        parent
+                            .spawn((Node {
+                                flex_direction: FlexDirection::Column,
+                                align_items: AlignItems::Center,
+                                row_gap: Val::Px(8.0),
+                                ..default()
+                            },))
+                            .with_children(|parent| {
+                                parent.spawn(GenericButton::large().bundle(atlases));
+                                parent.spawn(
+                                    Text::caption("Large (32px)")
+                                        .size(TextSize::Xs)
+                                        .color(TextColorEnum::Muted)
+                                        .build(),
+                                );
+                            });
+
+                        // Extra Large (64px)
+                        parent
+                            .spawn((Node {
+                                flex_direction: FlexDirection::Column,
+                                align_items: AlignItems::Center,
+                                row_gap: Val::Px(8.0),
+                                ..default()
+                            },))
+                            .with_children(|parent| {
+                                parent.spawn(GenericButton::extra_large().bundle(atlases));
+                                parent.spawn(
+                                    Text::caption("Extra Large (64px)")
+                                        .size(TextSize::Xs)
+                                        .color(TextColorEnum::Muted)
+                                        .build(),
+                                );
+                            });
+                    });
+            } else {
+                parent.spawn(
+                    Text::body("Loading icon atlases...")
+                        .color(TextColorEnum::Muted)
+                        .build(),
+                );
+            }
+        });
+}
+
+fn create_controller_section(
+    parent: &mut ChildSpawnerCommands,
+    generic_atlases: Option<&GenericAtlases>,
+    keyboad_mouse_atlas: Option<&KeyboardMouseAtlases>,
+    xbox_atlases: Option<&XboxAtlases>,
+    playstation_atlases: Option<&PlayStationAtlases>,
+    switch_atlases: Option<&NintendoSwitchAtlases>,
+) {
+    parent
+        .spawn((Node {
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(16.0),
+            ..default()
+        },))
+        .with_children(|parent| {
+            // Section title
+            parent.spawn(
+                Heading::h2("Controller Icons")
+                    .size(TextSize::X3l)
+                    .weight(TextWeight::Medium)
+                    .build(),
+            );
+
+            // Grid for different controller types
+            parent
+                .spawn((Node {
+                    display: Display::Grid,
+                    grid_template_columns: vec![RepeatedGridTrack::fr(1, 1.0); 2],
+                    column_gap: Val::Px(32.0),
+                    row_gap: Val::Px(24.0),
+                    ..default()
+                },))
+                .with_children(|parent| {
+                    // Generic Controls
+                    if let Some(atlases) = generic_atlases {
+                        create_controller_card(parent, "Generic Controls", |parent| {
+                            parent.spawn(GenericButton::new().bundle(atlases));
+                            parent.spawn(GenericJoystick::new().bundle(atlases));
+                            parent.spawn(GenericStick::new().bundle(atlases));
+                        });
+                    }
+
+                    if let Some(atlases) = keyboad_mouse_atlas {
+                        create_controller_card(parent, "Keyboard & Mouse", |parent| {
+                            parent.spawn(KeyboardW::new().bundle(atlases));
+                            parent.spawn(KeyboardA::new().bundle(atlases));
+                            parent.spawn(KeyboardS::new().bundle(atlases));
+                            parent.spawn(KeyboardD::new().bundle(atlases));
+                            parent.spawn(Mouse::new().bundle(atlases));
+                        });
+                    }
+                    // Xbox Controls
+                    if let Some(atlases) = xbox_atlases {
+                        create_controller_card(parent, "Xbox Controls", |parent| {
+                            parent.spawn(XboxA::new().bundle(atlases));
+                            parent.spawn(XboxB::new().bundle(atlases));
+                            parent.spawn(XboxX::new().bundle(atlases));
+                            parent.spawn(XboxY::new().bundle(atlases));
+                        });
+                    }
+
+                    // PlayStation Controls
+                    if let Some(atlases) = playstation_atlases {
+                        create_controller_card(parent, "PlayStation Controls", |parent| {
+                            parent.spawn(PlayStationCross::new().bundle(atlases));
+                            parent.spawn(PlayStationCircle::new().bundle(atlases));
+                            parent.spawn(PlayStationSquare::new().bundle(atlases));
+                            parent.spawn(PlayStationTriangle::new().bundle(atlases));
+                        });
+                    }
+
+                    // Nintendo Switch Controls
+                    if let Some(atlases) = switch_atlases {
+                        create_controller_card(parent, "Nintendo Switch Controls", |parent| {
+                            parent.spawn(SwitchButtonA::new().bundle(atlases));
+                            parent.spawn(SwitchButtonB::new().bundle(atlases));
+                            parent.spawn(SwitchButtonX::new().bundle(atlases));
+                            parent.spawn(SwitchButtonY::new().bundle(atlases));
+                        });
+                    }
+                });
+        });
+}
+
+fn create_interface_section(
+    parent: &mut ChildSpawnerCommands,
+    interface_atlases: Option<&InterfaceAtlases>,
+) {
+    parent
+        .spawn((Node {
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(16.0),
+            ..default()
+        },))
+        .with_children(|parent| {
+            // Section title
+            parent.spawn(
+                Heading::h2("Interface Icons")
+                    .size(TextSize::X3l)
+                    .weight(TextWeight::Medium)
+                    .build(),
+            );
+
+            if let Some(atlases) = interface_atlases {
+                parent
+                    .spawn((Node {
+                        flex_direction: FlexDirection::Row,
+                        column_gap: Val::Px(16.0),
+                        padding: UiRect::all(Val::Px(16.0)),
+                        ..default()
+                    },))
+                    .with_children(|parent| {
+                        parent.spawn(InterfaceHome::new().bundle(atlases));
+                        parent.spawn(InterfaceGear::new().bundle(atlases));
+                        parent.spawn(InterfaceChevronDown::new().bundle(atlases));
+                        parent.spawn(InterfaceAvatar::new().bundle(atlases));
+                    });
+            } else {
+                parent.spawn(
+                    Text::body("Loading interface icons...")
+                        .color(TextColorEnum::Muted)
+                        .build(),
+                );
+            }
+        });
+}
+
+fn create_tinting_section(
+    parent: &mut ChildSpawnerCommands,
+    generic_atlases: Option<&GenericAtlases>,
+) {
+    parent
+        .spawn((Node {
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(16.0),
+            ..default()
+        },))
+        .with_children(|parent| {
+            // Section title
+            parent.spawn(
+                Heading::h2("Color Tinting")
+                    .size(TextSize::X3l)
+                    .weight(TextWeight::Medium)
+                    .build(),
+            );
+
+            if let Some(atlases) = generic_atlases {
+                parent
+                    .spawn((Node {
+                        flex_direction: FlexDirection::Row,
+                        column_gap: Val::Px(16.0),
+                        padding: UiRect::all(Val::Px(16.0)),
+                        ..default()
+                    },))
+                    .with_children(|parent| {
+                        // White (default)
+                        parent.spawn(GenericButton::new().bundle(atlases));
+
+                        // Red tint
+                        parent.spawn(GenericButton::new().tint(theme().red.solid).bundle(atlases));
+
+                        // Green tint
+                        parent.spawn(
+                            GenericButton::new()
+                                .tint(theme().green.solid)
+                                .bundle(atlases),
+                        );
+
+                        // Blue tint
+                        parent.spawn(
+                            GenericButton::new()
+                                .tint(theme().indigo.solid)
+                                .bundle(atlases),
+                        );
+
+                        // Purple tint
+                        parent.spawn(
+                            GenericButton::new()
+                                .tint(theme().purple.solid)
+                                .bundle(atlases),
+                        );
+                    });
+            }
+        });
+}
+
+fn create_controller_card<F>(parent: &mut ChildSpawnerCommands, title: &str, spawn_icons: F)
+where
+    F: FnOnce(&mut ChildSpawnerCommands),
+{
+    parent
+        .spawn((
+            Node {
+                flex_direction: FlexDirection::Column,
+                padding: UiRect::all(Val::Px(16.0)),
+                border: UiRect::all(Val::Px(1.0)),
+                row_gap: Val::Px(12.0),
+                ..default()
+            },
+            BorderColor(theme().gray.border),
+            BackgroundColor(theme().gray.surface),
+            BorderRadius::all(Val::Px(8.0)),
         ))
         .with_children(|parent| {
-            // Title
-            parent.spawn((
-                Text::new("Icon System Demo"),
-                TextFont {
-                    font_size: 32.0,
+            // Card title
+            parent.spawn(
+                Heading::h3(title)
+                    .size(TextSize::Lg)
+                    .weight(TextWeight::Medium)
+                    .build(),
+            );
+
+            // Icons grid
+            parent
+                .spawn((Node {
+                    display: Display::Grid,
+                    grid_template_columns: vec![RepeatedGridTrack::fr(1, 1.0); 4],
+                    column_gap: Val::Px(12.0),
+                    row_gap: Val::Px(12.0),
                     ..default()
-                },
-                TextColor(Color::WHITE),
-            ));
-
-            // Icon size demonstration
-            parent
-                .spawn((
-                    Node {
-                        flex_direction: FlexDirection::Row,
-                        column_gap: Val::Px(20.0),
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                ))
-                .with_children(|size_row| {
-                    // Small icons
-                    size_row
-                        .spawn((
-                            Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                row_gap: Val::Px(10.0),
-                                ..default()
-                            },
-                        ))
-                        .with_children(|small_col| {
-                            small_col.spawn((
-                                Text::new("Small (16px)"),
-                                TextFont {
-                                    font_size: 14.0,
-                                    ..default()
-                                },
-                                TextColor(Color::WHITE),
-                            ));
-
-                            small_col
-                                .spawn((
-                                    Node {
-                                        flex_direction: FlexDirection::Row,
-                                        column_gap: Val::Px(5.0),
-                                        ..default()
-                                    },
-                                ))
-                                .with_children(|icons| {
-                                    icons.spawn(IconBuilder::small(IconId::Home).bundle(&atlases));
-                                    icons.spawn(IconBuilder::small(IconId::Gear).bundle(&atlases));
-                                    icons.spawn(IconBuilder::small(IconId::MagnifyingGlass).bundle(&atlases));
-                                    icons.spawn(IconBuilder::small(IconId::Person).bundle(&atlases));
-                                });
-                        });
-
-                    // Medium icons
-                    size_row
-                        .spawn((
-                            Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                row_gap: Val::Px(10.0),
-                                ..default()
-                            },
-                        ))
-                        .with_children(|medium_col| {
-                            medium_col.spawn((
-                                Text::new("Medium (24px)"),
-                                TextFont {
-                                    font_size: 14.0,
-                                    ..default()
-                                },
-                                TextColor(Color::WHITE),
-                            ));
-
-                            medium_col
-                                .spawn((
-                                    Node {
-                                        flex_direction: FlexDirection::Row,
-                                        column_gap: Val::Px(5.0),
-                                        ..default()
-                                    },
-                                ))
-                                .with_children(|icons| {
-                                    icons.spawn(IconBuilder::medium(IconId::Backpack).bundle(&atlases));
-                                    icons.spawn(IconBuilder::medium(IconId::Heart).bundle(&atlases));
-                                    icons.spawn(IconBuilder::medium(IconId::LightningBolt).bundle(&atlases));
-                                    icons.spawn(IconBuilder::medium(IconId::Target).bundle(&atlases));
-                                });
-                        });
-
-                    // Large icons
-                    size_row
-                        .spawn((
-                            Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                row_gap: Val::Px(10.0),
-                                ..default()
-                            },
-                        ))
-                        .with_children(|large_col| {
-                            large_col.spawn((
-                                Text::new("Large (32px)"),
-                                TextFont {
-                                    font_size: 14.0,
-                                    ..default()
-                                },
-                                TextColor(Color::WHITE),
-                            ));
-
-                            large_col
-                                .spawn((
-                                    Node {
-                                        flex_direction: FlexDirection::Row,
-                                        column_gap: Val::Px(5.0),
-                                        ..default()
-                                    },
-                                ))
-                                .with_children(|icons| {
-                                    icons.spawn(IconBuilder::large(IconId::Scissors).bundle(&atlases));
-                                    icons.spawn(IconBuilder::large(IconId::Badge).bundle(&atlases));
-                                    icons.spawn(IconBuilder::large(IconId::MagicWand).bundle(&atlases));
-                                    icons.spawn(IconBuilder::large(IconId::Star).bundle(&atlases));
-                                });
-                        });
-                });
-
-            // Colored icons demonstration
-            parent
-                .spawn((
-                    Node {
-                        flex_direction: FlexDirection::Column,
-                        align_items: AlignItems::Center,
-                        row_gap: Val::Px(10.0),
-                        ..default()
-                    },
-                ))
-                .with_children(|color_section| {
-                    color_section.spawn((
-                        Text::new("Colored Icons"),
-                        TextFont {
-                            font_size: 18.0,
-                            ..default()
-                        },
-                        TextColor(Color::WHITE),
-                    ));
-
-                    color_section
-                        .spawn((
-                            Node {
-                                flex_direction: FlexDirection::Row,
-                                column_gap: Val::Px(10.0),
-                                ..default()
-                            },
-                        ))
-                        .with_children(|color_row| {
-                            // Red sun icon
-                            color_row.spawn(
-                                Icon::medium(IconId::Sun)
-                                    .tint(Color::srgb(1.0, 0.3, 0.3))
-                                    .bundle(&atlases)
-                            );
-
-                            // Blue globe icon
-                            color_row.spawn(
-                                Icon::medium(IconId::Globe)
-                                    .tint(Color::srgb(0.3, 0.6, 1.0))
-                                    .bundle(&atlases)
-                            );
-
-                            // Green heart icon
-                            color_row.spawn(
-                                Icon::medium(IconId::HeartFilled)
-                                    .tint(Color::srgb(0.3, 0.8, 0.3))
-                                    .bundle(&atlases)
-                            );
-
-                            // Yellow lightning icon
-                            color_row.spawn(
-                                Icon::medium(IconId::LightningBolt)
-                                    .tint(Color::srgb(1.0, 1.0, 0.3))
-                                    .bundle(&atlases)
-                            );
-                        });
-                });
-
-            // Interactive button with icon
-            parent
-                .spawn((
-                    Button,
-                    Node {
-                        width: Val::Px(200.0),
-                        height: Val::Px(50.0),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        column_gap: Val::Px(10.0),
-                        ..default()
-                    },
-                    BackgroundColor(Color::srgb(0.2, 0.3, 0.7)),
-                ))
-                .with_children(|button| {
-                    button.spawn(
-                        Icon::medium(IconId::Play)
-                            .bundle(&atlases)
-                    );
-
-                    button.spawn((
-                        Text::new("Start Game"),
-                        TextFont {
-                            font_size: 16.0,
-                            ..default()
-                        },
-                        TextColor(Color::WHITE),
-                    ));
-                });
-
-            // Instructions
-            parent.spawn((
-                Text::new("Icons loaded from texture atlas at assets/ui/texture_atlas_20x16_*.png\nSupports 318 icons in 16px, 24px, 32px, and 64px sizes"),
-                TextFont {
-                    font_size: 12.0,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.7, 0.7, 0.7)),
-                TextLayout::new_with_justify(JustifyText::Center),
-            ));
+                },))
+                .with_children(spawn_icons);
         });
 }

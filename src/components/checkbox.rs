@@ -389,7 +389,7 @@ pub fn handle_checkbox_interactions(
 pub fn spawn_checkmarks(
     mut commands: Commands,
     checkbox_query: Query<(Entity, &CheckboxComponent), Added<CheckboxComponent>>,
-    icon_atlases: Option<Res<crate::assets::icon::IconAtlases>>,
+    icon_atlases: Option<Res<crate::assets::icons::InterfaceAtlases>>,
 ) {
     // Only proceed if icon atlases are loaded
     let Some(atlases) = icon_atlases else {
@@ -408,7 +408,7 @@ pub fn update_checkmarks(
     mut commands: Commands,
     checkbox_query: Query<(Entity, &CheckboxComponent, Option<&Children>), Changed<CheckboxComponent>>,
     checkmark_query: Query<Entity, With<CheckmarkComponent>>,
-    icon_atlases: Option<Res<crate::assets::icon::IconAtlases>>,
+    icon_atlases: Option<Res<crate::assets::icons::InterfaceAtlases>>,
 ) {
     // Only proceed if icon atlases are loaded
     let Some(atlases) = icon_atlases else {
@@ -448,9 +448,9 @@ fn spawn_checkmark_with_atlas(
     commands: &mut Commands, 
     parent_entity: Entity, 
     checkbox: &CheckboxComponent,
-    atlases: &crate::assets::icon::IconAtlases,
+    atlases: &crate::assets::icons::InterfaceAtlases,
 ) {
-    use crate::assets::icon::{Icon, IconId, IconSize};
+    use crate::assets::icons::{IconSize, InterfaceIcon, InterfaceIconId};
     
     let icon_size = match checkbox.size {
         CheckboxSize::Size1 => IconSize::Small,   // 16px
@@ -458,8 +458,8 @@ fn spawn_checkmark_with_atlas(
         CheckboxSize::Size3 => IconSize::Medium,  // 24px for 24px checkbox
     };
     
-    // Use the Check icon from the icon atlas (IconId::Check = 56)
-    let icon = Icon::new(IconId::Check)
+    // Use the Check icon from the interface atlas (InterfaceIconId::Check = 56)
+    let icon = InterfaceIcon::new(InterfaceIconId::Check)
         .size(icon_size)
         .tint(Color::WHITE); // White checkmark on colored background
     

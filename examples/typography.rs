@@ -5,25 +5,24 @@ use ui::{
         text::Text,
         ButtonBuilder,
     },
+    plugin::{ForgeUiPlugin, UiState},
     theme::{
         color::TextColor,
         typography::{FontFamily, TextSize, TextWeight},
     },
-    plugin::ForgeUiPlugin,
     utilities::{ui_root, ComponentBuilder},
 };
-fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2d);
-}
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, (setup_typography_showcase, setup_camera))
+        .add_systems(OnEnter(UiState::Ready), setup_typography_showcase)
         .run();
 }
 
 fn setup_typography_showcase(mut commands: Commands) {
+    commands.spawn(Camera2d);
     // Create main UI root
     commands.spawn(ui_root("main_ui"));
 

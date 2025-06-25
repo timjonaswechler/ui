@@ -5,8 +5,8 @@ use ui::{
         progress::{ProgressBuilder, ProgressComponent},
         text::Text,
     },
-    plugin::ForgeUiPlugin,
-    theme::color::{accent_palette, theme_mode, ThemeMode, UiColorPalettes},
+    plugin::{ForgeUiPlugin, UiState},
+    theme::color::{theme_mode, ThemeMode, UiColorPalettes},
     utilities::{ui_root::ui_root, ComponentBuilder},
 };
 
@@ -14,7 +14,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup_ui)
+        .add_systems(OnEnter(UiState::Ready), setup_ui)
         .add_systems(Update, simulate_progress)
         .run();
 }

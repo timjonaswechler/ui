@@ -5,7 +5,7 @@ use bevy::{
 };
 use ui::{
     components::{SwitchChangeEvent, SwitchComponent},
-    plugin::ForgeUiPlugin,
+    plugin::{ForgeUiPlugin, UiState},
     theme::color::{accent_palette, error_palette, success_palette, warning_palette},
     utilities::{ui_root::UIRoot, ComponentBuilder},
 };
@@ -15,7 +15,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
         .insert_resource(WinitSettings::desktop_app())
-        .add_systems(Startup, setup)
+        .add_systems(OnEnter(UiState::Ready), setup)
         .add_systems(Update, handle_switch_events)
         .run();
 }
@@ -280,9 +280,9 @@ fn setup(mut commands: Commands) {
         });
 }
 
-fn create_section<F>(parent: &mut Commands, title: &str, content_fn: F)
+fn create_section<F>(parent: &mut RelatedSpawnerCommands<'_, ChildOf>, title: &str, content_fn: F)
 where
-    F: FnOnce(&mut ChildBuilder),
+    F: FnOnce(&mut RelatedSpawnerCommands<'_, ChildOf>),
 {
     parent
         .spawn(Node {
@@ -308,7 +308,11 @@ where
         });
 }
 
-fn create_labeled_switch(parent: &mut ChildBuilder, label: &str, switch_bundle: impl Bundle) {
+fn create_labeled_switch(
+    parent: &mut RelatedSpawnerCommands<'_, ChildOf>,
+    label: &str,
+    switch_bundle: impl Bundle,
+) {
     parent
         .spawn(Node {
             flex_direction: FlexDirection::Column,
@@ -332,7 +336,11 @@ fn create_labeled_switch(parent: &mut ChildBuilder, label: &str, switch_bundle: 
         });
 }
 
-fn create_demo_row(parent: &mut ChildBuilder, label: &str, switch_name: &str) {
+fn create_demo_row(
+    parent: &mut RelatedSpawnerCommands<'_, ChildOf>,
+    label: &str,
+    switch_name: &str,
+) {
     parent
         .spawn(Node {
             flex_direction: FlexDirection::Row,

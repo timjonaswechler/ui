@@ -3,7 +3,7 @@ use ui::{
     components::{
         text::Text, ButtonBuilder, ButtonClickEvent, ButtonSize, ButtonVariant, Heading, HeadingExt,
     },
-    plugin::ForgeUiPlugin,
+    plugin::{ForgeUiPlugin, UiState},
     theme::{
         color::{error_palette, theme, TextColor as TextColorEnum},
         typography::{FontFamily, TextWeight},
@@ -15,7 +15,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
         // Set theme mode at startup - change this to ThemeMode::Dark for dark theme
-        .add_systems(Startup, setup)
+        .add_systems(OnEnter(UiState::Ready), setup)
         .add_systems(Update, handle_button_events)
         .run();
 }

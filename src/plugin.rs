@@ -1,4 +1,4 @@
-use crate::assets::{audio, icon};
+use crate::assets::{audio, AssetsPlugin};
 use crate::components::ComponentsPlugin;
 use crate::theme::typography::load_font_assets;
 use bevy::prelude::*;
@@ -28,14 +28,14 @@ impl ForgeUiPlugin {
 impl Plugin for ForgeUiPlugin {
     fn build(&self, app: &mut App) {
         app
-            // Direct font loading in startup - no complex asset loading states needed
-            .add_systems(Startup, (load_font_assets, icon::load_icon_atlases))
-            // Skip directly to Ready state - no need for loading states
+            // Initialize state system - start with LoadingAssets
             .init_state::<UiState>()
-            .insert_state(UiState::Ready)
-            .add_plugins((ComponentsPlugin, audio::plugin));
+            // Add asset loading in startup systems
+            .add_systems(Startup, load_font_assets)
+            // Add all plugin systems
+            .add_plugins((AssetsPlugin, ComponentsPlugin, audio::plugin));
 
-        info!("ForgeUiPlugin loaded. UiState={:?}", UiState::Ready);
+        info!("ForgeUiPlugin loaded. Starting with UiState={:?}", UiState::LoadingAssets);
     }
 }
 

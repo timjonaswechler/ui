@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use ui::{
     components::{BadgeBuilder, FlexComponent, Heading},
-    plugin::ForgeUiPlugin,
+    plugin::{ForgeUiPlugin, UiState},
     theme::{
         color::{accent_palette, error_palette, success_palette, theme, warning_palette},
         typography::TextWeight,
@@ -13,7 +13,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup)
+        .add_systems(OnEnter(UiState::Ready), setup)
         .run();
 }
 

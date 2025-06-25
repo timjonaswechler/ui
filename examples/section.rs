@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use ui::{
-    components::{Heading, Section, text::Text},
-    plugin::ForgeUiPlugin,
+    components::{text::Text, Heading, Section},
+    plugin::{ForgeUiPlugin, UiState},
     utilities::{ui_root, ComponentBuilder},
 };
 
@@ -9,7 +9,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup)
+        .add_systems(OnEnter(UiState::Ready), setup)
         .run();
 }
 
@@ -47,7 +47,7 @@ fn setup(mut commands: Commands) {
                         .with_children(|parent| {
                             parent.spawn(Heading::h2("Features").build());
                             parent.spawn(Text::body("Section provides semantic content structure with consistent vertical rhythm.").build());
-                            
+
                             // Subsection with smaller spacing
                             parent
                                 .spawn(Section::size_2("feature_list").gap(12.0).build())

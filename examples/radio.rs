@@ -3,13 +3,12 @@ use ui::{
     components::{
         radio::{
             RadioChangeEvent, RadioComponent, RadioGroupComponent, RadioGroupValueChangeEvent,
-            SelectionMode,
         },
         text::Text,
         BoxComponent, FlexComponent,
     },
-    plugin::ForgeUiPlugin,
-    theme::{color::accent_palette, typography::TextSize},
+    plugin::{ForgeUiPlugin, UiState},
+    theme::typography::TextSize,
     utilities::{ui_root, ComponentBuilder},
 };
 
@@ -17,7 +16,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
-        .add_systems(Startup, setup_ui)
+        .add_systems(OnEnter(UiState::Ready), setup_ui)
         .add_systems(Update, (handle_radio_events, handle_group_events))
         .run();
 }
