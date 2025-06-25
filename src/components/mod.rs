@@ -11,6 +11,7 @@ pub mod heading;
 pub mod progress;
 pub mod radio;
 pub mod section;
+pub mod select;
 pub mod separator;
 pub mod slider;
 pub mod switch;
@@ -27,6 +28,7 @@ pub use heading::*;
 pub use progress::*;
 pub use radio::*;
 pub use section::*;
+pub use select::*;
 pub use separator::*;
 pub use slider::*;
 pub use switch::*;
@@ -40,6 +42,8 @@ impl Plugin for ComponentsPlugin {
             .add_event::<checkbox::CheckboxChangeEvent>()
             .add_event::<radio::RadioChangeEvent>()
             .add_event::<radio::RadioGroupValueChangeEvent>()
+            .add_event::<select::SelectOpenEvent>()
+            .add_event::<select::SelectChangeEvent>()
             .add_event::<slider::SliderValueChangeEvent>()
             .add_event::<slider::SliderValueCommitEvent>()
             .add_event::<switch::SwitchChangeEvent>()
@@ -54,12 +58,34 @@ impl Plugin for ComponentsPlugin {
                     checkbox::spawn_checkmarks,
                     checkbox::update_checkmarks,
                     radio::handle_radio_interactions,
+                ),
+            )
+            .add_systems(
+                Update,
+                (
                     radio::update_radio_groups,
                     radio::spawn_radio_indicators,
                     radio::update_radio_indicators,
                     radio::setup_radio_interactions,
                     radio::link_radios_to_groups,
+                ),
+            )
+            .add_systems(
+                Update,
+                (
+                    select::setup_select_interactions,
+                    select::update_select_trigger_text,
+                ),
+            )
+            .add_systems(
+                Update,
+                (
                     switch::setup_switch_interactions,
+                ),
+            )
+            .add_systems(
+                Update,
+                (
                     switch::spawn_switch_children,
                     switch::update_switch_styling,
                 ),
@@ -70,6 +96,8 @@ impl Plugin for ComponentsPlugin {
                     progress::setup_progress_components,
                     progress::animate_indeterminate_progress,
                     progress::update_progress_values,
+                    select::position_select_dropdowns,
+                    select::handle_click_outside_select,
                     slider::handle_slider_drag,
                     slider::handle_track_click,
                     slider::update_slider_visuals,

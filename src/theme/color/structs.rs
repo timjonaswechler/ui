@@ -36,6 +36,7 @@ pub struct UiColorPalettes {
     pub amber: UiColorPalette,
     pub orange: UiColorPalette,
 }
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum UiColorPalettesName {
     Gray,
     Mauve,
