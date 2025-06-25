@@ -13,6 +13,112 @@ use bevy_picking::prelude::Pickable;
 /// The Box component serves as the foundation for all layout containers,
 /// providing spacing, sizing, and visual styling capabilities while
 /// maintaining consistent theme integration.
+///
+/// # Overview
+///
+/// Box is the most primitive layout component in the design system, similar to HTML's `<div>` 
+/// element but with built-in theming and responsive design capabilities. It provides a flexible 
+/// foundation for building more complex UI layouts and components.
+///
+/// # Core Features
+///
+/// - **Multiple visual variants**: Surface, Panel, Card, Classic, Ghost, Outline, and Container
+/// - **Responsive sizing**: Support for fixed, percentage, and viewport-relative dimensions
+/// - **Flexible spacing**: Theme-integrated padding and margin with semantic spacing levels
+/// - **Layout systems**: Full support for Flexbox and CSS Grid properties
+/// - **Visual styling**: Border radius, shadows, transparency, and color theming
+/// - **Container constraints**: Pre-defined max-width containers for consistent layouts
+/// - **Positioning**: Relative and absolute positioning with offset controls
+///
+/// # Usage Examples
+///
+/// ## Basic container with padding
+/// ```rust
+/// use your_crate::components::BoxComponent;
+/// use your_crate::theme::layout::SpacingLevel;
+/// use bevy::prelude::*;
+///
+/// // Simple surface container
+/// let basic_box = BoxComponent::new("content-area")
+///     .surface()
+///     .pad(SpacingLevel::Base)
+///     .build();
+/// ```
+///
+/// ## Card layout with shadow
+/// ```rust
+/// // Elevated card container
+/// let card_box = BoxComponent::new("product-card")
+///     .card()
+///     .padding(Val::Px(24.0))
+///     .rounded_lg()
+///     .shadow()
+///     .build();
+/// ```
+///
+/// ## Responsive container with max-width
+/// ```rust
+/// // Content container with responsive width constraints
+/// let container = BoxComponent::container_3("main-content")  // 880px max-width
+///     .padding_x(Val::Px(20.0))
+///     .padding_y(Val::Px(40.0))
+///     .build();
+/// ```
+///
+/// ## Flexible layout box
+/// ```rust
+/// // Flexbox child that grows to fill space
+/// let flex_item = BoxComponent::new("sidebar")
+///     .panel()
+///     .flex_1()
+///     .min_size(Val::Px(250.0), Val::Auto)
+///     .build();
+/// ```
+///
+/// ## Grid layout cell
+/// ```rust
+/// // Grid cell spanning multiple columns
+/// let grid_cell = BoxComponent::new("featured-content")
+///     .card()
+///     .grid_column_span(2)
+///     .padding(Val::Px(16.0))
+///     .build();
+/// ```
+///
+/// # Variant Guide
+///
+/// Each variant provides different levels of visual prominence and use cases:
+///
+/// - **Surface**: Subtle background for content areas, lowest visual weight
+/// - **Panel**: More prominent background for grouping related content
+/// - **Card**: Elevated appearance with shadow, perfect for standalone content blocks
+/// - **Classic**: Enhanced styling with stronger borders, ideal for important UI sections
+/// - **Ghost**: Transparent with hover effects, minimal visual impact
+/// - **Outline**: Border-only styling, clean and lightweight
+/// - **Container**: Width-constrained layouts for responsive design
+///
+/// # Theming Integration
+///
+/// Box integrates seamlessly with the theme system:
+///
+/// - Color palettes automatically apply appropriate background and border colors
+/// - Spacing levels provide consistent padding/margin across the design system
+/// - Border radius levels ensure visual consistency
+/// - Light/dark mode support through theme switching
+///
+/// # Performance Considerations
+///
+/// - Box components are lightweight wrappers around Bevy's native UI components
+/// - Styling calculations are performed once during build phase
+/// - Theme integration adds minimal runtime overhead
+/// - Picking/interaction capabilities are opt-in to avoid unnecessary performance costs
+///
+/// # Accessibility
+///
+/// - Proper focus management through `Focusable` trait integration
+/// - Keyboard navigation support for interactive variants
+/// - Color contrast maintained across all theme variants
+/// - Screen reader compatibility through semantic markup patterns
 #[derive(Component, Debug, Clone)]
 pub struct BoxComponent {
     pub variant: BoxVariant,
@@ -97,6 +203,30 @@ pub enum BoxVariant {
 }
 
 /// Styling configuration for Box component
+///
+/// BoxStyling contains the visual configuration options that can be applied to a Box component.
+/// This struct is used internally by the builder to calculate the final appearance based on
+/// the selected variant and explicit styling overrides.
+///
+/// # Fields
+///
+/// - `background_alpha`: Controls background transparency (0.0 = fully transparent, 1.0 = fully opaque)
+/// - `border_width`: Optional border thickness in pixels
+/// - `has_shadow`: Whether to apply drop shadow effect
+/// - `explicit_background`: Override theme background color with custom color
+/// - `explicit_border`: Override theme border color with custom color
+///
+/// # Usage
+///
+/// This struct is primarily used internally by the BoxBuilder during the build process.
+/// Developers typically interact with styling through the builder's fluent API methods
+/// rather than constructing BoxStyling directly.
+///
+/// # Theme Integration
+///
+/// When explicit colors are not provided, the styling system automatically selects
+/// appropriate colors from the current theme palette based on the component variant
+/// and the active color scheme (light/dark mode).
 #[derive(Debug, Clone, Default)]
 pub struct BoxStyling {
     pub background_alpha: f32,
@@ -107,6 +237,43 @@ pub struct BoxStyling {
 }
 
 /// Spacing level enum for theme-integrated spacing
+///
+/// SpacingLevel provides semantic spacing values that automatically adapt to the current
+/// theme configuration. This ensures consistent spacing across all components while
+/// allowing for easy theme customization and responsive design.
+///
+/// # Spacing Scale
+///
+/// The spacing scale follows a consistent progression from None to X5l:
+///
+/// - **None**: 0px - No spacing
+/// - **Xs**: Extra small spacing - Minimal gaps
+/// - **Sm**: Small spacing - Compact layouts
+/// - **Base**: Default spacing - Standard comfortable spacing
+/// - **Lg**: Large spacing - Generous layouts
+/// - **Xl**: Extra large spacing - Spacious designs
+/// - **X2l - X5l**: Progressive larger spacing - Specialized use cases
+///
+/// # Theme Integration
+///
+/// Each spacing level maps to a pixel value defined in the theme's UiSpacing configuration.
+/// This allows for global spacing adjustments without modifying individual components.
+///
+/// # Usage Examples
+///
+/// ```rust
+/// // Theme-integrated padding
+/// BoxComponent::new("content")
+///     .pad(SpacingLevel::Base)     // Uses theme's base spacing
+///     .pad_x(SpacingLevel::Lg)     // Horizontal spacing
+///     .pad_y(SpacingLevel::Sm)     // Vertical spacing
+///     .build()
+/// ```
+///
+/// # Responsive Design
+///
+/// SpacingLevel enables responsive spacing by allowing themes to define different
+/// pixel values for different screen sizes or design contexts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SpacingLevel {
     None,
@@ -139,6 +306,49 @@ impl SpacingLevel {
 }
 
 /// Radius level enum for theme-integrated border radius
+///
+/// RadiusLevel provides semantic border radius values that automatically adapt to the current
+/// theme configuration. This ensures consistent corner rounding across all components while
+/// maintaining visual hierarchy and design coherence.
+///
+/// # Radius Scale
+///
+/// The radius scale provides options from sharp corners to fully rounded:
+///
+/// - **None**: 0px - Sharp corners, no rounding
+/// - **Xs**: Minimal rounding - Subtle softening
+/// - **Sm**: Small rounding - Gentle curves
+/// - **Base**: Default rounding - Standard comfortable radius
+/// - **Lg**: Large rounding - Prominent curves
+/// - **Xl**: Extra large rounding - Distinctive styling
+/// - **X2l - X4l**: Progressive larger rounding - Specialized designs
+/// - **Full**: Maximum rounding - Creates circular or pill shapes
+///
+/// # Design Guidelines
+///
+/// Different radius levels serve different design purposes:
+///
+/// - **None/Xs**: Technical interfaces, data displays
+/// - **Sm/Base**: Standard UI components, cards, buttons
+/// - **Lg/Xl**: Prominent features, hero sections
+/// - **X2l+**: Decorative elements, brand expression
+/// - **Full**: Avatars, badges, pills, circular buttons
+///
+/// # Theme Integration
+///
+/// Each radius level maps to a pixel value defined in the theme's UiRadius configuration.
+/// This enables consistent visual language across the entire design system.
+///
+/// # Usage Examples
+///
+/// ```rust
+/// // Theme-integrated border radius
+/// BoxComponent::new("card")
+///     .radius(RadiusLevel::Base)   // Standard card rounding
+///     .rounded_lg()                // Convenience method for large radius
+///     .rounded_full()              // Fully rounded corners
+///     .build()
+/// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RadiusLevel {
     None,
@@ -171,6 +381,55 @@ impl RadiusLevel {
 }
 
 /// Builder for creating Box components with fluent API
+///
+/// The BoxBuilder provides a fluent interface for constructing Box components with
+/// comprehensive styling and layout options. It follows the builder pattern to allow
+/// method chaining and provides sensible defaults for all configuration options.
+///
+/// # Builder Pattern
+///
+/// The builder pattern allows for readable, self-documenting component construction:
+///
+/// ```rust
+/// let box_component = BoxComponent::new("my-box")
+///     .variant(BoxVariant::Card)
+///     .padding(Val::Px(20.0))
+///     .rounded_lg()
+///     .shadow()
+///     .build();
+/// ```
+///
+/// # Method Categories
+///
+/// The builder methods are organized into logical groups:
+///
+/// - **Variant Control**: Set visual appearance and behavior
+/// - **Size Control**: Dimensions, min/max sizes, aspect ratios
+/// - **Padding Control**: Internal spacing with theme integration
+/// - **Margin Control**: External spacing with precise control
+/// - **Positioning Control**: Layout positioning and offsets
+/// - **Flex Child Control**: Flexbox layout properties
+/// - **Grid Child Control**: CSS Grid layout properties
+/// - **Color Control**: Theme colors and explicit overrides
+/// - **Border Control**: Border styling and radius
+/// - **Visual Enhancement**: Shadows, transparency, effects
+/// - **Child Management**: Entity relationships and hierarchy
+///
+/// # Theme Integration
+///
+/// The builder seamlessly integrates with the theme system through specialized methods:
+///
+/// - `pad()`, `pad_x()`, `pad_y()` - Use semantic spacing levels
+/// - `radius()`, `rounded()`, `rounded_sm()` - Apply consistent border radius
+/// - `color()`, `accent()` - Apply theme color palettes
+/// - Container variants automatically apply responsive constraints
+///
+/// # Error Handling
+///
+/// The builder pattern ensures compile-time safety:
+/// - Invalid configurations are prevented through type constraints
+/// - Required parameters are enforced through method signatures
+/// - Sensible defaults prevent incomplete configurations
 pub struct BoxBuilder {
     name: String,
     box_config: BoxComponent,

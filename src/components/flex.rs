@@ -14,6 +14,154 @@ use bevy_picking::prelude::Pickable;
 /// The Flex component provides flexible layout capabilities using CSS Flexbox
 /// model, with theme integration and convenient builder methods for common
 /// flex patterns.
+///
+/// # Overview
+///
+/// Flex is a powerful layout component that implements the CSS Flexbox model for creating
+/// responsive, flexible layouts. It serves as a container that can arrange its children
+/// in rows or columns with precise control over alignment, distribution, and spacing.
+///
+/// # Core Features
+///
+/// - **Flexible Direction**: Row, column, and reverse variants for both axes
+/// - **Intelligent Wrapping**: Control how children wrap when space is limited
+/// - **Precise Alignment**: Fine-grained control over main and cross-axis alignment
+/// - **Gap Management**: Uniform or axis-specific spacing between children
+/// - **Theme Integration**: Consistent styling with the design system
+/// - **Responsive Design**: Support for percentage-based and viewport-relative sizing
+/// - **Nested Layouts**: Full support for complex nested flexbox hierarchies
+///
+/// # Usage Examples
+///
+/// ## Basic horizontal layout
+/// ```rust
+/// use your_crate::components::FlexComponent;
+/// use bevy::prelude::*;
+///
+/// // Simple row layout with gap
+/// let row_layout = FlexComponent::row("header")
+///     .justify_between()
+///     .align_center()
+///     .gap(16.0)
+///     .padding(Val::Px(20.0))
+///     .build();
+/// ```
+///
+/// ## Vertical stack with centering
+/// ```rust
+/// // Centered column layout
+/// let column_layout = FlexComponent::column("content")
+///     .justify_center()
+///     .align_center()
+///     .fill_height()
+///     .gap(12.0)
+///     .build();
+/// ```
+///
+/// ## Responsive card grid
+/// ```rust
+/// // Wrapping flex container for cards
+/// let card_grid = FlexComponent::new("card-grid")
+///     .row()
+///     .wrap()
+///     .justify_start()
+///     .align_stretch()
+///     .gap_xy(20.0, 16.0)  // Different column and row gaps
+///     .padding(Val::Px(24.0))
+///     .build();
+/// ```
+///
+/// ## Navigation bar layout
+/// ```rust
+/// // Navigation with logo left, menu center, actions right
+/// let navbar = FlexComponent::row("navbar")
+///     .justify_between()
+///     .align_center()
+///     .padding_x(Val::Px(32.0))
+///     .padding_y(Val::Px(16.0))
+///     .background_color(Color::WHITE)
+///     .border(1.0)
+///     .build();
+/// ```
+///
+/// ## Sidebar layout
+/// ```rust
+/// // Flexible sidebar that grows/shrinks
+/// let sidebar = FlexComponent::column("sidebar")
+///     .justify_start()
+///     .align_stretch()
+///     .flex_basis(Val::Px(250.0))
+///     .flex_shrink(0.0)
+///     .min_width(Val::Px(200.0))
+///     .max_width(Val::Px(300.0))
+///     .build();
+/// ```
+///
+/// # Layout Patterns
+///
+/// ## Main Axis vs Cross Axis
+///
+/// Understanding flexbox axes is crucial for effective layouts:
+///
+/// - **Row direction**: Main axis = horizontal, Cross axis = vertical
+/// - **Column direction**: Main axis = vertical, Cross axis = horizontal
+/// - **justify_content**: Controls main axis alignment
+/// - **align_items**: Controls cross axis alignment
+/// - **align_content**: Controls cross axis alignment for wrapped lines
+///
+/// ## Common Layout Patterns
+///
+/// ### Center Everything
+/// ```rust
+/// FlexComponent::center("modal-backdrop")
+///     .fill()
+///     .build()
+/// ```
+///
+/// ### Sticky Footer
+/// ```rust
+/// FlexComponent::column("page")
+///     .justify_between()
+///     .fill_height()
+///     .build()
+/// ```
+///
+/// ### Holy Grail Layout
+/// ```rust
+/// // Main container
+/// FlexComponent::column("page")
+///     .fill_height()
+///     .build()
+///
+/// // Content area
+/// FlexComponent::row("content")
+///     .flex_1()
+///     .align_stretch()
+///     .build()
+/// ```
+///
+/// # Gap System
+///
+/// Flex provides flexible gap management:
+///
+/// - **Uniform gaps**: Same spacing in both directions
+/// - **Axis-specific gaps**: Different row and column spacing
+/// - **Theme integration**: Use semantic spacing levels
+/// - **Responsive gaps**: Adjust spacing based on container size
+///
+/// # Performance Considerations
+///
+/// - Flexbox calculations are performed by Bevy's layout engine
+/// - Gap properties are more efficient than margin-based spacing
+/// - Nested flex containers can impact performance with deep hierarchies
+/// - Use `flex_grow`, `flex_shrink`, and `flex_basis` judiciously for optimal layout performance
+///
+/// # Accessibility
+///
+/// - Flex maintains document flow for screen readers
+/// - Visual reordering doesn't affect reading order
+/// - Focus management respects logical tab order
+/// - Responsive layouts adapt to user accessibility preferences
 #[derive(Component, Debug, Clone)]
 pub struct FlexComponent {
     pub direction: FlexDirection,
@@ -42,6 +190,34 @@ impl Default for FlexComponent {
 }
 
 /// Gap configuration for flex layouts
+///
+/// FlexGap defines how spacing is applied between flex children. It supports
+/// both uniform spacing (same gap in all directions) and axis-specific spacing
+/// (different gaps for rows and columns).
+///
+/// # Variants
+///
+/// - **None**: No spacing between children (default)
+/// - **Uniform**: Same gap value applied to both row and column spacing
+/// - **Axis**: Different gap values for row and column directions
+///
+/// # Usage Examples
+///
+/// ```rust
+/// // No gap
+/// FlexGap::None
+///
+/// // 16px gap in all directions
+/// FlexGap::Uniform(16.0)
+///
+/// // 12px between rows, 20px between columns
+/// FlexGap::Axis { row: 12.0, column: 20.0 }
+/// ```
+///
+/// # Performance Notes
+///
+/// Gap properties are handled natively by Bevy's flexbox implementation,
+/// making them more efficient than margin-based spacing approaches.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum FlexGap {
     None,
@@ -56,6 +232,22 @@ impl Default for FlexGap {
 }
 
 /// Styling configuration for Flex component
+///
+/// FlexStyling contains visual configuration options for Flex components,
+/// including background colors, borders, and transparency settings.
+///
+/// # Fields
+///
+/// - `background_alpha`: Controls background transparency (0.0 = transparent, 1.0 = opaque)
+/// - `border_width`: Optional border thickness in pixels
+/// - `explicit_background`: Override theme background color
+/// - `explicit_border`: Override theme border color
+///
+/// # Usage
+///
+/// This struct is primarily used internally by FlexBuilder to manage
+/// styling state during component construction. Developers typically
+/// interact with styling through builder methods rather than directly.
 #[derive(Debug, Clone, Default)]
 pub struct FlexStyling {
     pub background_alpha: f32,
@@ -72,6 +264,99 @@ struct ExplicitColors {
 }
 
 /// Builder for creating Flex components with fluent API
+///
+/// FlexBuilder provides a comprehensive fluent interface for constructing Flex components
+/// with full control over flexbox properties, sizing, spacing, and visual styling.
+///
+/// # Builder Pattern
+///
+/// The builder uses method chaining to create readable, self-documenting component definitions:
+///
+/// ```rust
+/// let flex_component = FlexComponent::new("my-flex")
+///     .column()                    // Direction
+///     .justify_center()            // Main axis alignment
+///     .align_stretch()             // Cross axis alignment
+///     .gap(16.0)                   // Spacing
+///     .padding(Val::Px(20.0))      // Internal spacing
+///     .fill_width()                // Sizing
+///     .background_color(Color::WHITE)  // Styling
+///     .build();
+/// ```
+///
+/// # Method Categories
+///
+/// The builder methods are organized into logical groups:
+///
+/// ## Direction & Wrapping
+/// - `row()`, `column()`, `row_reverse()`, `column_reverse()`
+/// - `wrap()`, `nowrap()`, `wrap_reverse()`
+///
+/// ## Alignment & Distribution
+/// - `justify_start()`, `justify_center()`, `justify_between()`, etc.
+/// - `align_start()`, `align_center()`, `align_stretch()`, etc.
+/// - `align_content_*()` methods for wrapped content
+///
+/// ## Spacing & Gaps
+/// - `gap()`, `gap_xy()`, `row_gap()`, `column_gap()`
+/// - `gap_level()` for theme-integrated spacing
+///
+/// ## Sizing & Dimensions
+/// - `width()`, `height()`, `size()`, `square()`
+/// - `fill()`, `fill_width()`, `fill_height()`
+/// - `min_width()`, `max_width()`, `aspect_ratio()`
+///
+/// ## Spacing & Layout
+/// - `padding()`, `margin()`, `padding_x()`, `margin_y()`
+/// - `pad()`, `pad_x()`, `pad_y()` for theme spacing
+///
+/// ## Positioning
+/// - `position_relative()`, `position_absolute()`
+/// - `top()`, `right()`, `bottom()`, `left()`
+///
+/// ## Flex Child Properties
+/// - `flex_grow()`, `flex_shrink()`, `flex_basis()`
+/// - `flex_1()`, `flex_auto()`, `flex_none()`
+///
+/// ## Styling & Appearance
+/// - `color()`, `background_color()`, `border_color()`
+/// - `border()`, `rounded()`, `rounded_level()`
+///
+/// ## Child Management
+/// - `with_child()`, `with_children()`
+///
+/// # Shorthand Methods
+///
+/// FlexComponent provides convenient shorthand constructors:
+///
+/// ```rust
+/// // Equivalent to FlexComponent::new(name).row()
+/// FlexComponent::row("my-row")
+///
+/// // Equivalent to FlexComponent::new(name).column()
+/// FlexComponent::column("my-column")
+///
+/// // Equivalent to FlexComponent::new(name).justify_center().align_center()
+/// FlexComponent::center("centered-content")
+/// ```
+///
+/// # Theme Integration
+///
+/// The builder integrates seamlessly with the theme system:
+///
+/// - Color methods automatically apply theme palettes
+/// - Spacing methods use semantic spacing scales
+/// - Border radius follows theme consistency
+/// - Light/dark mode support through color palette switching
+///
+/// # Error Prevention
+///
+/// The builder pattern prevents common flexbox mistakes:
+///
+/// - Type-safe method signatures prevent invalid values
+/// - Sensible defaults for all properties
+/// - Compile-time validation of required parameters
+/// - Clear method names that map to CSS flexbox properties
 pub struct FlexBuilder {
     name: String,
     flex_config: FlexComponent,
