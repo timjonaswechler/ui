@@ -1,5 +1,8 @@
 // Removed unnecessary import; ChildBuilder is included via bevy::prelude
-use bevy::{color::palettes::css::*, prelude::*, winit::WinitSettings};
+use bevy::{
+    color::palettes::css::*, ecs::relationship::RelatedSpawnerCommands, prelude::*,
+    winit::WinitSettings,
+};
 use ui::{
     components::{SwitchChangeEvent, SwitchComponent},
     plugin::ForgeUiPlugin,
@@ -277,7 +280,7 @@ fn setup(mut commands: Commands) {
         });
 }
 
-fn create_section<F>(parent: &mut ChildBuilder, title: &str, content_fn: F)
+fn create_section<F>(parent: &mut Commands, title: &str, content_fn: F)
 where
     F: FnOnce(&mut ChildBuilder),
 {

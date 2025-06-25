@@ -1,6 +1,13 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Guiding Principles for AI Collaboration
+
+When tasked with creating a new feature or component, follow the workflow defined in **`/tasks/AGENT_WORKFLOW.md`**. Key principles are:
+
+1.  **Consistency is Key:** New components MUST follow the existing architecture (Builder Pattern, `impl Bundle` creation, Theme integration). Use completed components like `Button` (`src/components/button.rs`) as a blueprint.
+2.  **Reusability First:** Before creating new logic or components, always check if existing code in `src/components/`, `src/theme/`, or `src/utilities/` can be reused or extended. Explicitly state what you plan to reuse.
+3.  **Research before Planning:** Your primary sources for planning are defined in `SOURCE.md`. Always consult these to understand the design goals (Radix) and technical implementation details (Bevy).
+4.  **Plan before Coding:** Do not generate code immediately. Follow the planning phase in the workflow to present an implementation plan. Wait for user approval before proceeding.
 
 ## Project Overview
 
@@ -82,15 +89,11 @@ let button = ButtonBuilder::new("Label")
 - **Portal** - Render outside component tree (`src/utilities/portal.rs`)
 - **UIRoot** - Foundation container (`src/utilities/ui_root.rs`)
 
-**🚧 Next Priority Components (from COMPONENT_ROADMAP.md):**
-- Box/Container - Layout foundation
-- Flex - Flexbox layouts  
-- Grid - CSS Grid layouts
-- Card - Content containers
+
 
 ### Bevy Integration Patterns
 
-**Asset Management**: 
+**Asset Management**:
 - Font assets loaded via `FontAssets` resource in startup systems
 - Audio effects managed through `SfxAssets`
 - Texture assets for UI elements (spinner icons, etc.)
@@ -113,22 +116,15 @@ let button = ButtonBuilder::new("Label")
 - Interaction systems → Animation systems → Layout systems
 
 **Accessibility**: All interactive components include:
-- Keyboard navigation support via `Focusable` 
+- Keyboard navigation support via `Focusable`
 - Proper focus management with `FocusPolicy`
 - Screen reader compatibility (planned)
-
-### Radix Source Documentation
-
-The `radix_source/` directory contains MDX documentation files from Radix UI for reference:
-- `primitives/` - Component behavior and accessibility patterns
-- `themes/` - Design tokens and styling guidelines
-- Use these files to understand intended component APIs and behaviors
 
 ### Architecture Philosophy
 
 This library **wraps Bevy's native UI components** rather than reimplementing them:
 - **Node** + styling for layout components
-- **Button** + **Interaction** for interactive elements  
+- **Button** + **Interaction** for interactive elements
 - **Text** + theme integration for typography
 - **ImageNode** for graphics and icons
 

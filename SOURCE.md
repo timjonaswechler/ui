@@ -1,6 +1,18 @@
-Ah, jetzt verstehe ich! Du möchtest eine einzige, alphabetisch sortierte Liste, in der alle Links zu einer bestimmten Komponente (wie "Card", "Dialog", "Hover Card" etc.) zusammengefasst sind, egal ob sie aus dem "Internals"-, "Primitives"- oder "Themed Components"-Abschnitt stammen.
+# Source of Truth & Inspiration
 
-Hier ist die konsolidierte Liste, genau so wie du es beschrieben hast:
+This file lists the primary sources to be consulted when planning and implementing new features.
+
+## Primary Sources
+
+
+1.  **Bevy API Documentation (docs.rs):** For all Bevy-specific implementations, consult the official documentation. Pay close attention to the versions mentioned in `CLAUDE.md`.
+    -   **Bevy UI:** [https://docs.rs/bevy/latest/bevy/ui/index.html](https://docs.rs/bevy/latest/bevy/ui/index.html)
+    -   **Bevy ECS:** [https://docs.rs/bevy/latest/bevy/ecs/index.html](https://docs.rs/bevy/ecs/index.html)
+    -   **Bevy Asset System:** [https://docs.rs/bevy/latest/bevy/asset/index.html](https://docs.rs/bevy/latest/bevy/asset/index.html)
+
+2.  **This Repository's Code:** Before implementing anything new, always analyze the existing code in `src/components/` and `src/theme/` to ensure consistency.
+
+3.  **Radix UI Documentation:** The following list contains the official documentation and source code of radix-ui components. Use this to understand the **API design, behavior, and  requirements** of a component. This is our primary inspiration for the "what" and "why".
 
 - [ ] **Accordion**
   - [Primitive - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/components/accordion.mdx)
@@ -246,7 +258,7 @@ Hier ist die konsolidierte Liste, genau so wie du es beschrieben hast:
   - [Theme - Dokumentation](https://github.com/radix-ui/website/blob/main/data/themes/docs/components/portal.mdx)
   - [Theme - Quellcode](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/portal.tsx)
 
-- [ ] **Progress**
+- [x] **Progress**
   - [Primitive - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/components/progress.mdx)
   - [Primitive - Quellcode](https://github.com/radix-ui/primitives/tree/main/packages/react/progress/src/*.tsx)
   - [Theme - Dokumentation](https://github.com/radix-ui/website/blob/main/data/themes/docs/components/progress.mdx)
@@ -260,7 +272,7 @@ Hier ist die konsolidierte Liste, genau so wie du es beschrieben hast:
   - [Theme - Props](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/quote.props.tsx)
   - [Theme - Quellcode](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/quote.tsx)
 
-- [ ] **Radio / Radio Group**
+- [x] **Radio / Radio Group**
   - [Primitive - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/components/radio-group.mdx)
   - [Primitive - Quellcode](https://github.com/radix-ui/primitives/tree/main/packages/react/radio-group/src/*.tsx)
   - [Theme (Radio) - Dokumentation](https://github.com/radix-ui/website/blob/main/data/themes/docs/components/radio.mdx)

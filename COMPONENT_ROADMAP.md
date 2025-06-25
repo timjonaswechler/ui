@@ -4,7 +4,7 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 
 ## Project Overview
 
-- **Total Components**: 79 (30 Primitives + 49 Themes)
+- **Total Components**: 79
 - **Started**: 2025-06-20
 - **Estimated Completion**: 2025-12-20 (6 months)
 - **Focus**: Accessibility-first, builder pattern, theme integration
@@ -81,7 +81,7 @@ Based on Radix UI primitives and themes, this roadmap outlines the implementatio
 | Text Field | 📋 | High but not now| 3 | **BEVY NATIVE**: `TextMeasure` + `Button` (focus) + `ButtonInput<KeyCode>` for input ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/widget/struct.TextMeasure.html)) |
 | Text Area | 📋 | Highbut not now | 2 | **BEVY NATIVE**: `Text` + `ScrollPosition` + multi-line handling ([docs.rs](https://docs.rs/bevy/latest/bevy/ui/struct.ScrollPosition.html)) |
 | Select | 📋 | High | 4 | **BEVY NATIVE**: `Button` + `Node` dropdown + `Interaction` + `ui_focus_system` |
-| Slider | ✅ | Medium | 3 | **COMPLETED**: Interactive slider with track/range/thumb components, horizontal/vertical orientations, size variants (Size1-3), step control, drag interactions, click-to-jump, and value change/commit events |
+| Slider | ✅ | Medium | 3 | **COMPLETED**|
 
 ### Navigation
 | Component | Status | Priority | Est. Days | Notes |
@@ -385,7 +385,7 @@ Each component must include:
      - Phase 1: Implement drag functionality with Entity references (TrackRef, ThumbRef)
      - Phase 2: Implement click-on-track functionality with coordinate calculation
      - Phase 3: Global coordinate system and utilities for precise positioning
-   
+
 2. **This Week (2025-06-25-27)**:
    - Complete Slider interactivity implementation and testing
    - Begin Phase 3 continuation: Text Field or Select components
