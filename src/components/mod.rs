@@ -8,6 +8,7 @@ pub mod checkbox;
 pub mod flex;
 pub mod grid;
 pub mod heading;
+pub mod hover_card;
 pub mod progress;
 pub mod radio;
 pub mod section;
@@ -26,6 +27,7 @@ pub use checkbox::*;
 pub use flex::*;
 pub use grid::*;
 pub use heading::*;
+pub use hover_card::*;
 pub use progress::*;
 pub use radio::*;
 pub use section::*;
@@ -42,6 +44,8 @@ impl Plugin for ComponentsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<button::ButtonClickEvent>()
             .add_event::<checkbox::CheckboxChangeEvent>()
+            .add_event::<hover_card::HoverCardOpenEvent>()
+            .add_event::<hover_card::HoverCardCloseEvent>()
             .add_event::<radio::RadioChangeEvent>()
             .add_event::<radio::RadioGroupValueChangeEvent>()
             .add_event::<select::SelectOpenEvent>()
@@ -56,6 +60,8 @@ impl Plugin for ComponentsPlugin {
                     button::setup_spinner_textures,
                     button::animate_loading_spinners,
                     text::apply_text_fonts,
+                    hover_card::hover_card_interaction_system,
+                    hover_card::hover_card_state_system,
                     checkbox::handle_checkbox_interactions,
                     checkbox::spawn_checkmarks,
                     checkbox::update_checkmarks,
@@ -98,6 +104,10 @@ impl Plugin for ComponentsPlugin {
                     progress::setup_progress_components,
                     progress::animate_indeterminate_progress,
                     progress::update_progress_values,
+                    hover_card::hover_card_positioning_system,
+                    hover_card::hover_card_portal_system,
+                    hover_card::hover_card_keyboard_system,
+                    hover_card::hover_card_animation_system,
                     select::position_select_dropdowns,
                     select::handle_click_outside_select,
                     slider::handle_slider_drag,

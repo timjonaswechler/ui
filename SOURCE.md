@@ -188,7 +188,7 @@ This file lists the primary sources to be consulted when planning and implementi
   - [Theme - Props](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/heading.props.tsx)
   - [Theme - Quellcode](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/heading.tsx)
 
-- [ ] **Hover Card**
+- [x] **Hover Card**
   - [Primitive - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/components/hover-card.mdx)
   - [Primitive - Quellcode](https://github.com/radix-ui/primitives/tree/main/packages/react/hover-card/src/hover-card.tsx)
   - [Theme - Dokumentation](https://github.com/radix-ui/website/blob/main/data/themes/docs/components/hover-card.mdx)
@@ -345,7 +345,7 @@ This file lists the primary sources to be consulted when planning and implementi
   - [Theme - Props](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/slider.props.tsx)
   - [Theme - Quellcode](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/slider.tsx)
 
-- [ ] **Slot**
+- [x] **Slot**
   - [Utility - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/utilities/slot.mdx)
   - [Utility - Quellcode](https://github.com/radix-ui/primitives/tree/main/packages/react/slot/src/*.tsx)
   - [Theme - Dokumentation](https://github.com/radix-ui/website/blob/main/data/themes/docs/components/slot.mdx)
@@ -385,7 +385,7 @@ This file lists the primary sources to be consulted when planning and implementi
   - [Theme - Props](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/table.props.tsx)
   - [Theme - Quellcode](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/table.tsx)
 
-- [ ] **Tabs**
+- [x] **Tabs**
   - [Base - CSS](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/_internal/base-tab-list.css)
   - [Base - Props](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/_internal/base-tab-list.props.ts)
   - [Primitive - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/components/tabs.mdx)

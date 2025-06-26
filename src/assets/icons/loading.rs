@@ -1,5 +1,3 @@
-use bevy::prelude::*;
-
 // Re-export aller Loading-Funktionen für direkten Zugriff
 pub use super::controllers::{
     load_generic_atlases, load_indicators_atlases, load_keyboardmouse_atlases,

@@ -1,24 +1,72 @@
 # Radix Themes UI
 
-Dieses Repository enthaelt unter `radix_source` eine Sammlung von Dokumentationsdateien (*.mdx), die auf den [Radix Themes](https://www.radix-ui.com/themes) und [Radix Primitives](https://www.radix-ui.com/primitives) basieren. Sie dienen als Ausgangspunkt, um wiederverwendbare UI-Bausteine in einem eigenen Bevy 0.16 Projekt zu erstellen.
+## Ziel und Philosophie
 
+- **Radix-Ansatz für Bevy:**  
+  Die Komponentenstruktur orientiert sich an Radix UI, wird jedoch auf die Bevy-API und -Philosophie übertragen. Besonderer Wert wird auf das Builder-Pattern gelegt, um eine intuitive und flexible API zu schaffen.
+- **Keine Trennung zwischen Primitives und Themes:**  
+  Die Trennung der Komponenten in Primitives und Themes dient nur der Übersicht, funktional gibt es keine Unterscheidung.
+- **Interaktionen:**  
+  Für interaktive Elemente wird [Bevy Picking](https://docs.rs/bevy_picking/latest/bevy_picking/) verwendet.
 
-## Hinweise:
-- Für Interaktionen die [Bevy Picking](https://docs.rs/bevy_picking/latest/bevy_picking/) verwenden.
--  Die Struktur der Module ist an die von Radix UI angelehnt, bei der umsetzung der Komponenten wird jedoch auf die Bevy-API und -Philosophie geachtet. Hierbei wird besonders auf die Verwendung des Builder-Patterns geachtet, um eine einfache und intuitive API zu schaffen.
-- Schluss endlich soll kein unterschied zwischen den Radix Primitives und Radix Themes gemacht werden. Die Komponenten wurden nur in die jeweiligen Ordner gepackt, da dies die Struktur von Radix UI ist.
+## Komponenten-Anatomie
 
-- Anatomie der Komponenten:
-  - in einigen Fällen gibt es eine Root-Komponente, die alle Teile der Komponente enthält. In diesem Fall wird auch für jede einzelne Komponente ein Modul erstellt, das die Teile der Komponente enthält.
-  - Der Builder der Komponente gibt am ende in der build-Methode die Root-Komponente zurück, die alle Teile der Komponente enthält. Als Rückgabe wird `impl Bundle` genutzt, um die Komponenten in Bevy zu verwenden.
+- Viele Komponenten bestehen aus einer Root-Komponente, die alle Teile kapselt.
+- Für jede Teilkomponente wird ein eigenes Modul erstellt.
+- Der Builder gibt in der `build`-Methode die Root-Komponente als `impl Bundle` zurück, was eine einfache Integration in Bevy ermöglicht.
 
-## aktuelle Struktur:
+## Projektstruktur
+
 ├── README.md
 ├── Cargo.toml
 ├── assets
+│ ├── audio
+│ │ ├── music/.ogg
+│ │ └── sfx/.ogg
+│ └── ui
+│ └── icons
+│ ├── controllers/**/.png
+│ └── interface/.png
 ├── examples
+├── radix_source
+│ └── *.mdx
 └── src
-    ├── lib.rs           Hauptmodul, das die Bibliothek definiert
-    ├── components       Module für einzelne UI-Elemente
-    ├── theme            Farbpaletten, Design-Tokens, ggf. Ladefunktionen
-    └── utilities        Hilfsfunktionen (z. B. Slot, Portal, Styles)
+├── lib.rs # Hauptmodul, das die Bibliothek definiert
+├── components # Module für einzelne UI-Elemente
+├── theme # Farbpaletten, Design-Tokens, ggf. Ladefunktionen
+└── utilities # Hilfsfunktionen (z. B. Slot, Portal, Styles)
+text
+
+## Hinweise zur Asset-Verwaltung
+
+- **Git LFS:**  
+  Dieses Repository nutzt [Git Large File Storage (LFS)](https://git-lfs.com/) für große Dateien wie Musik, SFX und UI-Icons.  
+  Nach dem Klonen des Repositories müssen ggf. die LFS-Dateien separat geladen werden:
+  ```bash
+  git lfs install
+  git clone https://github.com/timjonaswechler/ui.git
+  cd ui
+  git lfs pull
+  ```
+
+  Die folgenden Pfade werden per LFS verwaltet:
+- `assets/audio/music/*.ogg`
+- `assets/audio/sfx/*.ogg`
+- `assets/ui/icons/controllers/**/*.png`
+- `assets/ui/icons/interface/*.png`
+
+## Entwicklung & Zusammenarbeit
+
+- **Branches:**  
+Nutze Feature-Branches für neue Komponenten oder größere Änderungen.
+- **Code Style:**  
+Halte dich an die Rust- und Bevy-Konventionen. Dokumentation und Beispiele sind willkommen!
+- **Issues & Pull Requests:**  
+Fehler, Verbesserungsvorschläge und neue Komponenten bitte als Issue oder Pull Request einreichen.
+
+## Weiterführende Links
+
+- [Radix Themes](https://www.radix-ui.com/themes)
+- [Radix Primitives](https://www.radix-ui.com/primitives)
+- [Bevy Engine](https://bevyengine.org/)
+- [Bevy Picking](https://docs.rs/bevy_picking/latest/bevy_picking/)
