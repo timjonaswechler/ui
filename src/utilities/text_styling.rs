@@ -600,27 +600,182 @@ pub trait TextStylePresets: TextStyler + Sized {
 // Blanket implementation for all TextStyler implementors
 impl<T: TextStyler + Sized> TextStylePresets for T {}
 
-/// Helper function to create a text builder with common styling
+/// Create a styled text builder with intelligent defaults and fluent API
+///
+/// This convenience function creates a StyledTextBuilder with accessibility-optimized
+/// defaults and a fluent API for building styled text components. It provides an
+/// alternative to component-based text styling when direct text creation is needed.
+///
+/// # Parameters
+/// - `content`: Text content (accepts any type that converts to String)
+///
+/// # Default Configuration
+/// - High contrast enabled for accessibility
+/// - Auto-contrast optimization enabled
+/// - Standard text variant
+/// - Theme-integrated color resolution
+///
+/// # Examples
+/// ```rust
+/// // Simple styled text
+/// let welcome_text = styled_text("Welcome!")
+///     .as_heading_style()
+///     .text_center()
+///     .build();
+///
+/// // Accessible error message
+/// let error_msg = styled_text("Invalid input")
+///     .as_accessible_style()
+///     .text_color(TextColor::Error)
+///     .build();
+///
+/// // Code snippet
+/// let code_sample = styled_text("fn main() { println!(\"Hello\"); }")
+///     .as_code_style()
+///     .build();
+/// ```
+///
+/// # Usage Patterns
+/// 
+/// ## Quick Text Creation
+/// ```rust
+/// let quick_text = styled_text("Click here").build();
+/// ```
+///
+/// ## Preset-Based Styling
+/// ```rust
+/// let heading = styled_text("Section Title").as_heading_style().build();
+/// let body = styled_text("Content text").as_body_style().build();
+/// let caption = styled_text("Last updated").as_caption_style().build();
+/// ```
+///
+/// ## Custom Styling
+/// ```rust
+/// let custom = styled_text("Custom Text")
+///     .text_size(TextSize::Xl)
+///     .text_weight(TextWeight::Bold)
+///     .text_color(TextColor::Accent)
+///     .text_center()
+///     .build();
+/// ```
 pub fn styled_text(content: impl Into<String>) -> StyledTextBuilder {
     StyledTextBuilder::new(content)
 }
 
-/// Wrapper around TextBuilder that implements TextStyler
+/// Fluent text builder implementing the TextStyler trait system
+///
+/// StyledTextBuilder provides a concrete implementation of the TextStyler trait
+/// that enables direct text creation with comprehensive styling capabilities.
+/// It serves as both a learning example for trait implementation and a
+/// practical utility for creating styled text components.
+///
+/// # Architecture
+///
+/// The builder uses an options-based approach where styling properties are
+/// stored as `Option<T>` values, allowing for:
+/// - **Selective Configuration**: Only specified properties override defaults
+/// - **Efficient Building**: No unnecessary allocations for unused properties
+/// - **Flexible Defaults**: Theme-aware defaults applied during build phase
+/// - **Type Safety**: Compile-time validation of styling combinations
+///
+/// # State Management
+///
+/// - **content**: The text content to be styled
+/// - **variant**: Text variant for semantic meaning
+/// - **size/weight/family**: Typography configuration options
+/// - **color**: Explicit color override
+/// - **italic**: Style flag for italic text
+/// - **align**: Text alignment configuration
+/// - **background_context**: Background color for contrast calculation
+/// - **contrast_level**: Accessibility contrast requirements
+/// - **explicit_color_set**: Flag to control auto-contrast behavior
+///
+/// # Build Process
+///
+/// When `build()` is called:
+/// 1. Creates base Text component with content
+/// 2. Applies configured typography properties
+/// 3. Resolves colors through theme system
+/// 4. Applies accessibility settings
+/// 5. Returns complete Bevy bundle
+///
+/// # Examples
+///
+/// ```rust
+/// // Builder demonstrates fluent API
+/// let builder = StyledTextBuilder::new("Hello World")
+///     .text_size(TextSize::Lg)
+///     .text_weight(TextWeight::Bold)
+///     .text_color(TextColor::Accent)
+///     .text_center();
+///
+/// // Build creates final component
+/// let text_bundle = builder.build();
+/// ```
 pub struct StyledTextBuilder {
+    /// Text content to display
     content: String,
+    /// Semantic text variant for theme integration
     variant: TextVariant,
+    /// Optional font size override
     size: Option<TextSize>,
+    /// Optional font weight override
     weight: Option<TextWeight>,
+    /// Optional font family override
     family: Option<FontFamily>,
+    /// Optional explicit color specification
     color: Option<TextColorEnum>,
+    /// Italic style flag
     italic: bool,
+    /// Optional text alignment override
     align: Option<JustifyText>,
+    /// Background color context for contrast calculation
     background_context: Option<Color>,
+    /// Accessibility contrast level requirement
     contrast_level: Option<TextContrastLevel>,
+    /// Flag to disable auto-contrast optimization
     explicit_color_set: bool,
 }
 
 impl StyledTextBuilder {
+    /// Create a new text builder with accessibility-optimized defaults
+    ///
+    /// Initializes a StyledTextBuilder with the provided content and
+    /// accessibility-first default configuration. The builder starts with
+    /// high contrast enabled and auto-contrast optimization active.
+    ///
+    /// # Parameters
+    /// - `content`: Text content (any type convertible to String)
+    ///
+    /// # Default Configuration
+    /// - **Variant**: Default text variant for theme integration
+    /// - **Contrast Level**: High contrast for WCAG AA compliance
+    /// - **Auto-Contrast**: Enabled for automatic color optimization
+    /// - **All Other Properties**: None (theme defaults will be applied)
+    ///
+    /// # Examples
+    /// ```rust
+    /// // Basic text builder
+    /// let builder = StyledTextBuilder::new("Hello");
+    ///
+    /// // With string literal
+    /// let builder = StyledTextBuilder::new("Welcome to our app");
+    ///
+    /// // With owned string
+    /// let text = String::from("Dynamic content");
+    /// let builder = StyledTextBuilder::new(text);
+    ///
+    /// // With format macro
+    /// let builder = StyledTextBuilder::new(format!("User: {}", username));
+    /// ```
+    ///
+    /// # Design Rationale
+    ///
+    /// The defaults prioritize accessibility and ease of use:
+    /// - **High Contrast**: Ensures readability out of the box
+    /// - **Auto-Contrast**: Adapts to backgrounds automatically
+    /// - **Optional Properties**: Allows selective customization
+    /// - **Theme Integration**: Works seamlessly with design system
     pub fn new(content: impl Into<String>) -> Self {
         Self {
             content: content.into(),
@@ -632,17 +787,76 @@ impl StyledTextBuilder {
             italic: false,
             align: None,
             background_context: None,
-            contrast_level: Some(TextContrastLevel::High),
-            explicit_color_set: false,
+            contrast_level: Some(TextContrastLevel::High),  // WCAG AA by default
+            explicit_color_set: false,                      // Auto-contrast enabled
         }
     }
-    /// Build the final text component
+    /// Build the final text component with applied styling
+    ///
+    /// Converts the configured builder into a complete Bevy text bundle by
+    /// applying all styling properties through the underlying Text component.
+    /// The build process resolves theme integration, accessibility settings,
+    /// and color optimization.
+    ///
+    /// # Build Process
+    ///
+    /// 1. **Base Component**: Creates Text component with content and variant
+    /// 2. **Typography**: Applies size, weight, family, and style options
+    /// 3. **Color Resolution**: Resolves colors through theme system
+    /// 4. **Accessibility**: Applies contrast levels and optimization
+    /// 5. **Layout**: Configures alignment and positioning
+    /// 6. **Bundle Creation**: Returns complete Bevy component bundle
+    ///
+    /// # Theme Integration
+    ///
+    /// The build process automatically:
+    /// - Resolves semantic colors through current theme palette
+    /// - Applies typography scale from theme configuration
+    /// - Optimizes contrast based on background context
+    /// - Ensures accessibility compliance with configured levels
+    ///
+    /// # Returns
+    ///
+    /// A Bevy bundle containing all necessary components for text rendering:
+    /// - Text component with styling configuration
+    /// - Bevy Text bundle with resolved typography
+    /// - Layout components for positioning and alignment
+    /// - Theme-resolved colors and accessibility settings
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// // Build simple text
+    /// let text_bundle = styled_text("Hello")
+    ///     .text_size(TextSize::Lg)
+    ///     .build();
+    ///
+    /// // Build complex styled text
+    /// let styled_bundle = styled_text("Important Notice")
+    ///     .as_heading_style()
+    ///     .text_color(TextColor::Error)
+    ///     .text_center()
+    ///     .text_accessible()
+    ///     .build();
+    ///
+    /// // Use in Bevy systems
+    /// commands.spawn(text_bundle);
+    /// ```
+    ///
+    /// # Performance Notes
+    ///
+    /// - **One-Time Resolution**: Colors and typography resolved once during build
+    /// - **Efficient Bundling**: Minimal component overhead
+    /// - **Theme Caching**: Leverages theme system caching for performance
+    /// - **No Runtime Overhead**: All styling applied at build time
     pub fn build(self) -> impl Bundle {
         use crate::components::text::Text;
         
+        // Create base text component with content and variant
         let mut builder = Text::new(self.content)
             .variant(self.variant);
             
+        // Apply typography properties if specified
         if let Some(size) = self.size {
             builder = builder.size(size);
         }
@@ -658,9 +872,13 @@ impl StyledTextBuilder {
         if self.italic {
             builder = builder.italic();
         }
+        
+        // Apply layout properties if specified
         if let Some(align) = self.align {
             builder = builder.align(align);
         }
+        
+        // Apply accessibility and contrast settings
         if let Some(bg) = self.background_context {
             builder = builder.on_background(bg);
         }
@@ -671,6 +889,7 @@ impl StyledTextBuilder {
             builder = builder.manual_color();
         }
         
+        // Build final component bundle
         builder.build()
     }
 }
