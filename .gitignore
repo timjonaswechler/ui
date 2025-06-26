@@ -22,3 +22,4 @@ Thumbs.db
 # Backup and temporary files
 *~
 *.swp
+assets/music/*
