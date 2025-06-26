@@ -1,0 +1,4 @@
+assets/audio/music/*.ogg filter=lfs diff=lfs merge=lfs -text
+assets/audio/sfx/*.ogg filter=lfs diff=lfs merge=lfs -text
+assets/ui/icons/controllers/**/*.png filter=lfs diff=lfs merge=lfs -text
+assets/ui/icons/interface/*.png filter=lfs diff=lfs merge=lfs -text
