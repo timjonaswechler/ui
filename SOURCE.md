@@ -5,7 +5,7 @@ This file lists the primary sources to be consulted when planning and implementi
 ## Primary Sources
 
 
-1.  **Bevy API Documentation (docs.rs):** For all Bevy-specific implementations, consult the official documentation. Pay close attention to the versions mentioned in `CLAUDE.md`.
+1.  **Bevy API Documentation (docs.rs):** For all Bevy-specific implementations, consult the official documentation. Pay close attention to the versions mentioned in `CLAUDE.md`/`GEMINI.md`.
     -   **Bevy UI:** [https://docs.rs/bevy/latest/bevy/ui/index.html](https://docs.rs/bevy/latest/bevy/ui/index.html)
     -   **Bevy ECS:** [https://docs.rs/bevy/latest/bevy/ecs/index.html](https://docs.rs/bevy/ecs/index.html)
     -   **Bevy Asset System:** [https://docs.rs/bevy/latest/bevy/asset/index.html](https://docs.rs/bevy/latest/bevy/asset/index.html)
@@ -315,7 +315,7 @@ This file lists the primary sources to be consulted when planning and implementi
   - [Theme - Props](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/segmented-control.props.tsx)
   - [Theme - Quellcode](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/segmented-control.tsx)
 
-- [ ] **Select**
+- [x] **Select**
   - [Primitive - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/components/select.mdx)
   - [Primitive - Quellcode](https://github.com/radix-ui/primitives/tree/main/packages/react/select/src/*.tsx)
   - [Theme - Dokumentation](https://github.com/radix-ui/website/blob/main/data/themes/docs/components/select.mdx)
@@ -337,7 +337,7 @@ This file lists the primary sources to be consulted when planning and implementi
   - [Theme - Props](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/skeleton.props.tsx)
   - [Theme - Quellcode](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/skeleton.tsx)
 
-- [ ] **Slider**
+- [x] **Slider**
   - [Primitive - Dokumentation](https://github.com/radix-ui/website/blob/main/data/primitives/docs/components/slider.mdx)
   - [Primitive - Quellcode](https://github.com/radix-ui/primitives/tree/main/packages/react/slider/src/*.tsx)
   - [Theme - Dokumentation](https://github.com/radix-ui/website/blob/main/data/themes/docs/components/slider.mdx)

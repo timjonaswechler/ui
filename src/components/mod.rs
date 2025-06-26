@@ -15,6 +15,7 @@ pub mod select;
 pub mod separator;
 pub mod slider;
 pub mod switch;
+pub mod tabs;
 pub mod text;
 
 pub use badge::*;
@@ -32,6 +33,7 @@ pub use select::*;
 pub use separator::*;
 pub use slider::*;
 pub use switch::*;
+pub use tabs::*;
 pub use text::*;
 
 pub struct ComponentsPlugin;
@@ -101,6 +103,8 @@ impl Plugin for ComponentsPlugin {
                     slider::handle_slider_drag,
                     slider::handle_track_click,
                     slider::update_slider_visuals,
+                    tabs::handle_trigger_clicks,
+                    tabs::style_active_triggers,
                     // Icon interaction system removed - handled by individual icon systems
                 ),
             );

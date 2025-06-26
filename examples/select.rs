@@ -10,7 +10,24 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(ForgeUiPlugin)
         .add_systems(Startup, setup)
+        .add_systems(Update, log_select_events)
         .run();
+}
+
+/// Log select events to verify they're working
+fn log_select_events(
+    mut select_change_events: EventReader<SelectChangeEvent>,
+    mut select_open_events: EventReader<SelectOpenEvent>,
+) {
+    for event in select_change_events.read() {
+        info!("✅ SelectChangeEvent: entity={:?}, value='{}', label='{}', previous={:?}",
+              event.select_entity, event.selected_value, event.selected_label, event.previous_value);
+    }
+    
+    for event in select_open_events.read() {
+        info!("🔄 SelectOpenEvent: entity={:?}, open={}",
+              event.select_entity, event.open);
+    }
 }
 
 fn setup(mut commands: Commands) {
@@ -37,10 +54,13 @@ fn setup(mut commands: Commands) {
                         .build(),
                 );
 
-                // Basic Select
+                // Basic Select with custom options
                 container.spawn(
                     Select::new()
                         .placeholder("Choose an option...")
+                        .option("red", "Red Color")
+                        .option("green", "Green Color")
+                        .option("blue", "Blue Color")
                         .width(Val::Px(200.0))
                         .build(),
                 );
@@ -49,7 +69,10 @@ fn setup(mut commands: Commands) {
                 container.spawn(
                     Select::new()
                         .placeholder("Choose a fruit...")
-                        .selected_value("Orange")  // This should align with Orange in dropdown
+                        .option("apple", "Apple")
+                        .option("orange", "Orange")
+                        .option("grape", "Grape")
+                        .selected_value("orange")  // This should align with Orange in dropdown
                         .width(Val::Px(200.0))
                         .build(),
                 );

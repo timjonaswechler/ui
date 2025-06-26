@@ -20,8 +20,8 @@ use bevy::prelude::*;
 /// use bevy::prelude::*;
 ///
 /// // Using with icon builders
-/// let small_icon = ButtonA::new().size(IconSize::Small);
-/// let large_icon = ArrowRight::new().size(IconSize::Large);
+/// let small_icon = Xbox::ButtonA().new().size(IconSize::Small);
+/// let large_icon = Interface::ArrowRight().new().size(IconSize::Large);
 ///
 /// // Converting to Bevy Val for layout
 /// let icon_width = IconSize::Medium.as_val(); // Val::Px(24.0)
@@ -91,7 +91,6 @@ impl IconSize {
 /// - **Icon Component**: Bevy component with size, tint, and configuration options
 ///
 /// ## Builder APIs
-/// - **Direct Builders**: `ButtonA::new()` - Direct access to specific icons
 /// - **Namespace Builders**: `Xbox::ButtonA::new()` - Categorized access pattern
 /// - **Fluent Interface**: Method chaining for size, tint, and styling
 ///
@@ -122,14 +121,8 @@ impl IconSize {
 ///
 /// ## Using Generated Icons
 /// ```rust
-/// // Direct builder approach
-/// let icon = ButtonA::new()
-///     .large()
-///     .tint(Color::RED)
-///     .bundle(&xbox_atlases);
-///
 /// // Namespace approach
-/// let icon = Xbox::ButtonA::new()
+/// let icon = Xbox::ButtonA().new()
 ///     .medium()
 ///     .tint(Color::BLUE)
 ///     .bundle(&xbox_atlases);
@@ -339,71 +332,8 @@ macro_rules! define_icon_category {
             }
 
             // ===== ICON BUILDERS =====
-            
-            // Direkte Icon-Builder (Variante 1: ButtonA::new())
-            $(
-                #[doc = concat!("Direct builder for ", stringify!($category), " icon: ", stringify!($icon_name))]
-                #[doc = ""]
-                #[doc = concat!("Provides direct access to the ", stringify!($icon_name), " icon with a fluent builder API.")]
-                #[doc = "This builder allows for immediate icon creation without namespace qualification."]
-                #[doc = ""]
-                #[doc = "# Usage Examples"]
-                #[doc = ""]
-                #[doc = "```rust"]
-                #[doc = concat!("// Basic usage")]
-                #[doc = concat!("let icon = ", stringify!($icon_name), "::new().bundle(&atlases);")]
-                #[doc = ""]
-                #[doc = concat!("// With customization")]
-                #[doc = concat!("let styled_icon = ", stringify!($icon_name), "::new()")]
-                #[doc = "    .large()"]
-                #[doc = "    .tint(Color::RED)"]
-                #[doc = "    .bundle(&atlases);"]
-                #[doc = ""]
-                #[doc = concat!("// Shorthand methods")]
-                #[doc = concat!("let small_icon = ", stringify!($icon_name), "::small();")]
-                #[doc = concat!("let tinted_icon = ", stringify!($icon_name), "::tint(Color::BLUE);")]
-                #[doc = "```"]
-                #[doc = ""]
-                #[doc = "# Available Methods"]
-                #[doc = ""]
-                #[doc = "- `new()` - Create icon with default settings (Medium size, White tint)"]
-                #[doc = "- `small()`, `medium()`, `large()`, `extra_large()` - Size shortcuts"]
-                #[doc = "- `tint(Color)` - Apply color tinting"]
-                #[doc = "- `bundle(&atlases)` - Generate Bevy bundle for spawning"]
-                pub struct $icon_name;
 
-                impl $icon_name {
-                    pub fn new() -> [<$category Icon>] {
-                        [<$category Icon>]::new([<$category IconId>]::$icon_name)
-                    }
-
-                    pub fn small() -> [<$category Icon>] {
-                        Self::new().small()
-                    }
-
-                    pub fn medium() -> [<$category Icon>] {
-                        Self::new().medium()
-                    }
-
-                    pub fn large() -> [<$category Icon>] {
-                        Self::new().large()
-                    }
-
-                    pub fn extra_large() -> [<$category Icon>] {
-                        Self::new().extra_large()
-                    }
-
-                    pub fn tint(color: Color) -> [<$category Icon>] {
-                        Self::new().tint(color)
-                    }
-
-                    pub fn bundle(atlases: &[<$category Atlases>]) -> impl Bundle {
-                        Self::new().bundle(atlases)
-                    }
-                }
-            )*
-
-            // Namespace-Icon-Builder Structs (Variante 2: Xbox::ButtonA::new())
+            // Namespace-Icon-Builder Structs (Xbox::ButtonA::new())
             $(
                 paste::paste! {
                     #[doc = concat!("Namespace builder for ", stringify!($category), " icon: ", stringify!($icon_name))]

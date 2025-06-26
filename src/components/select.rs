@@ -2,8 +2,10 @@ use crate::components::text::Text;
 use crate::theme::color::{
     theme_mode, ThemeMode, UiColorPalette, UiColorPalettes, UiColorPalettesName,
 };
-use crate::utilities::{ComponentBuilder, Portal};
+use crate::utilities::ComponentBuilder;
 use bevy::prelude::*;
+use bevy::ui::FocusPolicy;
+use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SelectSize {
@@ -37,6 +39,7 @@ pub struct SelectComponent {
     pub variant: SelectVariant,
     pub color: UiColorPalettesName,
     pub state: SelectState,
+    pub options: Vec<(String, String)>, // (value, label) pairs
 }
 
 impl Default for SelectComponent {
@@ -50,6 +53,7 @@ impl Default for SelectComponent {
             variant: SelectVariant::Surface,
             color: UiColorPalettesName::Gray,
             state: SelectState::Closed,
+            options: Vec::new(),
         }
     }
 }
@@ -133,9 +137,9 @@ impl SelectComponent {
         }
     }
 
-    pub fn find_selected_option_index(&self, options: &[String]) -> Option<usize> {
+    pub fn find_selected_option_index(&self) -> Option<usize> {
         if let Some(ref selected_value) = self.selected_value {
-            options.iter().position(|opt| opt == selected_value)
+            self.options.iter().position(|(value, _label)| value == selected_value)
         } else {
             None
         }
@@ -302,6 +306,18 @@ impl SelectBuilder {
         self.node.max_width = max_width;
         self
     }
+
+    pub fn option(mut self, value: impl Into<String>, label: impl Into<String>) -> Self {
+        self.component.options.push((value.into(), label.into()));
+        self
+    }
+
+    pub fn options(mut self, options: Vec<(impl Into<String>, impl Into<String>)>) -> Self {
+        for (value, label) in options {
+            self.component.options.push((value.into(), label.into()));
+        }
+        self
+    }
 }
 
 impl ComponentBuilder for SelectBuilder {
@@ -402,9 +418,15 @@ pub fn setup_select_interactions(
     selects_query: Query<(Entity, &SelectComponent), Added<SelectComponent>>,
 ) {
     for (entity, select) in &selects_query {
-        // Add interaction observers
+        // Add interaction components and observers
         commands
             .entity(entity)
+            .insert((
+                Button,
+                Interaction::None,
+                FocusPolicy::Block,
+                Pickable::default(),
+            ))
             .observe(on_select_trigger_click)
             .observe(on_select_trigger_hover)
             .observe(on_select_trigger_hover_out);
@@ -431,23 +453,30 @@ fn on_select_trigger_click(
     mut select_open_events: EventWriter<SelectOpenEvent>,
 ) {
     if let Ok(mut select) = select_query.get_mut(trigger.target()) {
-        select.open = !select.open;
-        select.state = if select.open {
-            SelectState::Open
-        } else {
-            SelectState::Closed
-        };
+        // Only allow opening when closed, prevent immediate reopening
+        if !select.open {
+            select.open = true;
+            select.state = SelectState::Open;
 
-        // Send open event
-        select_open_events.write(SelectOpenEvent {
-            select_entity: trigger.target(),
-            open: select.open,
-        });
+            // Send open event
+            select_open_events.write(SelectOpenEvent {
+                select_entity: trigger.target(),
+                open: true,
+            });
 
-        if select.open {
             // Spawn dropdown
             spawn_select_dropdown(&mut commands, trigger.target(), &select);
         } else {
+            // Close if already open
+            select.open = false;
+            select.state = SelectState::Closed;
+
+            // Send close event
+            select_open_events.write(SelectOpenEvent {
+                select_entity: trigger.target(),
+                open: false,
+            });
+
             // Close existing dropdown
             for dropdown_entity in &dropdown_query {
                 commands.entity(dropdown_entity).despawn();
@@ -490,34 +519,23 @@ fn spawn_select_dropdown(commands: &mut Commands, select_entity: Entity, select:
 
     // Calculate option positioning for Radix-style behavior
     let option_height = select.calculate_option_height();
-    let option_labels = vec![
-        "Apple".to_string(),
-        "Orange".to_string(),
-        "Grape".to_string(),
-        "Carrot".to_string(),
-        "Potato".to_string(),
-    ];
+    
+    // Use dynamic options or fallback to default options if none provided
+    let options = if select.options.is_empty() {
+        // Fallback to default options for demonstration
+        vec![
+            ("apple".to_string(), "Apple".to_string()),
+            ("orange".to_string(), "Orange".to_string()),
+            ("grape".to_string(), "Grape".to_string()),
+            ("carrot".to_string(), "Carrot".to_string()),
+            ("potato".to_string(), "Potato".to_string()),
+        ]
+    } else {
+        select.options.clone()
+    };
 
     // Find the index of the selected option
-    let selected_index = if let Some(selected_value) = &select.selected_value {
-        // Try to find by direct value match first
-        option_labels
-            .iter()
-            .position(|label| label == selected_value)
-            .or_else(|| {
-                // Try to find by option-{i} format
-                if selected_value.starts_with("option-") {
-                    selected_value
-                        .strip_prefix("option-")
-                        .and_then(|s| s.parse::<usize>().ok())
-                        .filter(|&i| i < option_labels.len())
-                } else {
-                    None
-                }
-            })
-    } else {
-        None
-    };
+    let selected_index = select.find_selected_option_index();
 
     // Calculate Y offset so selected option aligns with trigger
     let y_offset = if let Some(index) = selected_index {
@@ -558,23 +576,26 @@ fn spawn_select_dropdown(commands: &mut Commands, select_entity: Entity, select:
         y_offset, selected_index, select.selected_value
     );
 
-    // Add sample options for now (Phase 3 will make this dynamic)
-    let option_labels = ["Apple", "Orange", "Grape", "Carrot", "Potato"];
-    let option_entities = option_labels
+    // Create option entities from dynamic options
+    let option_entities = options
         .iter()
         .enumerate()
-        .map(|(i, option_text)| {
+        .map(|(i, (option_value, option_label))| {
             let is_selected = select.selected_value.as_ref().map_or(false, |selected| {
-                selected == &format!("option-{}", i) || selected == option_text
+                selected == option_value
             });
 
             let option_entity = commands
                 .spawn((
-                    SelectOptionComponent::new(format!("option-{}", i), option_text.to_string()),
+                    SelectOptionComponent::new(option_value.clone(), option_label.clone()),
+                    Button,
                     Node {
                         width: Val::Percent(100.0),
                         height: Val::Px(option_height),
                         padding: UiRect::axes(Val::Px(12.0), Val::Px(8.0)),
+                        display: Display::Flex,
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::FlexStart,
                         ..default()
                     },
                     BackgroundColor(if is_selected {
@@ -583,6 +604,9 @@ fn spawn_select_dropdown(commands: &mut Commands, select_entity: Entity, select:
                         Color::NONE
                     }),
                     BorderColor(Color::NONE),
+                    Interaction::None,
+                    FocusPolicy::Block,
+                    Pickable::default(),
                 ))
                 .id();
 
@@ -595,7 +619,7 @@ fn spawn_select_dropdown(commands: &mut Commands, select_entity: Entity, select:
 
             // Add text child for option label
             commands.entity(option_entity).with_children(|option| {
-                option.spawn(Text::new(option_text.to_string()).build());
+                option.spawn(Text::new(option_label.clone()).build());
             });
 
             option_entity
@@ -625,7 +649,7 @@ pub fn position_select_dropdowns(
 
 /// Handles option click to select value
 fn on_select_option_click(
-    trigger: Trigger<Pointer<Click>>,
+    mut trigger: Trigger<Pointer<Click>>,
     option_query: Query<&SelectOptionComponent>,
     mut select_query: Query<&mut SelectComponent>,
     mut commands: Commands,
@@ -633,7 +657,11 @@ fn on_select_option_click(
     mut select_change_events: EventWriter<SelectChangeEvent>,
     mut select_open_events: EventWriter<SelectOpenEvent>,
 ) {
+    info!("🖱️ Option click detected on entity: {:?}", trigger.target());
+    
     if let Ok(option) = option_query.get(trigger.target()) {
+        info!("📋 Option found: label='{}', value='{}'", option.label, option.value);
+        
         // Find the dropdown entity and its associated select entity
         let mut select_entity_opt = None;
         let mut dropdown_to_despawn = None;
@@ -641,6 +669,7 @@ fn on_select_option_click(
         for (dropdown_entity, dropdown_comp) in &dropdown_query {
             select_entity_opt = Some(dropdown_comp.select_entity);
             dropdown_to_despawn = Some(dropdown_entity);
+            info!("🎯 Found dropdown: {:?} -> select: {:?}", dropdown_entity, dropdown_comp.select_entity);
             break; // For now, handle first dropdown found
         }
 
@@ -649,6 +678,7 @@ fn on_select_option_click(
         {
             if let Ok(mut select) = select_query.get_mut(select_entity) {
                 let previous_value = select.selected_value.clone();
+                info!("🔄 Updating select state: old={:?} -> new='{}'", previous_value, option.value);
 
                 // Update select state
                 select.selected_value = Some(option.value.clone());
@@ -663,7 +693,7 @@ fn on_select_option_click(
                     selected_label: option.label.clone(),
                 });
 
-                // Send close event
+                // Send close event  
                 select_open_events.write(SelectOpenEvent {
                     select_entity,
                     open: false,
@@ -672,9 +702,18 @@ fn on_select_option_click(
                 // Close dropdown
                 commands.entity(dropdown_entity).despawn();
 
-                info!("Selected option: {} ({})", option.label, option.value);
+                info!("✅ Selected option: {} ({})", option.label, option.value);
+                
+                // Prevent event propagation by consuming the click
+                trigger.propagate(false);
+            } else {
+                info!("❌ Could not get select component for entity: {:?}", select_entity);
             }
+        } else {
+            info!("❌ Could not find select or dropdown entity");
         }
+    } else {
+        info!("❌ Could not get option component for entity: {:?}", trigger.target());
     }
 }
 
@@ -734,25 +773,30 @@ pub fn handle_click_outside_select(
     mut select_query: Query<&mut SelectComponent>,
     mut select_open_events: EventWriter<SelectOpenEvent>,
     mouse_input: Res<ButtonInput<MouseButton>>,
-    // TODO: Add cursor position and bounds checking in Phase 3
+    interaction_query: Query<&Interaction, (Changed<Interaction>, Or<(With<SelectComponent>, With<SelectOptionComponent>)>)>,
 ) {
+    // Only process if mouse was just pressed and no UI interactions are happening
     if mouse_input.just_pressed(MouseButton::Left) {
-        // For now, we'll implement a simple version
-        // In Phase 3, we'll add proper bounds checking
-        for (dropdown_entity, dropdown) in &dropdown_query {
-            if let Ok(mut select) = select_query.get_mut(dropdown.select_entity) {
-                // Simple click-anywhere-to-close for now
-                // TODO: Add proper bounds checking to detect clicks outside dropdown
-                select.open = false;
-                select.state = SelectState::Closed;
+        // Check if any select-related UI elements are being interacted with
+        let ui_interaction_active = interaction_query.iter().any(|interaction| {
+            matches!(interaction, Interaction::Pressed | Interaction::Hovered)
+        });
 
-                select_open_events.write(SelectOpenEvent {
-                    select_entity: dropdown.select_entity,
-                    open: false,
-                });
+        // Only close dropdowns if no UI interactions are active
+        if !ui_interaction_active {
+            for (dropdown_entity, dropdown) in &dropdown_query {
+                if let Ok(mut select) = select_query.get_mut(dropdown.select_entity) {
+                    select.open = false;
+                    select.state = SelectState::Closed;
 
-                commands.entity(dropdown_entity).despawn();
-                info!("Closed dropdown due to outside click");
+                    select_open_events.write(SelectOpenEvent {
+                        select_entity: dropdown.select_entity,
+                        open: false,
+                    });
+
+                    commands.entity(dropdown_entity).despawn();
+                    info!("Closed dropdown due to outside click");
+                }
             }
         }
     }

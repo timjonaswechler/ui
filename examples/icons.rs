@@ -2,14 +2,13 @@ use bevy::prelude::*;
 use ui::{
     assets::icons::{
         controllers::{
-            GenericAtlases, KeyboardMouseAtlases, NintendoSwitchAtlases, PlayStationAtlases,
-            XboxAtlases,
+            GenericAtlases, GenericIcon, GenericIconId, KeyboardMouseAtlases, KeyboardMouseIcon,
+            KeyboardMouseIconId, NintendoSwitchAtlases, NintendoSwitchIcon, NintendoSwitchIconId,
+            PlayStationAtlases, PlayStationIcon, PlayStationIconId, XboxAtlases, XboxIcon,
+            XboxIconId,
         },
-        interface::InterfaceAtlases,
-        GenericButton, GenericJoystick, GenericStick, InterfaceAvatar, InterfaceChevronDown,
-        InterfaceGear, InterfaceHome, KeyboardA, KeyboardD, KeyboardS, KeyboardW, Mouse,
-        PlayStationCircle, PlayStationCross, PlayStationSquare, PlayStationTriangle, SwitchButtonA,
-        SwitchButtonB, SwitchButtonX, SwitchButtonY, XboxA, XboxB, XboxX, XboxY,
+        interface::{InterfaceAtlases, InterfaceIcon, InterfaceIconId},
+        IconSize,
     },
     components::{heading::Heading, text::Text},
     plugin::{ForgeUiPlugin, UiState},
@@ -130,7 +129,11 @@ fn create_size_demo_section(
                                 ..default()
                             },))
                             .with_children(|parent| {
-                                parent.spawn(GenericButton::small().bundle(atlases));
+                                parent.spawn(
+                                    GenericIcon::new(GenericIconId::Button)
+                                        .size(IconSize::Small)
+                                        .bundle(atlases),
+                                );
                                 parent.spawn(
                                     Text::caption("Small (16px)")
                                         .size(TextSize::Xs)
@@ -148,7 +151,11 @@ fn create_size_demo_section(
                                 ..default()
                             },))
                             .with_children(|parent| {
-                                parent.spawn(GenericButton::medium().bundle(atlases));
+                                parent.spawn(
+                                    GenericIcon::new(GenericIconId::Button)
+                                        .size(IconSize::Medium)
+                                        .bundle(atlases),
+                                );
                                 parent.spawn(
                                     Text::caption("Medium (24px)")
                                         .size(TextSize::Xs)
@@ -166,7 +173,11 @@ fn create_size_demo_section(
                                 ..default()
                             },))
                             .with_children(|parent| {
-                                parent.spawn(GenericButton::large().bundle(atlases));
+                                parent.spawn(
+                                    GenericIcon::new(GenericIconId::Button)
+                                        .size(IconSize::Large)
+                                        .bundle(atlases),
+                                );
                                 parent.spawn(
                                     Text::caption("Large (32px)")
                                         .size(TextSize::Xs)
@@ -184,7 +195,11 @@ fn create_size_demo_section(
                                 ..default()
                             },))
                             .with_children(|parent| {
-                                parent.spawn(GenericButton::extra_large().bundle(atlases));
+                                parent.spawn(
+                                    GenericIcon::new(GenericIconId::Button)
+                                        .size(IconSize::ExtraLarge)
+                                        .bundle(atlases),
+                                );
                                 parent.spawn(
                                     Text::caption("Extra Large (64px)")
                                         .size(TextSize::Xs)
@@ -239,48 +254,86 @@ fn create_controller_section(
                     // Generic Controls
                     if let Some(atlases) = generic_atlases {
                         create_controller_card(parent, "Generic Controls", |parent| {
-                            parent.spawn(GenericButton::new().bundle(atlases));
-                            parent.spawn(GenericJoystick::new().bundle(atlases));
-                            parent.spawn(GenericStick::new().bundle(atlases));
+                            parent.spawn(GenericIcon::new(GenericIconId::Button).bundle(atlases));
+                            parent.spawn(GenericIcon::new(GenericIconId::Joystick).bundle(atlases));
+                            parent.spawn(GenericIcon::new(GenericIconId::Stick).bundle(atlases));
                         });
                     }
 
                     if let Some(atlases) = keyboad_mouse_atlas {
                         create_controller_card(parent, "Keyboard & Mouse", |parent| {
-                            parent.spawn(KeyboardW::new().bundle(atlases));
-                            parent.spawn(KeyboardA::new().bundle(atlases));
-                            parent.spawn(KeyboardS::new().bundle(atlases));
-                            parent.spawn(KeyboardD::new().bundle(atlases));
-                            parent.spawn(Mouse::new().bundle(atlases));
+                            parent.spawn(
+                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardW)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardA)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardS)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardD)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                KeyboardMouseIcon::new(KeyboardMouseIconId::Mouse).bundle(atlases),
+                            );
                         });
                     }
                     // Xbox Controls
                     if let Some(atlases) = xbox_atlases {
                         create_controller_card(parent, "Xbox Controls", |parent| {
-                            parent.spawn(XboxA::new().bundle(atlases));
-                            parent.spawn(XboxB::new().bundle(atlases));
-                            parent.spawn(XboxX::new().bundle(atlases));
-                            parent.spawn(XboxY::new().bundle(atlases));
+                            parent.spawn(XboxIcon::new(XboxIconId::ButtonA).bundle(atlases));
+                            parent.spawn(XboxIcon::new(XboxIconId::ButtonB).bundle(atlases));
+                            parent.spawn(XboxIcon::new(XboxIconId::ButtonX).bundle(atlases));
+                            parent.spawn(XboxIcon::new(XboxIconId::ButtonY).bundle(atlases));
                         });
                     }
 
                     // PlayStation Controls
                     if let Some(atlases) = playstation_atlases {
                         create_controller_card(parent, "PlayStation Controls", |parent| {
-                            parent.spawn(PlayStationCross::new().bundle(atlases));
-                            parent.spawn(PlayStationCircle::new().bundle(atlases));
-                            parent.spawn(PlayStationSquare::new().bundle(atlases));
-                            parent.spawn(PlayStationTriangle::new().bundle(atlases));
+                            parent.spawn(
+                                PlayStationIcon::new(PlayStationIconId::ButtonCross)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                PlayStationIcon::new(PlayStationIconId::ButtonCircle)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                PlayStationIcon::new(PlayStationIconId::ButtonSquare)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                PlayStationIcon::new(PlayStationIconId::ButtonTriangle)
+                                    .bundle(atlases),
+                            );
                         });
                     }
 
                     // Nintendo Switch Controls
                     if let Some(atlases) = switch_atlases {
                         create_controller_card(parent, "Nintendo Switch Controls", |parent| {
-                            parent.spawn(SwitchButtonA::new().bundle(atlases));
-                            parent.spawn(SwitchButtonB::new().bundle(atlases));
-                            parent.spawn(SwitchButtonX::new().bundle(atlases));
-                            parent.spawn(SwitchButtonY::new().bundle(atlases));
+                            parent.spawn(
+                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonA)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonB)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonX)
+                                    .bundle(atlases),
+                            );
+                            parent.spawn(
+                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonY)
+                                    .bundle(atlases),
+                            );
                         });
                     }
                 });
@@ -315,10 +368,12 @@ fn create_interface_section(
                         ..default()
                     },))
                     .with_children(|parent| {
-                        parent.spawn(InterfaceHome::new().bundle(atlases));
-                        parent.spawn(InterfaceGear::new().bundle(atlases));
-                        parent.spawn(InterfaceChevronDown::new().bundle(atlases));
-                        parent.spawn(InterfaceAvatar::new().bundle(atlases));
+                        parent.spawn(InterfaceIcon::new(InterfaceIconId::Home).bundle(atlases));
+                        parent.spawn(InterfaceIcon::new(InterfaceIconId::Gear).bundle(atlases));
+                        parent.spawn(
+                            InterfaceIcon::new(InterfaceIconId::ChevronDown).bundle(atlases),
+                        );
+                        parent.spawn(InterfaceIcon::new(InterfaceIconId::Avatar).bundle(atlases));
                     });
             } else {
                 parent.spawn(
@@ -359,28 +414,32 @@ fn create_tinting_section(
                     },))
                     .with_children(|parent| {
                         // White (default)
-                        parent.spawn(GenericButton::new().bundle(atlases));
+                        parent.spawn(GenericIcon::new(GenericIconId::Button).bundle(atlases));
 
                         // Red tint
-                        parent.spawn(GenericButton::new().tint(theme().red.solid).bundle(atlases));
+                        parent.spawn(
+                            GenericIcon::new(GenericIconId::Button)
+                                .tint(theme().red.solid)
+                                .bundle(atlases),
+                        );
 
                         // Green tint
                         parent.spawn(
-                            GenericButton::new()
+                            GenericIcon::new(GenericIconId::Button)
                                 .tint(theme().green.solid)
                                 .bundle(atlases),
                         );
 
                         // Blue tint
                         parent.spawn(
-                            GenericButton::new()
+                            GenericIcon::new(GenericIconId::Button)
                                 .tint(theme().indigo.solid)
                                 .bundle(atlases),
                         );
 
                         // Purple tint
                         parent.spawn(
-                            GenericButton::new()
+                            GenericIcon::new(GenericIconId::Button)
                                 .tint(theme().purple.solid)
                                 .bundle(atlases),
                         );
