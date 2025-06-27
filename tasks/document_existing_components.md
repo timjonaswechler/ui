@@ -45,8 +45,9 @@ Iteratively add **professional‑grade rustdoc** to all existing components.  Ea
 *Created 2025‑06‑27*
 
 ## Progress
-- [] `Button`
-- [] `Badge`
+
+- [x] `Button` - Added comprehensive rustdoc documentation
+- [x] `Badge` - Already well documented with comprehensive rustdoc
 - [] `Box`
 - [] `Card`
 - [] `Checkbox`
@@ -63,7 +64,7 @@ Iteratively add **professional‑grade rustdoc** to all existing components.  Ea
 - [] `Switch`
 - [] `Tabs`
 - [] `Text`
-- [] `Toggle`
+- [x] `Toggle`
 - [] `ToggleGroup`
 - [] `RadioCard`
 - [] `TabNav`

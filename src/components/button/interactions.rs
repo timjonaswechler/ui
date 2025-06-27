@@ -1,3 +1,9 @@
+//! Button interaction systems and components for handling user input.
+//!
+//! This module manages button interactions including hover, click, press, and release
+//! events. It handles visual state changes, sound effects, and text color management
+//! for button components.
+
 use crate::assets::audio::{sound_effect, SfxAssets};
 use bevy::prelude::*;
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer, Pressed, Released};
@@ -7,11 +13,31 @@ use super::{
     events::ButtonClickEvent,
 };
 
-/// Marker component for text that should automatically update colors based on button state
-/// Text with explicit colors (manual_color) will not have this component
+/// Marker component for text that should automatically update colors based on button state.
+///
+/// Text entities with this component will have their colors managed automatically
+/// by the button interaction system. Text with explicit colors (manual_color)
+/// will not have this component and will maintain their custom colors.
+///
+/// This component is typically added to text entities that are children of buttons
+/// and should change color based on the button's current state (normal, hover, active, etc.).
 #[derive(Component, Debug)]
 pub struct ButtonManagedText;
 
+/// System that sets up interaction observers for newly added buttons.
+///
+/// This system runs when new buttons are added to the world and attaches
+/// the necessary event observers for handling user interactions. It also
+/// applies the initial styling to ensure buttons appear correctly.
+///
+/// # Parameters
+/// - `commands`: Commands for modifying entities
+/// - `buttons`: Query for newly added button entities
+/// - `button_query`: Query for button component data
+/// - `bg_colors`: Query for background color components
+/// - `text_colors`: Query for text color components
+/// - `children_query`: Query for child entities
+/// - `managed_text_query`: Query for managed text components
 pub fn setup_button_interactions(
     mut commands: Commands,
     buttons: Query<Entity, Added<Button>>,
@@ -45,6 +71,18 @@ pub fn setup_button_interactions(
     }
 }
 
+/// Event handler for button click interactions.
+///
+/// This function is called when a button receives a click event. It validates
+/// that the button is not disabled or loading, plays a sound effect, and
+/// sends a `ButtonClickEvent` for other systems to handle.
+///
+/// # Parameters
+/// - `trigger`: The click event trigger
+/// - `buttons`: Query for button components
+/// - `events`: Event writer for button click events
+/// - `commands`: Commands for spawning sound effects
+/// - `sfx_assets`: Sound effect assets
 fn on_button_click(
     trigger: Trigger<Pointer<Click>>,
     buttons: Query<&Button>,
@@ -72,6 +110,19 @@ fn on_button_click(
     }
 }
 
+/// Event handler for button hover (mouse over) interactions.
+///
+/// This function is called when the mouse cursor enters a button's area.
+/// It updates the button's visual state to the hover state if the button
+/// is not disabled or loading.
+///
+/// # Parameters
+/// - `trigger`: The hover event trigger
+/// - `buttons`: Query for mutable button components
+/// - `bg_colors`: Query for background color components
+/// - `text_colors`: Query for text color components
+/// - `children_query`: Query for child entities
+/// - `managed_text_query`: Query for managed text components
 fn on_button_hover(
     trigger: Trigger<Pointer<Over>>,
     mut buttons: Query<&mut Button>,
@@ -99,6 +150,18 @@ fn on_button_hover(
     }
 }
 
+/// Event handler for button hover out (mouse leave) interactions.
+///
+/// This function is called when the mouse cursor leaves a button's area.
+/// It updates the button's visual state back to the normal state.
+///
+/// # Parameters
+/// - `trigger`: The hover out event trigger
+/// - `buttons`: Query for mutable button components
+/// - `bg_colors`: Query for background color components
+/// - `text_colors`: Query for text color components
+/// - `children_query`: Query for child entities
+/// - `managed_text_query`: Query for managed text components
 fn on_button_hover_out(
     trigger: Trigger<Pointer<Out>>,
     mut buttons: Query<&mut Button>,
@@ -122,6 +185,19 @@ fn on_button_hover_out(
     }
 }
 
+/// Event handler for button press interactions.
+///
+/// This function is called when a button is pressed down (mouse button down).
+/// It updates the button's visual state to the active state if the button
+/// is not disabled or loading.
+///
+/// # Parameters
+/// - `trigger`: The press event trigger
+/// - `buttons`: Query for mutable button components
+/// - `bg_colors`: Query for background color components
+/// - `text_colors`: Query for text color components
+/// - `children_query`: Query for child entities
+/// - `managed_text_query`: Query for managed text components
 fn on_button_pressed(
     trigger: Trigger<Pointer<Pressed>>,
     mut buttons: Query<&mut Button>,
@@ -149,6 +225,19 @@ fn on_button_pressed(
     }
 }
 
+/// Event handler for button release interactions.
+///
+/// This function is called when a button is released (mouse button up).
+/// It updates the button's visual state back to the hover state if the button
+/// is not disabled or loading.
+///
+/// # Parameters
+/// - `trigger`: The release event trigger
+/// - `buttons`: Query for mutable button components
+/// - `bg_colors`: Query for background color components
+/// - `text_colors`: Query for text color components
+/// - `children_query`: Query for child entities
+/// - `managed_text_query`: Query for managed text components
 fn on_button_released(
     trigger: Trigger<Pointer<Released>>,
     mut buttons: Query<&mut Button>,
@@ -176,6 +265,21 @@ fn on_button_released(
     }
 }
 
+/// Applies visual styling to a button based on its current state.
+///
+/// This function updates the button's background color, text color, and
+/// any managed text children to match the styling for the given state.
+/// It recursively updates text colors in child entities that have the
+/// `ButtonManagedText` component.
+///
+/// # Parameters
+/// - `entity`: The button entity to style
+/// - `button`: The button component data
+/// - `state`: The current button state to style for
+/// - `bg_colors`: Query for background color components
+/// - `text_colors`: Query for text color components
+/// - `children_query`: Query for child entities
+/// - `managed_text_query`: Query for managed text components
 fn apply_button_styling(
     entity: Entity,
     button: &Button,
@@ -213,6 +317,19 @@ fn apply_button_styling(
     }
 }
 
+/// Recursively updates text colors for managed text entities.
+///
+/// This function traverses the entity hierarchy and updates text colors
+/// for any entities that have both `TextColor` and `ButtonManagedText`
+/// components. It preserves custom text colors by only updating entities
+/// with the managed text marker.
+///
+/// # Parameters
+/// - `entity`: The entity to check and update
+/// - `new_color`: The new text color to apply
+/// - `text_colors`: Query for text color components
+/// - `children_query`: Query for child entities
+/// - `managed_text_query`: Query for managed text components
 fn update_text_colors_recursive(
     entity: &Entity,
     new_color: &TextColor,

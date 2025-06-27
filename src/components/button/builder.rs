@@ -9,15 +9,58 @@ use bevy::prelude::*;
 
 use super::core::{Button, ButtonRadius, ButtonSize, ButtonVariant};
 
+/// Builder for constructing Button components using a fluent API.
+///
+/// The ButtonBuilder provides a convenient way to create and customize Button components
+/// with method chaining. It handles the complex logic of mapping button properties
+/// to Bevy UI components, styling, interaction handling, and accessibility features.
+///
+/// # Example
+/// ```text
+/// let button = Button::builder("my-button")
+///     .text("Click Me")
+///     .solid()
+///     .accent()
+///     .size_large()
+///     .pill()
+///     .build();
+/// ```
+///
+/// # Builder Pattern
+///
+/// The builder follows a fluent interface pattern where methods can be chained
+/// together to configure the button. Methods are organized into categories:
+/// - **Appearance**: `variant()`, `color()`, `radius()`
+/// - **Size**: `size()`, convenience methods like `size_large()`
+/// - **Text**: `text()`, `text_builder()`, text styling methods
+/// - **State**: `loading()`, `disabled()`, `high_contrast()`
+/// - **Content**: `child()`, `children()`
 pub struct ButtonBuilder {
+    /// Component name for debugging and identification
     name: String,
+    /// Button configuration
     button: Button,
+    /// Simple text content (alternative to text_builder)
     text: Option<String>,
+    /// Advanced text configuration (overrides simple text)
     text_builder: Option<TextBuilder>,
+    /// Additional child entities to include in the button
     children: Vec<Entity>,
 }
 
 impl ButtonBuilder {
+    /// Creates a new ButtonBuilder with the specified name.
+    ///
+    /// # Arguments
+    /// * `name` - A name for the button component (used for debugging and identification)
+    ///
+    /// # Returns
+    /// A new ButtonBuilder with default settings
+    ///
+    /// # Example
+    /// ```text
+    /// let builder = ButtonBuilder::new("submit-button");
+    /// ```
     pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: format!("{}_Button", name.into()),
@@ -28,52 +71,172 @@ impl ButtonBuilder {
         }
     }
 
+    /// Sets the visual variant of the button.
+    ///
+    /// # Arguments
+    /// * `variant` - The ButtonVariant to use (Solid, Soft, Outline, Ghost)
+    ///
+    /// # Example
+    /// ```rust
+    /// let button = Button::builder("my-button")
+    ///     .variant(ButtonVariant::Outline)
+    ///     .build();
+    /// ```
     pub fn variant(mut self, variant: ButtonVariant) -> Self {
         self.button.variant = variant;
         self
     }
 
+    /// Sets the size of the button.
+    ///
+    /// # Arguments
+    /// * `size` - The ButtonSize to use (Small, Default, Large)
+    ///
+    /// # Example
+    /// ```rust
+    /// let button = Button::builder("my-button")
+    ///     .size(ButtonSize::Large)
+    ///     .build();
+    /// ```
     pub fn size(mut self, size: ButtonSize) -> Self {
         self.button.size = size;
         self
     }
 
+    /// Sets the color palette for the button.
+    ///
+    /// # Arguments
+    /// * `color` - A UiColorPalette from the theme system
+    ///
+    /// # Example
+    /// ```rust
+    /// let button = Button::builder("my-button")
+    ///     .color(theme().blue)
+    ///     .build();
+    /// ```
     pub fn color(mut self, color: UiColorPalette) -> Self {
         self.button.color = color;
         self
     }
 
+    /// Enables high contrast mode for better accessibility.
+    ///
+    /// High contrast mode increases the color contrast between
+    /// text and background for improved readability.
+    ///
+    /// # Example
+    /// ```rust
+    /// let accessible_button = Button::builder("accessible")
+    ///     .text("Submit")
+    ///     .high_contrast()
+    ///     .build();
+    /// ```
     pub fn high_contrast(mut self) -> Self {
         self.button.high_contrast = true;
         self
     }
 
+    /// Sets automatic contrast calculation (default behavior).
+    ///
+    /// This method serves for clarity and future extensibility.
+    /// Automatic contrast is enabled by default.
+    ///
+    /// # Example
+    /// ```rust
+    /// let button = Button::builder("my-button")
+    ///     .auto_contrast()
+    ///     .build();
+    /// ```
     pub fn auto_contrast(self) -> Self {
-        // Aktiviert automatische Kontrastberechnung (ist standardmäßig aktiviert)
-        // Diese Methode dient der Klarstellung und kann in Zukunft erweitert werden
+        // Activates automatic contrast calculation (enabled by default)
+        // This method serves for clarity and can be extended in the future
         self
     }
 
+    /// Sets the border radius of the button.
+    ///
+    /// # Arguments
+    /// * `radius` - The ButtonRadius to use
+    ///
+    /// # Example
+    /// ```rust
+    /// let rounded_button = Button::builder("rounded")
+    ///     .radius(ButtonRadius::Large)
+    ///     .build();
+    /// ```
     pub fn radius(mut self, radius: ButtonRadius) -> Self {
         self.button.radius = radius;
         self
     }
 
+    /// Sets the button to loading state.
+    ///
+    /// Loading state typically shows a spinner and prevents interaction
+    /// while an asynchronous operation is in progress.
+    ///
+    /// # Example
+    /// ```rust
+    /// let loading_button = Button::builder("submit")
+    ///     .text("Submitting...")
+    ///     .loading()
+    ///     .build();
+    /// ```
     pub fn loading(mut self) -> Self {
         self.button.loading = true;
         self
     }
 
+    /// Sets the button to disabled state.
+    ///
+    /// Disabled buttons cannot be interacted with and typically
+    /// appear with reduced opacity and different styling.
+    ///
+    /// # Example
+    /// ```rust
+    /// let disabled_button = Button::builder("unavailable")
+    ///     .text("Not Available")
+    ///     .disabled()
+    ///     .build();
+    /// ```
     pub fn disabled(mut self) -> Self {
         self.button.disabled = true;
         self
     }
 
+    /// Sets simple text content for the button.
+    ///
+    /// This is a convenience method for basic text. For more complex text
+    /// styling, use `text_builder()` instead.
+    ///
+    /// # Arguments
+    /// * `text` - The text content to display
+    ///
+    /// # Example
+    /// ```rust
+    /// let button = Button::builder("action")
+    ///     .text("Click Me")
+    ///     .build();
+    /// ```
     pub fn text(mut self, text: impl Into<String>) -> Self {
         self.text = Some(text.into());
         self
     }
 
+    /// Sets the text size for the button text.
+    ///
+    /// This method configures a TextBuilder for advanced text styling.
+    /// If no TextBuilder exists, one will be created with the current text content.
+    ///
+    /// # Arguments
+    /// * `size` - The TextSize to use for the button text
+    ///
+    /// # Example
+    /// ```rust
+    /// let button = Button::builder("large-text")
+    ///     .text("Big Button")
+    ///     .text_size(TextSize::Lg)
+    ///     .build();
+    /// ```
     pub fn text_size(mut self, size: TextSize) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
         let builder = self
@@ -84,6 +247,18 @@ impl ButtonBuilder {
         self
     }
 
+    /// Sets the text weight (boldness) for the button text.
+    ///
+    /// # Arguments
+    /// * `weight` - The TextWeight to use (Light, Regular, Medium, SemiBold, Bold, ExtraBold)
+    ///
+    /// # Example
+    /// ```rust
+    /// let bold_button = Button::builder("bold")
+    ///     .text("Important Action")
+    ///     .text_weight(TextWeight::Bold)
+    ///     .build();
+    /// ```
     pub fn text_weight(mut self, weight: TextWeight) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
         let builder = self
@@ -94,6 +269,18 @@ impl ButtonBuilder {
         self
     }
 
+    /// Sets the font family for the button text.
+    ///
+    /// # Arguments
+    /// * `family` - The FontFamily to use (Default, Mono, Serif, Sans)
+    ///
+    /// # Example
+    /// ```rust
+    /// let mono_button = Button::builder("code")
+    ///     .text("Execute")
+    ///     .text_family(FontFamily::Mono)
+    ///     .build();
+    /// ```
     pub fn text_family(mut self, family: FontFamily) -> Self {
         let text_content = self.text.clone().unwrap_or_default();
         let builder = self
@@ -266,6 +453,41 @@ impl ButtonBuilder {
         self.button
             .get_styling(super::core::ButtonState::Normal)
             .text_color
+    }
+}
+
+impl Button {
+    /// Creates a new ButtonBuilder for constructing a Button component.
+    ///
+    /// This is the primary entry point for creating buttons using the builder pattern.
+    /// The builder provides a fluent API for configuring all aspects of button appearance,
+    /// behavior, and content.
+    ///
+    /// # Arguments
+    /// * `name` - A name for the button component (used for debugging and identification)
+    ///
+    /// # Returns
+    /// A new ButtonBuilder with default settings
+    ///
+    /// # Example
+    /// ```rust
+    /// let button = Button::builder("submit-button")
+    ///     .text("Submit Form")
+    ///     .solid()
+    ///     .accent()
+    ///     .size_large()
+    ///     .build();
+    /// ```
+    ///
+    /// # Builder Pattern Benefits
+    ///
+    /// - **Type Safety**: Compile-time verification of configuration
+    /// - **Discoverability**: IDE autocomplete reveals available options
+    /// - **Flexibility**: Mix and match any combination of properties
+    /// - **Readability**: Self-documenting code through method names
+    /// - **Extensibility**: Easy to add new configuration options
+    pub fn builder(name: impl Into<String>) -> ButtonBuilder {
+        ButtonBuilder::new(name)
     }
 }
 
