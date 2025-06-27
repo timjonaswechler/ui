@@ -1,4 +1,7 @@
-use crate::theme::color::{accent_palette, UiColorPalette};
+use crate::{
+    theme::color::{accent_palette, UiColorPalette}, 
+    assets::InterfaceIconId,
+};
 use bevy::prelude::*;
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer, Pressed, Released};
 
@@ -103,6 +106,7 @@ pub struct ToggleBuilder {
     name: String,
     toggle: ToggleComponent,
     text: Option<String>,
+    icon: Option<InterfaceIconId>,
 }
 
 impl ToggleBuilder {
@@ -111,6 +115,7 @@ impl ToggleBuilder {
             name: format!("{}_Toggle", name.into()),
             toggle: ToggleComponent::default(),
             text: None,
+            icon: None,
         }
     }
 
@@ -179,6 +184,12 @@ impl ToggleBuilder {
 
     pub fn text(mut self, text: impl Into<String>) -> Self {
         self.text = Some(text.into());
+        self
+    }
+
+    pub fn icon(mut self, icon: InterfaceIconId) -> Self {
+        self.icon = Some(icon);
+        // TODO: Implement icon support
         self
     }
 }
@@ -359,62 +370,96 @@ impl ToggleBuilder {
             Interaction::None,
         );
 
-        // Always add text spawner
-        if let Some(text) = self.text {
-            (
-                bundle,
-                ToggleTextSpawner {
-                    text,
-                    font_size: self.toggle.size.font_size(),
-                    text_color: self.toggle.get_styling(ToggleState::Normal).text_color,
-                },
-            )
-        } else {
-            (
-                bundle,
-                ToggleTextSpawner {
-                    text: String::new(),
-                    font_size: 0.0,
-                    text_color: Color::NONE,
-                },
-            )
-        }
+        // Always add content spawner for icons and/or text
+        (
+            bundle,
+            ToggleContentSpawner {
+                text: self.text,
+                icon: self.icon,
+                font_size: self.toggle.size.font_size(),
+                text_color: self.toggle.get_styling(ToggleState::Normal).text_color,
+            },
+        )
     }
 }
 
 #[derive(Component)]
-pub struct EmptyToggleSpawner;
-
-#[derive(Component)]
-pub struct ToggleTextSpawner {
-    text: String,
+pub struct ToggleContentSpawner {
+    text: Option<String>,
+    icon: Option<InterfaceIconId>,
     font_size: f32,
     text_color: Color,
 }
 
+#[derive(Component)]
+pub struct ToggleIconMarker {
+    icon: InterfaceIconId,
+    color: Color,
+}
+
 pub fn spawn_toggle_children(
     mut commands: Commands,
-    query: Query<(Entity, &ToggleTextSpawner), Added<ToggleTextSpawner>>,
+    query: Query<(Entity, &ToggleContentSpawner), Added<ToggleContentSpawner>>,
 ) {
     for (entity, spawner) in &query {
-        // Only spawn text if it's not empty
-        if !spawner.text.is_empty() && spawner.font_size > 0.0 {
-            commands.entity(entity).with_children(|parent| {
-                parent.spawn((
-                    Name::new("ToggleText"),
-                    Text::new(spawner.text.clone()),
-                    TextColor(spawner.text_color),
-                    TextFont {
-                        font_size: spawner.font_size,
-                        ..default()
-                    },
-                    Pickable::IGNORE,
-                ));
-            });
-        }
+        commands.entity(entity).with_children(|parent| {
+            // Create a container for icon + text if both exist
+            let has_text = spawner.text.as_ref().map_or(false, |t| !t.is_empty());
+            let has_icon = spawner.icon.is_some();
+            
+            // For now, only handle text. Icon support coming later
+            if has_text {
+                if let Some(text) = &spawner.text {
+                    parent.spawn((
+                        Name::new("ToggleText"),
+                        Text::new(text),
+                        TextColor(spawner.text_color),
+                        TextFont {
+                            font_size: spawner.font_size,
+                            ..default()
+                        },
+                        Pickable::IGNORE,
+                    ));
+                }
+            }
+            
+            // Add icon support
+            if has_icon {
+                if let Some(icon_id) = spawner.icon {
+                    parent.spawn((
+                        Name::new("ToggleIcon"),
+                        ToggleIconMarker {
+                            icon: icon_id,
+                            color: spawner.text_color,
+                        },
+                        Pickable::IGNORE,
+                    ));
+                }
+            }
+        });
 
         // Remove the spawner component
-        commands.entity(entity).remove::<ToggleTextSpawner>();
+        commands.entity(entity).remove::<ToggleContentSpawner>();
+    }
+}
+
+pub fn spawn_toggle_icons(
+    mut commands: Commands,
+    query: Query<(Entity, &ToggleIconMarker), Added<ToggleIconMarker>>,
+    interface_atlases: Option<Res<crate::assets::icons::interface::InterfaceAtlases>>,
+) {
+    use crate::assets::icons::interface::InterfaceIcon;
+    
+    if let Some(atlases) = interface_atlases {
+        for (entity, marker) in &query {
+            // Replace the marker with the actual icon
+            commands.entity(entity).remove::<ToggleIconMarker>();
+            commands.entity(entity).insert(
+                InterfaceIcon::new(marker.icon)
+                    .tint(marker.color)
+                    .bundle(&atlases)
+            );
+        }
     }
 }
 
@@ -500,6 +545,7 @@ pub fn update_toggle_styling(
     mut border_colors: Query<&mut BorderColor, With<ToggleComponent>>,
     children_query: Query<&Children>,
     mut text_colors: Query<&mut TextColor, With<Text>>,
+    mut icon_markers: Query<&mut ToggleIconMarker>,
 ) {
     for (entity, toggle) in &toggles_query {
         let styling = toggle.get_styling(toggle.current_state);
@@ -514,13 +560,32 @@ pub fn update_toggle_styling(
             *border_color = styling.border_color;
         }
 
-        // Update text color
-        if let Ok(children) = children_query.get(entity) {
-            for child in children.iter() {
-                if let Ok(mut text_color) = text_colors.get_mut(child) {
-                    *text_color = TextColor(styling.text_color);
-                }
+        // Update text and icon colors recursively
+        update_children_colors(&children_query, entity, styling.text_color, &mut text_colors, &mut icon_markers);
+    }
+}
+
+fn update_children_colors(
+    children_query: &Query<&Children>,
+    entity: Entity,
+    color: Color,
+    text_colors: &mut Query<&mut TextColor, With<Text>>,
+    icon_markers: &mut Query<&mut ToggleIconMarker>,
+) {
+    if let Ok(children) = children_query.get(entity) {
+        for child in children.iter() {
+            // Update text color
+            if let Ok(mut text_color) = text_colors.get_mut(child) {
+                *text_color = TextColor(color);
             }
+            
+            // Update icon marker color for later processing
+            if let Ok(mut icon_marker) = icon_markers.get_mut(child) {
+                icon_marker.color = color;
+            }
+            
+            // Recursively update grandchildren
+            update_children_colors(children_query, child, color, text_colors, icon_markers);
         }
     }
 }

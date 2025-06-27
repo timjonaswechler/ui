@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use ui::{
+    assets::icons::interface::InterfaceIconId,
     components::toggle::*,
     plugin::ForgeUiPlugin,
     theme::color::{accent_palette, error_palette, success_palette, warning_palette},
@@ -48,6 +49,7 @@ fn setup(mut commands: Commands) {
             parent.spawn((
                 Name::new("BasicToggle"),
                 ToggleComponent::new("basic")
+                    .text("text")
                     .variant(ToggleVariant::Soft)
                     .build(),
             ));
@@ -93,6 +95,67 @@ fn setup(mut commands: Commands) {
                 ToggleComponent::new("disabled")
                     .disabled()
                     .pressed()
+                    .build(),
+            ));
+
+            // Icon Toggles Section
+            parent.spawn((
+                Name::new("IconSectionTitle"),
+                Text::new("Icon Toggles"),
+                TextColor(Color::WHITE),
+                TextFont {
+                    font_size: 24.0,
+                    ..default()
+                },
+            ));
+
+            // Icon Only Toggle
+            parent.spawn((
+                Name::new("IconOnlyToggle"),
+                ToggleComponent::new("icon_only")
+                    .icon(InterfaceIconId::Heart)
+                    .variant(ToggleVariant::Soft)
+                    .build(),
+            ));
+
+            // Icon + Text Toggle
+            parent.spawn((
+                Name::new("IconTextToggle"),
+                ToggleComponent::new("icon_text")
+                    .icon(InterfaceIconId::StarFilled)
+                    .text("Favorite")
+                    .variant(ToggleVariant::Outline)
+                    .color(warning_palette())
+                    .build(),
+            ));
+
+            // Icon Toggle - Pressed
+            parent.spawn((
+                Name::new("IconPressedToggle"),
+                ToggleComponent::new("icon_pressed")
+                    .icon(InterfaceIconId::Bookmark)
+                    .text("Bookmarked")
+                    .variant(ToggleVariant::Solid)
+                    .pressed()
+                    .build(),
+            ));
+
+            // Various Icon Examples
+            parent.spawn((
+                Name::new("GearToggle"),
+                ToggleComponent::new("gear")
+                    .icon(InterfaceIconId::Gear)
+                    .text("Settings")
+                    .variant(ToggleVariant::Surface)
+                    .build(),
+            ));
+
+            parent.spawn((
+                Name::new("BellToggle"),
+                ToggleComponent::new("bell")
+                    .icon(InterfaceIconId::Bell)
+                    .text("Notifications")
+                    .color(error_palette())
                     .build(),
             ));
         });

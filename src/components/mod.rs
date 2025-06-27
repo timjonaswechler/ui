@@ -98,6 +98,7 @@ impl Plugin for ComponentsPlugin {
                 (
                     toggle::setup_toggle_interactions,
                     toggle::spawn_toggle_children,
+                    toggle::spawn_toggle_icons,
                     toggle::update_toggle_styling,
                 ),
             )
