@@ -8,7 +8,7 @@ use ui::{
     },
     plugin::ForgeUiPlugin,
     theme::color::{accent_palette, error_palette, success_palette},
-    utilities::{ui_root::ui_root, ComponentBuilder},
+    utilities::ui_root::ui_root,
 };
 
 fn main() {

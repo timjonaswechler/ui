@@ -6,7 +6,7 @@ use ui::{
     },
     plugin::ForgeUiPlugin,
     theme::color::accent_palette,
-    utilities::{ui_root, ComponentBuilder},
+    utilities::ui_root,
 };
 
 fn main() {

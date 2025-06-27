@@ -3,7 +3,6 @@ use ui::{
     components::{TabsBuilder, text::Text},
     plugin::{ForgeUiPlugin, UiState},
     theme::color::theme,
-    utilities::ComponentBuilder,
 };
 
 fn main() {

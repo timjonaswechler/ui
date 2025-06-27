@@ -8,7 +8,6 @@ use ui::{
         color::{error_palette, theme, TextColor as TextColorEnum},
         typography::{FontFamily, TextWeight},
     },
-    utilities::ComponentBuilder,
 };
 fn main() {
     App::new()

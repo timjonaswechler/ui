@@ -7,15 +7,11 @@ This document outlines the structured process for planning a new UI component fo
 
 Your goal in this phase is to fully understand the requirements and technical context.
 
-### 1.1. Clarify Requirements (PRD Generation)
--   Ask the user clarifying questions based on the initial prompt. Use the PRD structure (Goals, User Stories, Requirements, Non-Goals) as a guide.
--   Generate a preliminary `prd-[feature-name].md` for confirmation.
-
-### 1.2. Research Sources
--   **Radix Principles:** Review the corresponding component documentation listed in `SOURCE.md`. Identify the core API, props, and anatomy of the component.
+### 1.1. Research Sources
+-   **Radix Principles:** Review the corresponding component documentation listed in `SOURCE.md`. Identify the API, props, and anatomy of the component.
 -   **Bevy Implementation:** Research `docs.rs` for the relevant Bevy components and concepts needed (e.g., `NodeBundle`, `Style`, `Interaction`, `FocusPolicy`).
 
-### 1.3. Analyze Existing Code
+### 1.2. Analyze Existing Code
 -   Review the project's `src/` directory.
 -   Identify existing components, utilities, or theme elements that can be reused (e.g., `Text` component, theme colors, `ButtonBuilder` pattern).
 -   List the specific modules/structs you intend to reuse.
@@ -43,3 +39,20 @@ Based on your research, create a detailed implementation plan. Present this plan
 ---
 **Wait for user approval of the plan before proceeding to implementation.**
 ---
+
+## Progress of all UI Components there are to be created
+- [] `Toggle`
+- [] `ToggleGroup`
+- [] `RadioCard`
+- [] `TabNav`
+- [] `Spinner`
+- [] `Menu (base)`
+- [] `Menubar`
+- [] `Navigation Menu`
+- [] `Dropdown Menu`
+- [] `Context Menu`
+- [] `Dialog`
+- [] `Alert Dialog`
+- [] `Collapsible`
+- [] `Checkbox Group`
+- [] `Accordion`

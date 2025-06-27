@@ -16,7 +16,7 @@ use ui::{
         color::{theme, TextColor as TextColorEnum},
         typography::{TextSize, TextWeight},
     },
-    utilities::{ui_root, ComponentBuilder},
+    utilities::ui_root,
 };
 
 fn main() {

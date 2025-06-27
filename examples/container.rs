@@ -3,7 +3,7 @@ use ui::{
     components::{text::Text, BoxComponent, ContainerSize, FlexComponent},
     plugin::{ForgeUiPlugin, UiState},
     theme::typography::TextSize,
-    utilities::{ui_root, ComponentBuilder},
+    utilities::ui_root,
 };
 
 fn main() {

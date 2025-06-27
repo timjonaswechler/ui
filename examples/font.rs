@@ -3,7 +3,7 @@ use ui::{
     components::text::Text,
     plugin::{ForgeUiPlugin, UiState},
     theme::typography::{FontFamily, TextWeight},
-    utilities::{ui_root, ComponentBuilder},
+    utilities::ui_root,
 };
 
 fn main() {

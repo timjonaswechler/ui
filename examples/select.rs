@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use ui::{
     components::*,
-    utilities::{ComponentBuilder, ui_root},
+    utilities::ui_root,
     plugin::ForgeUiPlugin,
 };
 

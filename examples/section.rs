@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use ui::{
     components::{text::Text, Heading, Section},
     plugin::{ForgeUiPlugin, UiState},
-    utilities::{ui_root, ComponentBuilder},
+    utilities::ui_root,
 };
 
 fn main() {

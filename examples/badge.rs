@@ -6,7 +6,7 @@ use ui::{
         color::{accent_palette, error_palette, success_palette, theme, warning_palette},
         typography::TextWeight,
     },
-    utilities::{ui_root, ComponentBuilder},
+    utilities::ui_root,
 };
 
 fn main() {

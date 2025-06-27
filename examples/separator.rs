@@ -3,7 +3,7 @@ use ui::{
     components::{heading::Heading, separator::SeparatorBuilder, text::Text},
     plugin::{ForgeUiPlugin, UiState},
     theme::color::{accent_palette, theme_mode, ThemeMode, UiColorPalettes},
-    utilities::{ui_root::ui_root, ComponentBuilder},
+    utilities::ui_root::ui_root,
 };
 
 fn main() {

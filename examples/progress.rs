@@ -7,7 +7,7 @@ use ui::{
     },
     plugin::{ForgeUiPlugin, UiState},
     theme::color::{theme_mode, ThemeMode, UiColorPalettes},
-    utilities::{ui_root::ui_root, ComponentBuilder},
+    utilities::ui_root::ui_root,
 };
 
 fn main() {

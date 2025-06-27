@@ -10,7 +10,7 @@ use ui::{
         color::TextColor,
         typography::{FontFamily, TextSize, TextWeight},
     },
-    utilities::{ui_root, ComponentBuilder},
+    utilities::ui_root,
 };
 
 fn main() {
