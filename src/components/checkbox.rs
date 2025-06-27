@@ -3,7 +3,6 @@ use crate::{
         color::{accent_palette, UiColorPalette},
         layout::UiLayout,
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 use bevy_picking::prelude::Pickable;
@@ -278,20 +277,8 @@ impl CheckboxBuilder {
     }
 }
 
-impl ComponentBuilder for CheckboxBuilder {
-    type Output = (
-        Name,
-        CheckboxComponent,
-        Node,
-        BackgroundColor,
-        BorderColor,
-        BorderRadius,
-        Pickable,
-        Button,
-        Interaction,
-    );
-
-    fn build(self) -> Self::Output {
+impl CheckboxBuilder {
+    pub fn build(self) -> impl Bundle {
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();
         let border_radius = self.calculate_border_radius();

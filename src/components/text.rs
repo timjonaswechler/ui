@@ -101,7 +101,6 @@ use crate::{
             get_effective_text_weight, get_effective_font_family,
         },
     },
-    utilities::ComponentBuilder,
 };
 
 /// Builder for creating themed text components with advanced typography and accessibility features.
@@ -365,25 +364,7 @@ impl TextBuilder {
     }
 }
 
-impl ComponentBuilder for TextBuilder {
-    /// The Bundle type returned by the TextBuilder.
-    /// 
-    /// Includes all necessary Bevy components for a fully functional text entity:
-    /// - Text: The text content widget
-    /// - TextFont: Font and size information
-    /// - TextColor: Resolved color
-    /// - TextLayout: Alignment and layout
-    /// - Node: UI layout node
-    /// - TextFontInfo: Font metadata for the font system
-    type Output = (
-        bevy::ui::widget::Text,
-        TextFont,
-        bevy::prelude::TextColor,
-        TextLayout,
-        Node,
-        TextFontInfo,
-    );
-
+impl TextBuilder {
     /// Builds the text configuration into a Bevy Bundle.
     /// 
     /// This method performs the complex logic of:
@@ -394,7 +375,15 @@ impl ComponentBuilder for TextBuilder {
     /// 
     /// # Returns
     /// A tuple of Bevy components ready for entity spawning
-    fn build(self) -> Self::Output {
+    /// 
+    /// The returned bundle includes all necessary Bevy components for a fully functional text entity:
+    /// - Text: The text content widget
+    /// - TextFont: Font and size information
+    /// - TextColor: Resolved color
+    /// - TextLayout: Alignment and layout
+    /// - Node: UI layout node
+    /// - TextFontInfo: Font metadata for the font system
+    pub fn build(self) -> impl Bundle {
         let effective_size = get_effective_text_size(self.variant, self.size);
         let effective_weight = get_effective_text_weight(self.variant, self.weight);
         let effective_family = get_effective_font_family(self.variant, self.family);

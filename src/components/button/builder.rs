@@ -4,7 +4,6 @@ use crate::{
         color::{TextColor as TextColorEnum, TextContrastLevel, UiColorPalette},
         typography::{FontFamily, TextSize, TextWeight},
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 
@@ -258,30 +257,26 @@ impl ButtonBuilder {
     }
 
     fn calculate_border_color(&self) -> BorderColor {
-        self.button.get_styling(super::core::ButtonState::Normal).border_color
+        self.button
+            .get_styling(super::core::ButtonState::Normal)
+            .border_color
     }
 
     fn calculate_text_color(&self) -> TextColor {
-        self.button.get_styling(super::core::ButtonState::Normal).text_color
+        self.button
+            .get_styling(super::core::ButtonState::Normal)
+            .text_color
     }
 }
 
-impl ComponentBuilder for ButtonBuilder {
-    type Output = (
-        Name,
-        Button,
-        Node,
-        BorderColor,
-        BorderRadius,
-        BackgroundColor,
-        bevy_picking::prelude::Pickable,
-        impl Bundle,
-    );
-
-    fn build(self) -> Self::Output {
-        use bevy::{ecs::spawn::SpawnWith, prelude::*};
+impl ButtonBuilder {
+    pub fn build(self) -> impl Bundle {
+        use super::{
+            animations::SpinnerAnimation, interactions::ButtonManagedText,
+            styling::calculate_border_radius,
+        };
         use crate::components::text::Text;
-        use super::{animations::SpinnerAnimation, interactions::ButtonManagedText, styling::calculate_border_radius};
+        use bevy::{ecs::spawn::SpawnWith, prelude::*};
 
         let node = self.calculate_style();
         let background_color = self.calculate_background_color();

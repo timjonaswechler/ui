@@ -77,7 +77,6 @@ use crate::{
         color::{accent_palette, theme, TextColor, UiColorPalette},
         typography::{TextSize, TextWeight},
     },
-    utilities::ComponentBuilder,
 };
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
 

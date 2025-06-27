@@ -5,7 +5,6 @@ use crate::{
         button::{ButtonBuilder, ButtonVariant, ButtonSize, ButtonClickEvent},
     },
     theme::color::accent_palette,
-    utilities::ComponentBuilder,
 };
 
 // A marker component for the root of a tabs system.

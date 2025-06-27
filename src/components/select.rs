@@ -2,7 +2,6 @@ use crate::components::text::Text;
 use crate::theme::color::{
     theme_mode, ThemeMode, UiColorPalette, UiColorPalettes, UiColorPalettesName,
 };
-use crate::utilities::ComponentBuilder;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer};
@@ -320,17 +319,8 @@ impl SelectBuilder {
     }
 }
 
-impl ComponentBuilder for SelectBuilder {
-    type Output = (
-        SelectComponent,
-        Node,
-        BackgroundColor,
-        BorderColor,
-        BorderRadius,
-        SelectTrigger,
-    );
-
-    fn build(self) -> Self::Output {
+impl SelectBuilder {
+    pub fn build(self) -> impl Bundle {
         let (bg_color, border_color, _text_color) = self.component.calculate_trigger_colors();
         let height = self.component.calculate_trigger_height();
         let (vertical_padding, horizontal_padding) = self.component.calculate_padding();
@@ -385,10 +375,8 @@ impl SelectOptionBuilder {
     }
 }
 
-impl ComponentBuilder for SelectOptionBuilder {
-    type Output = (SelectOptionComponent, Node, BackgroundColor, BorderColor);
-
-    fn build(self) -> Self::Output {
+impl SelectOptionBuilder {
+    pub fn build(self) -> impl Bundle {
         (
             self.component,
             self.node,

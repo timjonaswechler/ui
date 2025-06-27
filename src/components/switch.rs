@@ -2,7 +2,6 @@ use crate::{
     theme::{
         color::{accent_palette, UiColorPalette},
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 use bevy_picking::prelude::{Click, Out, Over, Pickable, Pointer, Pressed, Released};
@@ -331,21 +330,8 @@ impl SwitchBuilder {
     }
 }
 
-impl ComponentBuilder for SwitchBuilder {
-    type Output = (
-        Name,
-        SwitchComponent,
-        Node,
-        BackgroundColor,
-        BorderColor,
-        BorderRadius,
-        Pickable,
-        Button,
-        Interaction,
-        SwitchChildSpawner,
-    );
-
-    fn build(self) -> Self::Output {
+impl SwitchBuilder {
+    pub fn build(self) -> impl Bundle {
         let node = self.calculate_style();
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();

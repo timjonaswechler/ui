@@ -2,7 +2,6 @@ use crate::{
     theme::{
         color::{accent_palette, UiColorPalette},
     },
-    utilities::ComponentBuilder,
 };
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
 
@@ -247,15 +246,7 @@ impl Default for ProgressBuilder {
     }
 }
 
-impl ComponentBuilder for ProgressBuilder {
-    type Output = (Name, ProgressComponent, Node, BackgroundColor, BorderRadius);
-
-    fn build(self) -> Self::Output {
-        // This is a placeholder - the actual build method returns impl Bundle
-        // which can't be expressed in the trait without making it generic
-        panic!("Use the build() method directly on ProgressBuilder")
-    }
-}
+// Note: ProgressBuilder already has a direct build() method that returns impl Bundle
 
 // Animation system for indeterminate progress
 pub fn animate_indeterminate_progress(

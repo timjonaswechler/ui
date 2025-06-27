@@ -138,7 +138,6 @@ use crate::{
         color::{accent_palette, UiColorPalette},
         layout::UiLayout,
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 use bevy::ui::{GridPlacement, MaxTrackSizingFunction, MinTrackSizingFunction};
@@ -1207,21 +1206,7 @@ impl GridBuilder {
     }
 }
 
-impl ComponentBuilder for GridBuilder {
-    /// The complete bundle of components created by the GridBuilder.
-    /// 
-    /// This bundle includes all necessary Bevy components for a fully
-    /// functional grid layout with proper styling and interaction support.
-    type Output = (
-        Name,              // Component identification
-        GridComponent,     // Grid configuration
-        Node,              // Layout and positioning
-        BackgroundColor,   // Background styling
-        BorderColor,       // Border styling
-        BorderRadius,      // Corner rounding
-        Pickable,          // Interaction support
-    );
-
+impl GridBuilder {
     /// Builds the grid configuration into a complete Bevy component bundle.
     /// 
     /// This method performs the complex translation from our high-level grid
@@ -1233,7 +1218,7 @@ impl ComponentBuilder for GridBuilder {
     /// 
     /// # Returns
     /// A tuple of Bevy components ready for entity spawning
-    fn build(mut self) -> Self::Output {
+    pub fn build(mut self) -> impl Bundle {
         // Configure Node for CSS Grid display
         self.node.display = Display::Grid;
 

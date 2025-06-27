@@ -5,7 +5,7 @@ use crate::{
         layout::UiLayout,
         typography::{FontFamily, TextSize, TextWeight},
     },
-    utilities::{portal::Portal, ui_root::UIRoot, ComponentBuilder},
+    utilities::{portal::Portal, ui_root::UIRoot},
 };
 use bevy::{ecs::spawn::SpawnWith, input::keyboard::KeyCode, prelude::*};
 use bevy_picking::prelude::Pickable;
@@ -730,7 +730,10 @@ pub fn hover_card_state_system(
 /// System to position hover card content relative to triggers
 pub fn hover_card_positioning_system(
     mut content_query: Query<(Entity, &HoverCardContent, &mut Node), With<HoverCardContentMarker>>,
-    trigger_query: Query<(Entity, &HoverCardTrigger, &GlobalTransform), (With<HoverCardTrigger>, Without<HoverCardContentMarker>)>,
+    trigger_query: Query<
+        (Entity, &HoverCardTrigger, &GlobalTransform),
+        (With<HoverCardTrigger>, Without<HoverCardContentMarker>),
+    >,
     node_query: Query<&Node, Without<HoverCardContentMarker>>,
     hover_card_query: Query<&HoverCard>,
     hover_card_changed: Query<Entity, (With<HoverCard>, Changed<HoverCard>)>,
@@ -742,7 +745,7 @@ pub fn hover_card_positioning_system(
 
     // Check if any hover card state changed
     let has_state_changes = hover_card_changed.iter().any(|_| true);
-    
+
     if !has_state_changes {
         return; // No positioning updates needed
     }
@@ -795,10 +798,10 @@ pub fn hover_card_positioning_system(
                 // Update position - ensure it's positioned relative to the window
                 content_node.left = Val::Px(final_x);
                 content_node.top = Val::Px(final_y);
-                
+
                 // Also ensure the content uses absolute positioning
                 content_node.position_type = PositionType::Absolute;
-                
+
                 info!(
                     "Positioning hover card: trigger_pos={:?}, trigger_size={:?}, side={:?}, final_pos=({}, {})",
                     trigger_pos, trigger_size, content.side, final_x, final_y
@@ -813,15 +816,15 @@ fn extract_node_size(node: &Node) -> Vec2 {
     let width = match node.width {
         Val::Px(w) => w,
         Val::Percent(p) => p * 8.0, // Rough estimate
-        _ => 100.0, // Default fallback
+        _ => 100.0,                 // Default fallback
     };
-    
+
     let height = match node.height {
         Val::Px(h) => h,
-        Val::Percent(p) => p * 6.0, // Rough estimate  
-        _ => 40.0, // Default fallback
+        Val::Percent(p) => p * 6.0, // Rough estimate
+        _ => 40.0,                  // Default fallback
     };
-    
+
     Vec2::new(width, height)
 }
 
@@ -857,7 +860,7 @@ fn calculate_content_position_improved(
     // Bevy UI has origin at top-left, Y increases downward
     let base_x = trigger_pos.x;
     let base_y = trigger_pos.y;
-    
+
     let half_width = trigger_size.x / 2.0;
     let half_height = trigger_size.y / 2.0;
 
@@ -867,7 +870,7 @@ fn calculate_content_position_improved(
             (base_x, base_y - half_height - side_offset)
         }
         HoverCardSide::Bottom => {
-            // Position below the trigger  
+            // Position below the trigger
             (base_x, base_y + half_height + side_offset)
         }
         HoverCardSide::Left => {

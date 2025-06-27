@@ -146,7 +146,6 @@ use crate::{
         color::{accent_palette, UiColorPalette},
         layout::UiLayout,
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 use bevy_picking::prelude::Pickable;
@@ -794,18 +793,8 @@ impl SectionBuilder {
     }
 }
 
-impl ComponentBuilder for SectionBuilder {
-    type Output = (
-        Name,
-        SectionComponent,
-        Node,
-        BackgroundColor,
-        BorderColor,
-        BorderRadius,
-        Pickable,
-    );
-
-    fn build(self) -> Self::Output {
+impl SectionBuilder {
+    pub fn build(self) -> impl Bundle {
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();
         let border_radius = self.calculate_border_radius();

@@ -4,7 +4,6 @@ use crate::{
         color::{accent_palette, UiColorPalette},
         layout::UiLayout,
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 use bevy_picking::prelude::Pickable;
@@ -947,18 +946,8 @@ impl FlexBuilder {
     }
 }
 
-impl ComponentBuilder for FlexBuilder {
-    type Output = (
-        Name,
-        FlexComponent,
-        Node,
-        BackgroundColor,
-        BorderColor,
-        BorderRadius,
-        Pickable,
-    );
-
-    fn build(mut self) -> Self::Output {
+impl FlexBuilder {
+    pub fn build(mut self) -> impl Bundle {
         // Update Node with flex properties
         self.node.display = Display::Flex;
         self.node.flex_direction = self.flex_config.direction;

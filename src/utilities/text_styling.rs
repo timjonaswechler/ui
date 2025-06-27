@@ -81,7 +81,6 @@ use crate::{
         typography::{TextSize, TextWeight, FontFamily, TextVariant},
         color::{TextColor as TextColorEnum, TextContrastLevel},
     },
-    utilities::ComponentBuilder,
 };
 
 /// Comprehensive text styling trait for UI components with text content

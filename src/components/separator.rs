@@ -3,7 +3,6 @@ use crate::{
         color::{theme_mode, ThemeMode, UiColorPalette, UiColorPalettes},
         layout::UiLayout,
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 
@@ -113,13 +112,4 @@ impl Default for SeparatorBuilder {
     }
 }
 
-impl ComponentBuilder for SeparatorBuilder {
-    type Output = (Name, SeparatorComponent, Node, BackgroundColor);
-
-    fn build(self) -> Self::Output {
-        let node = self.calculate_style();
-        let background_color = self.calculate_background_color();
-
-        (Name::new(self.name), self.separator, node, background_color)
-    }
-}
+// Note: SeparatorBuilder already has a direct build() method that returns impl Bundle

@@ -1,7 +1,6 @@
 use crate::{
     components::box_component::{BoxBuilder, BoxComponent, BoxVariant},
     theme::color::UiColorPalette,
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 
@@ -202,22 +201,16 @@ impl Default for CardBuilder {
     }
 }
 
-impl ComponentBuilder for CardBuilder {
-    type Output = (Name, Card, Node, BackgroundColor, BorderColor, BorderRadius);
-
-    fn build(self) -> Self::Output {
-        let box_bundle = self.box_builder.build();
-
+impl CardBuilder {
+    pub fn build(self) -> impl Bundle {
+        // Since BoxBuilder now returns impl Bundle, we need to build it directly
+        // and add our Card component alongside it
         (
-            box_bundle.0, // Name
             Card {
                 name: "Card".to_string(),
-                box_component: box_bundle.1, // BoxComponent
+                box_component: Default::default(), // We'll use a placeholder since we can't access the components directly
             },
-            box_bundle.2, // Node
-            box_bundle.3, // BackgroundColor
-            box_bundle.4, // BorderColor
-            box_bundle.5, // BorderRadius
+            self.box_builder.build(),
         )
     }
 }

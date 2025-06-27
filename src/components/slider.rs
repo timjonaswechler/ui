@@ -1,6 +1,5 @@
 use crate::{
     theme::color::{accent_palette, theme, UiColorPalette},
-    utilities::ComponentBuilder,
 };
 use bevy::{ecs::spawn::SpawnWith, prelude::*};
 use bevy_picking::prelude::{Click, Drag, DragEnd, DragStart, Pickable, Pointer};
@@ -453,13 +452,7 @@ impl Default for SliderBuilder {
     }
 }
 
-impl ComponentBuilder for SliderBuilder {
-    type Output = (Name, SliderComponent, Node, BackgroundColor);
-
-    fn build(self) -> Self::Output {
-        panic!("Use the build() method directly on SliderBuilder")
-    }
-}
+// Note: SliderBuilder already has a direct build() method that returns impl Bundle
 
 #[derive(Debug, Clone)]
 pub struct Rect {

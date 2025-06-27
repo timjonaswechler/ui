@@ -2,7 +2,6 @@ use crate::{
     theme::{
         color::{accent_palette, UiColorPalette},
     },
-    utilities::ComponentBuilder,
 };
 use bevy::prelude::*;
 use bevy_picking::prelude::Pickable;
@@ -412,20 +411,8 @@ impl RadioBuilder {
     }
 }
 
-impl ComponentBuilder for RadioBuilder {
-    type Output = (
-        Name,
-        RadioComponent,
-        Node,
-        BackgroundColor,
-        BorderColor,
-        BorderRadius,
-        Pickable,
-        Button,
-        Interaction,
-    );
-
-    fn build(self) -> Self::Output {
+impl RadioBuilder {
+    pub fn build(self) -> impl Bundle {
         let background_color = self.calculate_background_color();
         let border_color = self.calculate_border_color();
         let border_radius = self.calculate_border_radius();
@@ -662,14 +649,8 @@ impl RadioGroupBuilder {
     }
 }
 
-impl ComponentBuilder for RadioGroupBuilder {
-    type Output = (
-        Name,
-        RadioGroupComponent,
-        Node,
-    );
-
-    fn build(self) -> Self::Output {
+impl RadioGroupBuilder {
+    pub fn build(self) -> impl Bundle {
         (
             Name::new(self.name),
             self.group_config,
