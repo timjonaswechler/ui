@@ -18,6 +18,7 @@ pub mod slider;
 pub mod switch;
 pub mod tabs;
 pub mod text;
+pub mod toggle;
 
 pub use badge::*;
 pub use box_component::*;
@@ -37,6 +38,7 @@ pub use slider::*;
 pub use switch::*;
 pub use tabs::*;
 pub use text::*;
+pub use toggle::*;
 
 pub struct ComponentsPlugin;
 
@@ -53,6 +55,7 @@ impl Plugin for ComponentsPlugin {
             .add_event::<slider::SliderValueChangeEvent>()
             .add_event::<slider::SliderValueCommitEvent>()
             .add_event::<switch::SwitchChangeEvent>()
+            .add_event::<toggle::ToggleChangeEvent>()
             .add_systems(
                 Update,
                 (
@@ -85,17 +88,17 @@ impl Plugin for ComponentsPlugin {
                     select::update_select_trigger_text,
                 ),
             )
+            .add_systems(Update, (switch::setup_switch_interactions,))
             .add_systems(
                 Update,
-                (
-                    switch::setup_switch_interactions,
-                ),
+                (switch::spawn_switch_children, switch::update_switch_styling),
             )
             .add_systems(
                 Update,
                 (
-                    switch::spawn_switch_children,
-                    switch::update_switch_styling,
+                    toggle::setup_toggle_interactions,
+                    toggle::spawn_toggle_children,
+                    toggle::update_toggle_styling,
                 ),
             )
             .add_systems(
