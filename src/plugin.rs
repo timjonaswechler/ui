@@ -12,7 +12,7 @@ pub enum UiState {
     HotReload,
 }
 
-pub(crate) const FONT_SIZE_BASE: f32 = 16.0;
+pub(crate) const FONT_SIZE_BASE: f32 = 24.0;
 pub(crate) const SPACING_FACTOR: f32 = 0.25;
 pub(crate) const HIGH_CONTRAST: bool = false;
 pub(crate) const SCALING: f32 = 1.0;
@@ -35,7 +35,9 @@ impl Plugin for ForgeUiPlugin {
             // Add all plugin systems
             .add_plugins((AssetsPlugin, ComponentsPlugin, audio::plugin));
 
-        info!("ForgeUiPlugin loaded. Starting with UiState={:?}", UiState::LoadingAssets);
+        info!(
+            "ForgeUiPlugin loaded. Starting with UiState={:?}",
+            UiState::LoadingAssets
+        );
     }
 }
-

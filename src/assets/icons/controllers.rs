@@ -1,1409 +1,1478 @@
 #![allow(non_snake_case)]
-use super::macros::IconSize;
-use crate::define_icon_category;
-use bevy::prelude::*;
+#![allow(non_upper_case_globals)]
 
-// ===== GENERIC CONTROLLER ICONS =====
-define_icon_category! {
-    Generic {
-        path: "ui/icons/controllers/generic",
-        atlas: (20, 2),
-        icons: [
-            Button = 0,
-            ButtonCircle = 1,
-            ButtonCircleFill = 2,
-            ButtonCircleOutline = 3,
-            ButtonFinger = 4,
-            ButtonFingerPressed = 5,
-            ButtonPressed = 6,
-            ButtonSquare = 7,
-            ButtonSquareFill = 8,
-            ButtonSquareOutline = 9,
-            ButtonTriggerA = 10,
-            ButtonTriggerAFill = 11,
-            ButtonTriggerAOutline = 12,
-            ButtonTriggerB = 13,
-            ButtonTriggerBFill = 14,
-            ButtonTriggerBOutline = 15,
-            ButtonTriggerC = 16,
-            ButtonTriggerCFill = 17,
-            ButtonTriggerCOutline = 18,
-            Joystick = 19,
-            JoystickHorizontal = 20,
-            JoystickLeft = 21,
-            JoystickRed = 22,
-            JoystickRedHorizontal = 23,
-            JoystickRedLeft = 24,
-            JoystickRedRight = 25,
-            JoystickRight = 26,
-            Stick = 27,
-            StickDown = 28,
-            StickHorizontal = 29,
-            StickLeft = 30,
-            StickPress = 31,
-            StickRight = 32,
-            StickSide = 33,
-            StickUp = 34,
-            StickVertical = 35,
-        ]
+pub mod generic {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::{FontFamily, TextSize};
+
+    pub struct Generic;
+
+    impl Generic {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content)
+                .family(FontFamily::GenericController)
+                .size(TextSize::Base)
+        }
     }
+
+    // ===== GENERIC CONTROLLER ICONS =====
+    pub const Button: &str = "\u{e000}";
+    pub const ButtonCircle: &str = "\u{e001}";
+    pub const ButtonCircleFill: &str = "\u{e002}";
+    pub const ButtonCircleOutline: &str = "\u{e003}";
+    pub const ButtonFinger: &str = "\u{e004}";
+    pub const ButtonFingerPressed: &str = "\u{e005}";
+    pub const ButtonPressed: &str = "\u{e006}";
+    pub const ButtonSquare: &str = "\u{e007}";
+    pub const ButtonSquareFill: &str = "\u{e008}";
+    pub const ButtonSquareOutline: &str = "\u{e009}";
+    pub const ButtonTriggerA: &str = "\u{e00a}";
+    pub const ButtonTriggerAFill: &str = "\u{e00b}";
+    pub const ButtonTriggerAOutline: &str = "\u{e00c}";
+    pub const ButtonTriggerB: &str = "\u{e00d}";
+    pub const ButtonTriggerBFill: &str = "\u{e00e}";
+    pub const ButtonTriggerBOutline: &str = "\u{e00f}";
+    pub const ButtonTriggerC: &str = "\u{e010}";
+    pub const ButtonTriggerCFill: &str = "\u{e011}";
+    pub const ButtonTriggerCOutline: &str = "\u{e012}";
+    pub const Joystick: &str = "\u{e013}";
+    pub const JoystickHorizontal: &str = "\u{e014}";
+    pub const JoystickLeft: &str = "\u{e015}";
+    pub const JoystickRed: &str = "\u{e016}";
+    pub const JoystickRedHorizontal: &str = "\u{e017}";
+    pub const JoystickRedLeft: &str = "\u{e018}";
+    pub const JoystickRedRight: &str = "\u{e019}";
+    pub const JoystickRight: &str = "\u{e01a}";
+    pub const Stick: &str = "\u{e01b}";
+    pub const StickDown: &str = "\u{e01c}";
+    pub const StickHorizontal: &str = "\u{e01d}";
+    pub const StickLeft: &str = "\u{e01e}";
+    pub const StickPress: &str = "\u{e01f}";
+    pub const StickRight: &str = "\u{e020}";
+    pub const StickSide: &str = "\u{e021}";
+    pub const StickUp: &str = "\u{e022}";
+    pub const StickVertical: &str = "\u{e023}";
 }
 
 // ===== KEYBOARD & MOUSE ICONS =====
-define_icon_category! {
-    KeyboardMouse {
-        path: "ui/icons/controllers/keyboard_mouse",
-        atlas: (20, 13),
-        icons: [
-            Keyboard = 0,
-            Keyboard0 = 1,
-            Keyboard0Outline = 2,
-            Keyboard1 = 3,
-            Keyboard1Outline = 4,
-            Keyboard2 = 5,
-            Keyboard2Outline = 6,
-            Keyboard3 = 7,
-            Keyboard3Outline = 8,
-            Keyboard4 = 9,
-            Keyboard4Outline = 10,
-            Keyboard5 = 11,
-            Keyboard5Outline = 12,
-            Keyboard6 = 13,
-            Keyboard6Outline = 14,
-            Keyboard7 = 15,
-            Keyboard7Outline = 16,
-            Keyboard8 = 17,
-            Keyboard8Outline = 18,
-            Keyboard9 = 19,
-            Keyboard9Outline = 20,
-            KeyboardA = 21,
-            KeyboardAOutline = 22,
-            KeyboardAlt = 23,
-            KeyboardAltOutline = 24,
-            KeyboardAny = 25,
-            KeyboardAnyOutline = 26,
-            KeyboardApostrophe = 27,
-            KeyboardApostropheOutline = 28,
-            KeyboardArrowDown = 29,
-            KeyboardArrowDownOutline = 30,
-            KeyboardArrowLeft = 31,
-            KeyboardArrowLeftOutline = 32,
-            KeyboardArrowRight = 33,
-            KeyboardArrowRightOutline = 34,
-            KeyboardArrowUp = 35,
-            KeyboardArrowUpOutline = 36,
-            KeyboardArrows = 37,
-            KeyboardArrowsAll = 38,
-            KeyboardArrowsDown = 39,
-            KeyboardArrowsDownOutline = 40,
-            KeyboardArrowsHorizontal = 41,
-            KeyboardArrowsHorizontalOutline = 42,
-            KeyboardArrowsLeft = 43,
-            KeyboardArrowsLeftOutline = 44,
-            KeyboardArrowsNone = 45,
-            KeyboardArrowsRight = 46,
-            KeyboardArrowsRightOutline = 47,
-            KeyboardArrowsUp = 48,
-            KeyboardArrowsUpOutline = 49,
-            KeyboardArrowsVertical = 50,
-            KeyboardArrowsVerticalOutline = 51,
-            KeyboardAsterisk = 52,
-            KeyboardAsteriskOutline = 53,
-            KeyboardB = 54,
-            KeyboardBOutline = 55,
-            KeyboardBackspace = 56,
-            KeyboardBackspaceIcon = 57,
-            KeyboardBackspaceIconAlternative = 58,
-            KeyboardBackspaceIconAlternativeOutline = 59,
-            KeyboardBackspaceIconOutline = 60,
-            KeyboardBackspaceOutline = 61,
-            KeyboardBracketClose = 62,
-            KeyboardBracketCloseOutline = 63,
-            KeyboardBracketGreater = 64,
-            KeyboardBracketGreaterOutline = 65,
-            KeyboardBracketLess = 66,
-            KeyboardBracketLessOutline = 67,
-            KeyboardBracketOpen = 68,
-            KeyboardBracketOpenOutline = 69,
-            KeyboardC = 70,
-            KeyboardCOutline = 71,
-            KeyboardCapslock = 72,
-            KeyboardCapslockIcon = 73,
-            KeyboardCapslockIconOutline = 74,
-            KeyboardCapslockOutline = 75,
-            KeyboardCaret = 76,
-            KeyboardCaretOutline = 77,
-            KeyboardColon = 78,
-            KeyboardColonOutline = 79,
-            KeyboardComma = 80,
-            KeyboardCommaOutline = 81,
-            KeyboardCommand = 82,
-            KeyboardCommandOutline = 83,
-            KeyboardCtrl = 84,
-            KeyboardCtrlOutline = 85,
-            KeyboardD = 86,
-            KeyboardDOutline = 87,
-            KeyboardDelete = 88,
-            KeyboardDeleteOutline = 89,
-            KeyboardE = 90,
-            KeyboardEOutline = 91,
-            KeyboardEnd = 92,
-            KeyboardEndOutline = 93,
-            KeyboardEnter = 94,
-            KeyboardEnterOutline = 95,
-            KeyboardEquals = 96,
-            KeyboardEqualsOutline = 97,
-            KeyboardEscape = 98,
-            KeyboardEscapeOutline = 99,
-            KeyboardExclamation = 100,
-            KeyboardExclamationOutline = 101,
-            KeyboardF = 102,
-            KeyboardF1 = 103,
-            KeyboardF10 = 104,
-            KeyboardF10Outline = 105,
-            KeyboardF11 = 106,
-            KeyboardF11Outline = 107,
-            KeyboardF12 = 108,
-            KeyboardF12Outline = 109,
-            KeyboardF1Outline = 110,
-            KeyboardF2 = 111,
-            KeyboardF2Outline = 112,
-            KeyboardF3 = 113,
-            KeyboardF3Outline = 114,
-            KeyboardF4 = 115,
-            KeyboardF4Outline = 116,
-            KeyboardF5 = 117,
-            KeyboardF5Outline = 118,
-            KeyboardF6 = 119,
-            KeyboardF6Outline = 120,
-            KeyboardF7 = 121,
-            KeyboardF7Outline = 122,
-            KeyboardF8 = 123,
-            KeyboardF8Outline = 124,
-            KeyboardF9 = 125,
-            KeyboardF9Outline = 126,
-            KeyboardFOutline = 127,
-            KeyboardFunction = 128,
-            KeyboardFunctionOutline = 129,
-            KeyboardG = 130,
-            KeyboardGOutline = 131,
-            KeyboardH = 132,
-            KeyboardHOutline = 133,
-            KeyboardHome = 134,
-            KeyboardHomeOutline = 135,
-            KeyboardI = 136,
-            KeyboardIOutline = 137,
-            KeyboardInsert = 138,
-            KeyboardInsertOutline = 139,
-            KeyboardJ = 140,
-            KeyboardJOutline = 141,
-            KeyboardK = 142,
-            KeyboardKOutline = 143,
-            KeyboardL = 144,
-            KeyboardLOutline = 145,
-            KeyboardM = 146,
-            KeyboardMOutline = 147,
-            KeyboardMinus = 148,
-            KeyboardMinusOutline = 149,
-            KeyboardN = 150,
-            KeyboardNOutline = 151,
-            KeyboardNumlock = 152,
-            KeyboardNumlockOutline = 153,
-            KeyboardNumpadEnter = 154,
-            KeyboardNumpadEnterOutline = 155,
-            KeyboardNumpadPlus = 156,
-            KeyboardNumpadPlusOutline = 157,
-            KeyboardO = 158,
-            KeyboardOOutline = 159,
-            KeyboardOption = 160,
-            KeyboardOptionOutline = 161,
-            KeyboardOutline = 162,
-            KeyboardP = 163,
-            KeyboardPOutline = 164,
-            KeyboardPageDown = 165,
-            KeyboardPageDownOutline = 166,
-            KeyboardPageUp = 167,
-            KeyboardPageUpOutline = 168,
-            KeyboardPeriod = 169,
-            KeyboardPeriodOutline = 170,
-            KeyboardPlus = 171,
-            KeyboardPlusOutline = 172,
-            KeyboardPrintscreen = 173,
-            KeyboardPrintscreenOutline = 174,
-            KeyboardQ = 175,
-            KeyboardQOutline = 176,
-            KeyboardQuestion = 177,
-            KeyboardQuestionOutline = 178,
-            KeyboardQuote = 179,
-            KeyboardQuoteOutline = 180,
-            KeyboardR = 181,
-            KeyboardROutline = 182,
-            KeyboardReturn = 183,
-            KeyboardReturnOutline = 184,
-            KeyboardS = 185,
-            KeyboardSOutline = 186,
-            KeyboardSemicolon = 187,
-            KeyboardSemicolonOutline = 188,
-            KeyboardShift = 189,
-            KeyboardShiftIcon = 190,
-            KeyboardShiftIconOutline = 191,
-            KeyboardShiftOutline = 192,
-            KeyboardSlashBack = 193,
-            KeyboardSlashBackOutline = 194,
-            KeyboardSlashForward = 195,
-            KeyboardSlashForwardOutline = 196,
-            KeyboardSpace = 197,
-            KeyboardSpaceIcon = 198,
-            KeyboardSpaceIconOutline = 199,
-            KeyboardSpaceOutline = 200,
-            KeyboardT = 201,
-            KeyboardTOutline = 202,
-            KeyboardTab = 203,
-            KeyboardTabIcon = 204,
-            KeyboardTabIconAlternative = 205,
-            KeyboardTabIconAlternativeOutline = 206,
-            KeyboardTabIconOutline = 207,
-            KeyboardTabOutline = 208,
-            KeyboardTilde = 209,
-            KeyboardTildeOutline = 210,
-            KeyboardU = 211,
-            KeyboardUOutline = 212,
-            KeyboardV = 213,
-            KeyboardVOutline = 214,
-            KeyboardW = 215,
-            KeyboardWOutline = 216,
-            KeyboardWin = 217,
-            KeyboardWinOutline = 218,
-            KeyboardX = 219,
-            KeyboardXOutline = 220,
-            KeyboardY = 221,
-            KeyboardYOutline = 222,
-            KeyboardZ = 223,
-            KeyboardZOutline = 224,
-            Mouse = 225,
-            MouseHorizontal = 226,
-            MouseLeft = 227,
-            MouseLeftOutline = 228,
-            MouseMove = 229,
-            MouseOutline = 230,
-            MouseRight = 231,
-            MouseRightOutline = 232,
-            MouseScroll = 233,
-            MouseScrollDown = 234,
-            MouseScrollDownOutline = 235,
-            MouseScrollOutline = 236,
-            MouseScrollUp = 237,
-            MouseScrollUpOutline = 238,
-            MouseScrollVertical = 239,
-            MouseScrollVerticalOutline = 240,
-            MouseSmall = 241,
-            MouseVertical = 242,
-        ]
+pub mod keyboard_mouse {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct KeyboardMouse;
+
+    impl KeyboardMouse {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::KeyboardMouse)
+        }
     }
+    pub const Keyboard: &str = "\u{e000}";
+    pub const Keyboard0: &str = "\u{e001}";
+    pub const Keyboard0Outline: &str = "\u{e002}";
+    pub const Keyboard1: &str = "\u{e003}";
+    pub const Keyboard1Outline: &str = "\u{e004}";
+    pub const Keyboard2: &str = "\u{e005}";
+    pub const Keyboard2Outline: &str = "\u{e006}";
+    pub const Keyboard3: &str = "\u{e007}";
+    pub const Keyboard3Outline: &str = "\u{e008}";
+    pub const Keyboard4: &str = "\u{e009}";
+    pub const Keyboard4Outline: &str = "\u{e00a}";
+    pub const Keyboard5: &str = "\u{e00b}";
+    pub const Keyboard5Outline: &str = "\u{e00c}";
+    pub const Keyboard6: &str = "\u{e00d}";
+    pub const Keyboard6Outline: &str = "\u{e00e}";
+    pub const Keyboard7: &str = "\u{e00f}";
+    pub const Keyboard7Outline: &str = "\u{e010}";
+    pub const Keyboard8: &str = "\u{e011}";
+    pub const Keyboard8Outline: &str = "\u{e012}";
+    pub const Keyboard9: &str = "\u{e013}";
+    pub const Keyboard9Outline: &str = "\u{e014}";
+    pub const KeyboardA: &str = "\u{e015}";
+    pub const KeyboardAOutline: &str = "\u{e016}";
+    pub const KeyboardAlt: &str = "\u{e017}";
+    pub const KeyboardAltOutline: &str = "\u{e018}";
+    pub const KeyboardAny: &str = "\u{e019}";
+    pub const KeyboardAnyOutline: &str = "\u{e01a}";
+    pub const KeyboardApostrophe: &str = "\u{e01b}";
+    pub const KeyboardApostropheOutline: &str = "\u{e01c}";
+    pub const KeyboardArrowDown: &str = "\u{e01d}";
+    pub const KeyboardArrowDownOutline: &str = "\u{e01e}";
+    pub const KeyboardArrowLeft: &str = "\u{e01f}";
+    pub const KeyboardArrowLeftOutline: &str = "\u{e020}";
+    pub const KeyboardArrowRight: &str = "\u{e021}";
+    pub const KeyboardArrowRightOutline: &str = "\u{e022}";
+    pub const KeyboardArrowUp: &str = "\u{e023}";
+    pub const KeyboardArrowUpOutline: &str = "\u{e024}";
+    pub const KeyboardArrows: &str = "\u{e025}";
+    pub const KeyboardArrowsAll: &str = "\u{e026}";
+    pub const KeyboardArrowsDown: &str = "\u{e027}";
+    pub const KeyboardArrowsDownOutline: &str = "\u{e028}";
+    pub const KeyboardArrowsHorizontal: &str = "\u{e029}";
+    pub const KeyboardArrowsHorizontalOutline: &str = "\u{e02a}";
+    pub const KeyboardArrowsLeft: &str = "\u{e02b}";
+    pub const KeyboardArrowsLeftOutline: &str = "\u{e02c}";
+    pub const KeyboardArrowsNone: &str = "\u{e02d}";
+    pub const KeyboardArrowsRight: &str = "\u{e02e}";
+    pub const KeyboardArrowsRightOutline: &str = "\u{e02f}";
+    pub const KeyboardArrowsUp: &str = "\u{e030}";
+    pub const KeyboardArrowsUpOutline: &str = "\u{e031}";
+    pub const KeyboardArrowsVertical: &str = "\u{e032}";
+    pub const KeyboardArrowsVerticalOutline: &str = "\u{e033}";
+    pub const KeyboardAsterisk: &str = "\u{e034}";
+    pub const KeyboardAsteriskOutline: &str = "\u{e035}";
+    pub const KeyboardB: &str = "\u{e036}";
+    pub const KeyboardBOutline: &str = "\u{e037}";
+    pub const KeyboardBackspace: &str = "\u{e038}";
+    pub const KeyboardBackspaceIcon: &str = "\u{e039}";
+    pub const KeyboardBackspaceIconAlternative: &str = "\u{e03a}";
+    pub const KeyboardBackspaceIconAlternativeOutline: &str = "\u{e03b}";
+    pub const KeyboardBackspaceIconOutline: &str = "\u{e03c}";
+    pub const KeyboardBackspaceOutline: &str = "\u{e03d}";
+    pub const KeyboardBracketClose: &str = "\u{e03e}";
+    pub const KeyboardBracketCloseOutline: &str = "\u{e03f}";
+    pub const KeyboardBracketGreater: &str = "\u{e040}";
+    pub const KeyboardBracketGreaterOutline: &str = "\u{e041}";
+    pub const KeyboardBracketLess: &str = "\u{e042}";
+    pub const KeyboardBracketLessOutline: &str = "\u{e043}";
+    pub const KeyboardBracketOpen: &str = "\u{e044}";
+    pub const KeyboardBracketOpenOutline: &str = "\u{e045}";
+    pub const KeyboardC: &str = "\u{e046}";
+    pub const KeyboardCOutline: &str = "\u{e047}";
+    pub const KeyboardCapslock: &str = "\u{e048}";
+    pub const KeyboardCapslockIcon: &str = "\u{e049}";
+    pub const KeyboardCapslockIconOutline: &str = "\u{e04a}";
+    pub const KeyboardCapslockOutline: &str = "\u{e04b}";
+    pub const KeyboardCaret: &str = "\u{e04c}";
+    pub const KeyboardCaretOutline: &str = "\u{e04d}";
+    pub const KeyboardColon: &str = "\u{e04e}";
+    pub const KeyboardColonOutline: &str = "\u{e04f}";
+    pub const KeyboardComma: &str = "\u{e050}";
+    pub const KeyboardCommaOutline: &str = "\u{e051}";
+    pub const KeyboardCommand: &str = "\u{e052}";
+    pub const KeyboardCommandOutline: &str = "\u{e053}";
+    pub const KeyboardCtrl: &str = "\u{e054}";
+    pub const KeyboardCtrlOutline: &str = "\u{e055}";
+    pub const KeyboardD: &str = "\u{e056}";
+    pub const KeyboardDOutline: &str = "\u{e057}";
+    pub const KeyboardDelete: &str = "\u{e058}";
+    pub const KeyboardDeleteOutline: &str = "\u{e059}";
+    pub const KeyboardE: &str = "\u{e05a}";
+    pub const KeyboardEOutline: &str = "\u{e05b}";
+    pub const KeyboardEnd: &str = "\u{e05c}";
+    pub const KeyboardEndOutline: &str = "\u{e05d}";
+    pub const KeyboardEnter: &str = "\u{e05e}";
+    pub const KeyboardEnterOutline: &str = "\u{e05f}";
+    pub const KeyboardEquals: &str = "\u{e060}";
+    pub const KeyboardEqualsOutline: &str = "\u{e061}";
+    pub const KeyboardEscape: &str = "\u{e062}";
+    pub const KeyboardEscapeOutline: &str = "\u{e063}";
+    pub const KeyboardExclamation: &str = "\u{e064}";
+    pub const KeyboardExclamationOutline: &str = "\u{e065}";
+    pub const KeyboardF: &str = "\u{e066}";
+    pub const KeyboardF1: &str = "\u{e067}";
+    pub const KeyboardF10: &str = "\u{e068}";
+    pub const KeyboardF10Outline: &str = "\u{e069}";
+    pub const KeyboardF11: &str = "\u{e06a}";
+    pub const KeyboardF11Outline: &str = "\u{e06b}";
+    pub const KeyboardF12: &str = "\u{e06c}";
+    pub const KeyboardF12Outline: &str = "\u{e06d}";
+    pub const KeyboardF1Outline: &str = "\u{e06e}";
+    pub const KeyboardF2: &str = "\u{e06f}";
+    pub const KeyboardF2Outline: &str = "\u{e070}";
+    pub const KeyboardF3: &str = "\u{e071}";
+    pub const KeyboardF3Outline: &str = "\u{e072}";
+    pub const KeyboardF4: &str = "\u{e073}";
+    pub const KeyboardF4Outline: &str = "\u{e074}";
+    pub const KeyboardF5: &str = "\u{e075}";
+    pub const KeyboardF5Outline: &str = "\u{e076}";
+    pub const KeyboardF6: &str = "\u{e077}";
+    pub const KeyboardF6Outline: &str = "\u{e078}";
+    pub const KeyboardF7: &str = "\u{e079}";
+    pub const KeyboardF7Outline: &str = "\u{e07a}";
+    pub const KeyboardF8: &str = "\u{e07b}";
+    pub const KeyboardF8Outline: &str = "\u{e07c}";
+    pub const KeyboardF9: &str = "\u{e07d}";
+    pub const KeyboardF9Outline: &str = "\u{e07e}";
+    pub const KeyboardFOutline: &str = "\u{e07f}";
+    pub const KeyboardFunction: &str = "\u{e080}";
+    pub const KeyboardFunctionOutline: &str = "\u{e081}";
+    pub const KeyboardG: &str = "\u{e082}";
+    pub const KeyboardGOutline: &str = "\u{e083}";
+    pub const KeyboardH: &str = "\u{e084}";
+    pub const KeyboardHOutline: &str = "\u{e085}";
+    pub const KeyboardHome: &str = "\u{e086}";
+    pub const KeyboardHomeOutline: &str = "\u{e087}";
+    pub const KeyboardI: &str = "\u{e088}";
+    pub const KeyboardIOutline: &str = "\u{e089}";
+    pub const KeyboardInsert: &str = "\u{e08a}";
+    pub const KeyboardInsertOutline: &str = "\u{e08b}";
+    pub const KeyboardJ: &str = "\u{e08c}";
+    pub const KeyboardJOutline: &str = "\u{e08d}";
+    pub const KeyboardK: &str = "\u{e08e}";
+    pub const KeyboardKOutline: &str = "\u{e08f}";
+    pub const KeyboardL: &str = "\u{e090}";
+    pub const KeyboardLOutline: &str = "\u{e091}";
+    pub const KeyboardM: &str = "\u{e092}";
+    pub const KeyboardMOutline: &str = "\u{e093}";
+    pub const KeyboardMinus: &str = "\u{e094}";
+    pub const KeyboardMinusOutline: &str = "\u{e095}";
+    pub const KeyboardN: &str = "\u{e096}";
+    pub const KeyboardNOutline: &str = "\u{e097}";
+    pub const KeyboardNumlock: &str = "\u{e098}";
+    pub const KeyboardNumlockOutline: &str = "\u{e099}";
+    pub const KeyboardNumpadEnter: &str = "\u{e09a}";
+    pub const KeyboardNumpadEnterOutline: &str = "\u{e09b}";
+    pub const KeyboardNumpadPlus: &str = "\u{e09c}";
+    pub const KeyboardNumpadPlusOutline: &str = "\u{e09d}";
+    pub const KeyboardO: &str = "\u{e09e}";
+    pub const KeyboardOOutline: &str = "\u{e09f}";
+    pub const KeyboardOption: &str = "\u{e0a0}";
+    pub const KeyboardOptionOutline: &str = "\u{e0a1}";
+    pub const KeyboardOutline: &str = "\u{e0a2}";
+    pub const KeyboardP: &str = "\u{e0a3}";
+    pub const KeyboardPOutline: &str = "\u{e0a4}";
+    pub const KeyboardPageDown: &str = "\u{e0a5}";
+    pub const KeyboardPageDownOutline: &str = "\u{e0a6}";
+    pub const KeyboardPageUp: &str = "\u{e0a7}";
+    pub const KeyboardPageUpOutline: &str = "\u{e0a8}";
+    pub const KeyboardPeriod: &str = "\u{e0a9}";
+    pub const KeyboardPeriodOutline: &str = "\u{e0aa}";
+    pub const KeyboardPlus: &str = "\u{e0ab}";
+    pub const KeyboardPlusOutline: &str = "\u{e0ac}";
+    pub const KeyboardPrintscreen: &str = "\u{e0ad}";
+    pub const KeyboardPrintscreenOutline: &str = "\u{e0ae}";
+    pub const KeyboardQ: &str = "\u{e0af}";
+    pub const KeyboardQOutline: &str = "\u{e0b0}";
+    pub const KeyboardQuestion: &str = "\u{e0b1}";
+    pub const KeyboardQuestionOutline: &str = "\u{e0b2}";
+    pub const KeyboardQuote: &str = "\u{e0b3}";
+    pub const KeyboardQuoteOutline: &str = "\u{e0b4}";
+    pub const KeyboardR: &str = "\u{e0b5}";
+    pub const KeyboardROutline: &str = "\u{e0b6}";
+    pub const KeyboardReturn: &str = "\u{e0b7}";
+    pub const KeyboardReturnOutline: &str = "\u{e0b8}";
+    pub const KeyboardS: &str = "\u{e0b9}";
+    pub const KeyboardSOutline: &str = "\u{e0ba}";
+    pub const KeyboardSemicolon: &str = "\u{e0bb}";
+    pub const KeyboardSemicolonOutline: &str = "\u{e0bc}";
+    pub const KeyboardShift: &str = "\u{e0bd}";
+    pub const KeyboardShiftIcon: &str = "\u{e0be}";
+    pub const KeyboardShiftIconOutline: &str = "\u{e0bf}";
+    pub const KeyboardShiftOutline: &str = "\u{e0c0}";
+    pub const KeyboardSlashBack: &str = "\u{e0c1}";
+    pub const KeyboardSlashBackOutline: &str = "\u{e0c2}";
+    pub const KeyboardSlashForward: &str = "\u{e0c3}";
+    pub const KeyboardSlashForwardOutline: &str = "\u{e0c4}";
+    pub const KeyboardSpace: &str = "\u{e0c5}";
+    pub const KeyboardSpaceIcon: &str = "\u{e0c6}";
+    pub const KeyboardSpaceIconOutline: &str = "\u{e0c7}";
+    pub const KeyboardSpaceOutline: &str = "\u{e0c8}";
+    pub const KeyboardT: &str = "\u{e0c9}";
+    pub const KeyboardTOutline: &str = "\u{e0ca}";
+    pub const KeyboardTab: &str = "\u{e0cb}";
+    pub const KeyboardTabIcon: &str = "\u{e0cc}";
+    pub const KeyboardTabIconAlternative: &str = "\u{e0cd}";
+    pub const KeyboardTabIconAlternativeOutline: &str = "\u{e0ce}";
+    pub const KeyboardTabIconOutline: &str = "\u{e0cf}";
+    pub const KeyboardTabOutline: &str = "\u{e0d0}";
+    pub const KeyboardTilde: &str = "\u{e0d1}";
+    pub const KeyboardTildeOutline: &str = "\u{e0d2}";
+    pub const KeyboardU: &str = "\u{e0d3}";
+    pub const KeyboardUOutline: &str = "\u{e0d4}";
+    pub const KeyboardV: &str = "\u{e0d5}";
+    pub const KeyboardVOutline: &str = "\u{e0d6}";
+    pub const KeyboardW: &str = "\u{e0d7}";
+    pub const KeyboardWOutline: &str = "\u{e0d8}";
+    pub const KeyboardWin: &str = "\u{e0d9}";
+    pub const KeyboardWinOutline: &str = "\u{e0da}";
+    pub const KeyboardX: &str = "\u{e0db}";
+    pub const KeyboardXOutline: &str = "\u{e0dc}";
+    pub const KeyboardY: &str = "\u{e0dd}";
+    pub const KeyboardYOutline: &str = "\u{e0de}";
+    pub const KeyboardZ: &str = "\u{e0df}";
+    pub const KeyboardZOutline: &str = "\u{e0e0}";
+    pub const Mouse: &str = "\u{e0e1}";
+    pub const MouseHorizontal: &str = "\u{e0e2}";
+    pub const MouseLeft: &str = "\u{e0e3}";
+    pub const MouseLeftOutline: &str = "\u{e0e4}";
+    pub const MouseMove: &str = "\u{e0e5}";
+    pub const MouseOutline: &str = "\u{e0e6}";
+    pub const MouseRight: &str = "\u{e0e7}";
+    pub const MouseRightOutline: &str = "\u{e0e8}";
+    pub const MouseScroll: &str = "\u{e0e9}";
+    pub const MouseScrollDown: &str = "\u{e0ea}";
+    pub const MouseScrollDownOutline: &str = "\u{e0eb}";
+    pub const MouseScrollOutline: &str = "\u{e0ec}";
+    pub const MouseScrollUp: &str = "\u{e0ed}";
+    pub const MouseScrollUpOutline: &str = "\u{e0ee}";
+    pub const MouseScrollVertical: &str = "\u{e0ef}";
+    pub const MouseScrollVerticalOutline: &str = "\u{e0f0}";
+    pub const MouseSmall: &str = "\u{e0f1}";
+    pub const MouseVertical: &str = "\u{e0f2}";
 }
 
 // ===== NINTENDO SWITCH ICONS =====
-define_icon_category! {
-    NintendoSwitch {
-        path: "ui/icons/controllers/nintendo_switch",
-        atlas: (20, 6),
-        icons: [
-            ControllerSwitch = 0,
-            ControllerSwitchJoyconDown = 1,
-            ControllerSwitchJoyconUp = 2,
-            ControllerSwitchPro = 3,
-            ButtonA = 4,
-            ButtonAOutline = 5,
-            ButtonB = 6,
-            ButtonBOutline = 7,
-            ButtonHome = 8,
-            ButtonHomeOutline = 9,
-            ButtonL = 10,
-            ButtonLOutline = 11,
-            ButtonMinus = 12,
-            ButtonMinusOutline = 13,
-            ButtonPlus = 14,
-            ButtonPlusOutline = 15,
-            ButtonR = 16,
-            ButtonROutline = 17,
-            ButtonSl = 18,
-            ButtonSlOutline = 19,
-            ButtonSr = 20,
-            ButtonSrOutline = 21,
-            ButtonSync = 22,
-            ButtonSyncOutline = 23,
-            ButtonX = 24,
-            ButtonXOutline = 25,
-            ButtonY = 26,
-            ButtonYOutline = 27,
-            ButtonZl = 28,
-            ButtonZlOutline = 29,
-            ButtonZr = 30,
-            ButtonZrOutline = 31,
-            Buttons = 32,
-            ButtonsAll = 33,
-            ButtonsDown = 34,
-            ButtonsDownOutline = 35,
-            ButtonsHorizontal = 36,
-            ButtonsHorizontalOutline = 37,
-            ButtonsLeft = 38,
-            ButtonsLeftOutline = 39,
-            ButtonsNone = 40,
-            ButtonsRight = 41,
-            ButtonsRightOutline = 42,
-            ButtonsUp = 43,
-            ButtonsUpOutline = 44,
-            ButtonsVertical = 45,
-            ButtonsVerticalOutline = 46,
-            Down = 47,
-            DownOutline = 48,
-            Dpad = 49,
-            DpadAll = 50,
-            DpadDown = 51,
-            DpadDownOutline = 52,
-            DpadHorizontal = 53,
-            DpadHorizontalOutline = 54,
-            DpadLeft = 55,
-            DpadLeftOutline = 56,
-            DpadNone = 57,
-            DpadRight = 58,
-            DpadRightOutline = 59,
-            DpadUp = 60,
-            DpadUpOutline = 61,
-            DpadVertical = 62,
-            DpadVerticalOutline = 63,
-            Joycon = 64,
-            JoyconLeft = 65,
-            JoyconLeftDiagonal = 66,
-            JoyconLeftDiagonalOutline = 67,
-            JoyconLeftHorizontal = 68,
-            JoyconLeftHorizontalOutline = 69,
-            JoyconLeftOutline = 70,
-            JoyconLeftRotate = 71,
-            JoyconLeftRotateOutline = 72,
-            JoyconLeftVertical = 73,
-            JoyconLeftVerticalOutline = 74,
-            JoyconOutline = 75,
-            JoyconRight = 76,
-            JoyconRightDiagonal = 77,
-            JoyconRightDiagonalOutline = 78,
-            JoyconRightHorizontal = 79,
-            JoyconRightHorizontalOutline = 80,
-            JoyconRightOutline = 81,
-            JoyconRightRotate = 82,
-            JoyconRightRotateOutline = 83,
-            JoyconRightVertical = 84,
-            JoyconRightVerticalOutline = 85,
-            Left = 86,
-            LeftOutline = 87,
-            Right = 88,
-            RightOutline = 89,
-            StickL = 90,
-            StickLDown = 91,
-            StickLHorizontal = 92,
-            StickLLeft = 93,
-            StickLPress = 94,
-            StickLRight = 95,
-            StickLUp = 96,
-            StickLVertical = 97,
-            StickR = 98,
-            StickRDown = 99,
-            StickRHorizontal = 100,
-            StickRLeft = 101,
-            StickRPress = 102,
-            StickRRight = 103,
-            StickRUp = 104,
-            StickRVertical = 105,
-            StickSideL = 106,
-            StickSideR = 107,
-            StickTopL = 108,
-            StickTopR = 109,
-            Up = 110,
-            UpOutline = 111,
-        ]
+pub mod switch {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct Switch;
+
+    impl Switch {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::NintendoSwitch)
+        }
     }
+
+    pub const ControllerSwitch: &str = "\u{e000}";
+    pub const ControllerSwitchJoyconDown: &str = "\u{e001}";
+    pub const ControllerSwitchJoyconUp: &str = "\u{e002}";
+    pub const ControllerSwitchPro: &str = "\u{e003}";
+    pub const ButtonA: &str = "\u{e004}";
+    pub const ButtonAOutline: &str = "\u{e005}";
+    pub const ButtonB: &str = "\u{e006}";
+    pub const ButtonBOutline: &str = "\u{e007}";
+    pub const ButtonHome: &str = "\u{e008}";
+    pub const ButtonHomeOutline: &str = "\u{e009}";
+    pub const ButtonL: &str = "\u{e00a}";
+    pub const ButtonLOutline: &str = "\u{e00b}";
+    pub const ButtonMinus: &str = "\u{e00c}";
+    pub const ButtonMinusOutline: &str = "\u{e00d}";
+    pub const ButtonPlus: &str = "\u{e00e}";
+    pub const ButtonPlusOutline: &str = "\u{e00f}";
+    pub const ButtonR: &str = "\u{e010}";
+    pub const ButtonROutline: &str = "\u{e011}";
+    pub const ButtonSl: &str = "\u{e012}";
+    pub const ButtonSlOutline: &str = "\u{e013}";
+    pub const ButtonSr: &str = "\u{e014}";
+    pub const ButtonSrOutline: &str = "\u{e015}";
+    pub const ButtonSync: &str = "\u{e016}";
+    pub const ButtonSyncOutline: &str = "\u{e017}";
+    pub const ButtonX: &str = "\u{e018}";
+    pub const ButtonXOutline: &str = "\u{e019}";
+    pub const ButtonY: &str = "\u{e01a}";
+    pub const ButtonYOutline: &str = "\u{e01b}";
+    pub const ButtonZl: &str = "\u{e01c}";
+    pub const ButtonZlOutline: &str = "\u{e01d}";
+    pub const ButtonZr: &str = "\u{e01e}";
+    pub const ButtonZrOutline: &str = "\u{e01f}";
+    pub const Buttons: &str = "\u{e020}";
+    pub const ButtonsAll: &str = "\u{e021}";
+    pub const ButtonsDown: &str = "\u{e022}";
+    pub const ButtonsDownOutline: &str = "\u{e023}";
+    pub const ButtonsHorizontal: &str = "\u{e024}";
+    pub const ButtonsHorizontalOutline: &str = "\u{e025}";
+    pub const ButtonsLeft: &str = "\u{e026}";
+    pub const ButtonsLeftOutline: &str = "\u{e027}";
+    pub const ButtonsNone: &str = "\u{e028}";
+    pub const ButtonsRight: &str = "\u{e029}";
+    pub const ButtonsRightOutline: &str = "\u{e02a}";
+    pub const ButtonsUp: &str = "\u{e02b}";
+    pub const ButtonsUpOutline: &str = "\u{e02c}";
+    pub const ButtonsVertical: &str = "\u{e02d}";
+    pub const ButtonsVerticalOutline: &str = "\u{e02e}";
+    pub const Down: &str = "\u{e02f}";
+    pub const DownOutline: &str = "\u{e030}";
+    pub const Dpad: &str = "\u{e031}";
+    pub const DpadAll: &str = "\u{e032}";
+    pub const DpadDown: &str = "\u{e033}";
+    pub const DpadDownOutline: &str = "\u{e034}";
+    pub const DpadHorizontal: &str = "\u{e035}";
+    pub const DpadHorizontalOutline: &str = "\u{e036}";
+    pub const DpadLeft: &str = "\u{e037}";
+    pub const DpadLeftOutline: &str = "\u{e038}";
+    pub const DpadNone: &str = "\u{e039}";
+    pub const DpadRight: &str = "\u{e03a}";
+    pub const DpadRightOutline: &str = "\u{e03b}";
+    pub const DpadUp: &str = "\u{e03c}";
+    pub const DpadUpOutline: &str = "\u{e03d}";
+    pub const DpadVertical: &str = "\u{e03e}";
+    pub const DpadVerticalOutline: &str = "\u{e03f}";
+    pub const Joycon: &str = "\u{e040}";
+    pub const JoyconLeft: &str = "\u{e041}";
+    pub const JoyconLeftDiagonal: &str = "\u{e042}";
+    pub const JoyconLeftDiagonalOutline: &str = "\u{e043}";
+    pub const JoyconLeftHorizontal: &str = "\u{e044}";
+    pub const JoyconLeftHorizontalOutline: &str = "\u{e045}";
+    pub const JoyconLeftOutline: &str = "\u{e046}";
+    pub const JoyconLeftRotate: &str = "\u{e047}";
+    pub const JoyconLeftRotateOutline: &str = "\u{e048}";
+    pub const JoyconLeftVertical: &str = "\u{e049}";
+    pub const JoyconLeftVerticalOutline: &str = "\u{e04a}";
+    pub const JoyconOutline: &str = "\u{e04b}";
+    pub const JoyconRight: &str = "\u{e04c}";
+    pub const JoyconRightDiagonal: &str = "\u{e04d}";
+    pub const JoyconRightDiagonalOutline: &str = "\u{e04e}";
+    pub const JoyconRightHorizontal: &str = "\u{e04f}";
+    pub const JoyconRightHorizontalOutline: &str = "\u{e050}";
+    pub const JoyconRightOutline: &str = "\u{e051}";
+    pub const JoyconRightRotate: &str = "\u{e052}";
+    pub const JoyconRightRotateOutline: &str = "\u{e053}";
+    pub const JoyconRightVertical: &str = "\u{e054}";
+    pub const JoyconRightVerticalOutline: &str = "\u{e055}";
+    pub const Left: &str = "\u{e056}";
+    pub const LeftOutline: &str = "\u{e057}";
+    pub const Right: &str = "\u{e058}";
+    pub const RightOutline: &str = "\u{e059}";
+    pub const StickL: &str = "\u{e05a}";
+    pub const StickLDown: &str = "\u{e05b}";
+    pub const StickLHorizontal: &str = "\u{e05c}";
+    pub const StickLLeft: &str = "\u{e05d}";
+    pub const StickLPress: &str = "\u{e05e}";
+    pub const StickLRight: &str = "\u{e05f}";
+    pub const StickLUp: &str = "\u{e060}";
+    pub const StickLVertical: &str = "\u{e061}";
+    pub const StickR: &str = "\u{e062}";
+    pub const StickRDown: &str = "\u{e063}";
+    pub const StickRHorizontal: &str = "\u{e064}";
+    pub const StickRLeft: &str = "\u{e065}";
+    pub const StickRPress: &str = "\u{e066}";
+    pub const StickRRight: &str = "\u{e067}";
+    pub const StickRUp: &str = "\u{e068}";
+    pub const StickRVertical: &str = "\u{e069}";
+    pub const StickSideL: &str = "\u{e06a}";
+    pub const StickSideR: &str = "\u{e06b}";
+    pub const StickTopL: &str = "\u{e06c}";
+    pub const StickTopR: &str = "\u{e06d}";
+    pub const Up: &str = "\u{e06e}";
+    pub const UpOutline: &str = "\u{e06f}";
 }
 
 // ===== NINTENDO SWITCH 2 ICONS =====
-define_icon_category! {
-    NintendoSwitch2 {
-        path: "ui/icons/controllers/nintendo_switch_2",
-        atlas: (20, 7),
-        icons: [
-            ControllerSwitch = 0,
-            ControllerSwitchJoyconDown = 1,
-            ControllerSwitchJoyconUp = 2,
-            ControllerSwitchPro = 3,
-            ButtonA = 4,
-            ButtonAOutline = 5,
-            ButtonB = 6,
-            ButtonBOutline = 7,
-            ButtonC = 8,
-            ButtonCOutline = 9,
-            ButtonGl = 10,
-            ButtonGlOutline = 11,
-            ButtonGr = 12,
-            ButtonGrOutline = 13,
-            ButtonHome = 14,
-            ButtonHomeOutline = 15,
-            ButtonL = 16,
-            ButtonLOutline = 17,
-            ButtonMinus = 18,
-            ButtonMinusOutline = 19,
-            ButtonPlus = 20,
-            ButtonPlusOutline = 21,
-            ButtonR = 22,
-            ButtonROutline = 23,
-            ButtonSl = 24,
-            ButtonSlOutline = 25,
-            ButtonSr = 26,
-            ButtonSrOutline = 27,
-            ButtonSync = 28,
-            ButtonSyncOutline = 29,
-            ButtonX = 30,
-            ButtonXOutline = 31,
-            ButtonY = 32,
-            ButtonYOutline = 33,
-            ButtonZl = 34,
-            ButtonZlOutline = 35,
-            ButtonZr = 36,
-            ButtonZrOutline = 37,
-            Buttons = 38,
-            ButtonsAll = 39,
-            ButtonsDown = 40,
-            ButtonsDownOutline = 41,
-            ButtonsHorizontal = 42,
-            ButtonsHorizontalOutline = 43,
-            ButtonsLeft = 44,
-            ButtonsLeftOutline = 45,
-            ButtonsNone = 46,
-            ButtonsRight = 47,
-            ButtonsRightOutline = 48,
-            ButtonsUp = 49,
-            ButtonsUpOutline = 50,
-            ButtonsVertical = 51,
-            ButtonsVerticalOutline = 52,
-            Down = 53,
-            DownOutline = 54,
-            Dpad = 55,
-            DpadAll = 56,
-            DpadDown = 57,
-            DpadDownOutline = 58,
-            DpadHorizontal = 59,
-            DpadHorizontalOutline = 60,
-            DpadLeft = 61,
-            DpadLeftOutline = 62,
-            DpadNone = 63,
-            DpadRight = 64,
-            DpadRightOutline = 65,
-            DpadUp = 66,
-            DpadUpOutline = 67,
-            DpadVertical = 68,
-            DpadVerticalOutline = 69,
-            Joycon = 70,
-            JoyconLeft = 71,
-            JoyconLeftDiagonal = 72,
-            JoyconLeftDiagonalOutline = 73,
-            JoyconLeftHorizontal = 74,
-            JoyconLeftHorizontalOutline = 75,
-            JoyconLeftMouse = 76,
-            JoyconLeftMouseOutline = 77,
-            JoyconLeftOutline = 78,
-            JoyconLeftRotate = 79,
-            JoyconLeftRotateOutline = 80,
-            JoyconLeftVertical = 81,
-            JoyconLeftVerticalOutline = 82,
-            JoyconOutline = 83,
-            JoyconRight = 84,
-            JoyconRightDiagonal = 85,
-            JoyconRightDiagonalOutline = 86,
-            JoyconRightHorizontal = 87,
-            JoyconRightHorizontalOutline = 88,
-            JoyconRightMouse = 89,
-            JoyconRightMouseOutline = 90,
-            JoyconRightOutline = 91,
-            JoyconRightRotate = 92,
-            JoyconRightRotateOutline = 93,
-            JoyconRightVertical = 94,
-            JoyconRightVerticalOutline = 95,
-            Left = 96,
-            LeftOutline = 97,
-            Right = 98,
-            RightOutline = 99,
-            StickL = 100,
-            StickLDown = 101,
-            StickLHorizontal = 102,
-            StickLLeft = 103,
-            StickLPress = 104,
-            StickLRight = 105,
-            StickLUp = 106,
-            StickLVertical = 107,
-            StickR = 108,
-            StickRDown = 109,
-            StickRHorizontal = 110,
-            StickRLeft = 111,
-            StickRPress = 112,
-            StickRRight = 113,
-            StickRUp = 114,
-            StickRVertical = 115,
-            StickSideL = 116,
-            StickSideR = 117,
-            StickTopL = 118,
-            StickTopR = 119,
-            Up = 120,
-            UpOutline = 121,
-        ]
+pub mod switch_2 {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct Switch2;
+
+    impl Switch2 {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::NintendoSwitch2)
+        }
     }
+
+    pub const ControllerSwitch2: &str = "\u{e000}";
+    pub const ControllerSwitch2JoyconDown: &str = "\u{e001}";
+    pub const ControllerSwitch2JoyconUp: &str = "\u{e002}";
+    pub const ControllerSwitch2Pro: &str = "\u{e003}";
+    pub const ButtonA: &str = "\u{e004}";
+    pub const ButtonAOutline: &str = "\u{e005}";
+    pub const ButtonB: &str = "\u{e006}";
+    pub const ButtonBOutline: &str = "\u{e007}";
+    pub const ButtonC: &str = "\u{e008}";
+    pub const ButtonCOutline: &str = "\u{e009}";
+    pub const ButtonGl: &str = "\u{e00a}";
+    pub const ButtonGlOutline: &str = "\u{e00b}";
+    pub const ButtonGr: &str = "\u{e00c}";
+    pub const ButtonGrOutline: &str = "\u{e00d}";
+    pub const ButtonHome: &str = "\u{e00e}";
+    pub const ButtonHomeOutline: &str = "\u{e00f}";
+    pub const ButtonL: &str = "\u{e010}";
+    pub const ButtonLOutline: &str = "\u{e011}";
+    pub const ButtonMinus: &str = "\u{e012}";
+    pub const ButtonMinusOutline: &str = "\u{e013}";
+    pub const ButtonPlus: &str = "\u{e014}";
+    pub const ButtonPlusOutline: &str = "\u{e015}";
+    pub const ButtonR: &str = "\u{e016}";
+    pub const ButtonROutline: &str = "\u{e017}";
+    pub const ButtonSl: &str = "\u{e018}";
+    pub const ButtonSlOutline: &str = "\u{e019}";
+    pub const ButtonSr: &str = "\u{e01a}";
+    pub const ButtonSrOutline: &str = "\u{e01b}";
+    pub const ButtonSync: &str = "\u{e01c}";
+    pub const ButtonSyncOutline: &str = "\u{e01d}";
+    pub const ButtonX: &str = "\u{e01e}";
+    pub const ButtonXOutline: &str = "\u{e01f}";
+    pub const ButtonY: &str = "\u{e020}";
+    pub const ButtonYOutline: &str = "\u{e021}";
+    pub const ButtonZl: &str = "\u{e022}";
+    pub const ButtonZlOutline: &str = "\u{e023}";
+    pub const ButtonZr: &str = "\u{e024}";
+    pub const ButtonZrOutline: &str = "\u{e025}";
+    pub const Buttons: &str = "\u{e026}";
+    pub const ButtonsAll: &str = "\u{e027}";
+    pub const ButtonsDown: &str = "\u{e028}";
+    pub const ButtonsDownOutline: &str = "\u{e029}";
+    pub const ButtonsHorizontal: &str = "\u{e02a}";
+    pub const ButtonsHorizontalOutline: &str = "\u{e02b}";
+    pub const ButtonsLeft: &str = "\u{e02c}";
+    pub const ButtonsLeftOutline: &str = "\u{e02d}";
+    pub const ButtonsNone: &str = "\u{e02e}";
+    pub const ButtonsRight: &str = "\u{e02f}";
+    pub const ButtonsRightOutline: &str = "\u{e030}";
+    pub const ButtonsUp: &str = "\u{e031}";
+    pub const ButtonsUpOutline: &str = "\u{e032}";
+    pub const ButtonsVertical: &str = "\u{e033}";
+    pub const ButtonsVerticalOutline: &str = "\u{e034}";
+    pub const Down: &str = "\u{e035}";
+    pub const DownOutline: &str = "\u{e036}";
+    pub const Dpad: &str = "\u{e037}";
+    pub const DpadAll: &str = "\u{e038}";
+    pub const DpadDown: &str = "\u{e039}";
+    pub const DpadDownOutline: &str = "\u{e03a}";
+    pub const DpadHorizontal: &str = "\u{e03b}";
+    pub const DpadHorizontalOutline: &str = "\u{e03c}";
+    pub const DpadLeft: &str = "\u{e03d}";
+    pub const DpadLeftOutline: &str = "\u{e03e}";
+    pub const DpadNone: &str = "\u{e03f}";
+    pub const DpadRight: &str = "\u{e040}";
+    pub const DpadRightOutline: &str = "\u{e041}";
+    pub const DpadUp: &str = "\u{e042}";
+    pub const DpadUpOutline: &str = "\u{e043}";
+    pub const DpadVertical: &str = "\u{e044}";
+    pub const DpadVerticalOutline: &str = "\u{e045}";
+    pub const Joycon: &str = "\u{e046}";
+    pub const JoyconLeft: &str = "\u{e047}";
+    pub const JoyconLeftDiagonal: &str = "\u{e048}";
+    pub const JoyconLeftDiagonalOutline: &str = "\u{e049}";
+    pub const JoyconLeftHorizontal: &str = "\u{e04a}";
+    pub const JoyconLeftHorizontalOutline: &str = "\u{e04b}";
+    pub const JoyconLeftMouse: &str = "\u{e04c}";
+    pub const JoyconLeftMouseOutline: &str = "\u{e04d}";
+    pub const JoyconLeftOutline: &str = "\u{e04e}";
+    pub const JoyconLeftRotate: &str = "\u{e04f}";
+    pub const JoyconLeftRotateOutline: &str = "\u{e050}";
+    pub const JoyconLeftVertical: &str = "\u{e051}";
+    pub const JoyconLeftVerticalOutline: &str = "\u{e052}";
+    pub const JoyconOutline: &str = "\u{e053}";
+    pub const JoyconRight: &str = "\u{e054}";
+    pub const JoyconRightDiagonal: &str = "\u{e055}";
+    pub const JoyconRightDiagonalOutline: &str = "\u{e056}";
+    pub const JoyconRightHorizontal: &str = "\u{e057}";
+    pub const JoyconRightHorizontalOutline: &str = "\u{e058}";
+    pub const JoyconRightMouse: &str = "\u{e059}";
+    pub const JoyconRightMouseOutline: &str = "\u{e05a}";
+    pub const JoyconRightOutline: &str = "\u{e05b}";
+    pub const JoyconRightRotate: &str = "\u{e05c}";
+    pub const JoyconRightRotateOutline: &str = "\u{e05d}";
+    pub const JoyconRightVertical: &str = "\u{e05e}";
+    pub const JoyconRightVerticalOutline: &str = "\u{e05f}";
+    pub const Left: &str = "\u{e060}";
+    pub const LeftOutline: &str = "\u{e061}";
+    pub const Right: &str = "\u{e062}";
+    pub const RightOutline: &str = "\u{e063}";
+    pub const StickL: &str = "\u{e064}";
+    pub const StickLDown: &str = "\u{e065}";
+    pub const StickLHorizontal: &str = "\u{e066}";
+    pub const StickLLeft: &str = "\u{e067}";
+    pub const StickLPress: &str = "\u{e068}";
+    pub const StickLRight: &str = "\u{e069}";
+    pub const StickLUp: &str = "\u{e06a}";
+    pub const StickLVertical: &str = "\u{e06b}";
+    pub const StickR: &str = "\u{e06c}";
+    pub const StickRDown: &str = "\u{e06d}";
+    pub const StickRHorizontal: &str = "\u{e06e}";
+    pub const StickRLeft: &str = "\u{e06f}";
+    pub const StickRPress: &str = "\u{e070}";
+    pub const StickRRight: &str = "\u{e071}";
+    pub const StickRUp: &str = "\u{e072}";
+    pub const StickRVertical: &str = "\u{e073}";
+    pub const StickSideL: &str = "\u{e074}";
+    pub const StickSideR: &str = "\u{e075}";
+    pub const StickTopL: &str = "\u{e076}";
+    pub const StickTopR: &str = "\u{e077}";
+    pub const Up: &str = "\u{e078}";
+    pub const UpOutline: &str = "\u{e079}";
 }
 
 // ===== PLAYSTATION ICONS =====
-define_icon_category! {
-    PlayStation {
-        path: "ui/icons/controllers/playstation_series",
-        atlas: (20, 7),
-        icons: [
-            ControllerPlaystation1 = 0,
-            ControllerPlaystation2 = 1,
-            ControllerPlaystation3 = 2,
-            ControllerPlaystation4 = 3,
-            ControllerPlaystation5 = 4,
-            Playstation3ButtonSelect = 5,
-            Playstation3ButtonSelectOutline = 6,
-            Playstation3ButtonStart = 7,
-            Playstation3ButtonStartOutline = 8,
-            Playstation4ButtonOptions = 9,
-            Playstation4ButtonOptionsOutline = 10,
-            Playstation4ButtonShare = 11,
-            Playstation4ButtonShareOutline = 12,
-            Playstation4Touchpad = 13,
-            Playstation4TouchpadOutline = 14,
-            Playstation4TouchpadPress = 15,
-            Playstation4TouchpadPressCenter = 16,
-            Playstation4TouchpadPressLeft = 17,
-            Playstation4TouchpadPressRight = 18,
-            Playstation4TouchpadSelected = 19,
-            Playstation4TouchpadSwipeDown = 20,
-            Playstation4TouchpadSwipeHorizontal = 21,
-            Playstation4TouchpadSwipeLeft = 22,
-            Playstation4TouchpadSwipeRight = 23,
-            Playstation4TouchpadSwipeUp = 24,
-            Playstation4TouchpadSwipeVertical = 25,
-            Playstation4TouchpadTouch = 26,
-            Playstation4TouchpadTouchOutline = 27,
-            Playstation5ButtonCreate = 28,
-            Playstation5ButtonCreateAlternative = 29,
-            Playstation5ButtonCreateAlternativeOutline = 30,
-            Playstation5ButtonCreateOutline = 31,
-            Playstation5ButtonMute = 32,
-            Playstation5ButtonMuteOutline = 33,
-            Playstation5ButtonOptions = 34,
-            Playstation5ButtonOptionsAlternative = 35,
-            Playstation5ButtonOptionsAlternativeOutline = 36,
-            Playstation5ButtonOptionsOutline = 37,
-            Playstation5EliteFnL = 38,
-            Playstation5EliteFnLOutline = 39,
-            Playstation5EliteFnR = 40,
-            Playstation5EliteFnROutline = 41,
-            Playstation5EliteLb = 42,
-            Playstation5EliteLbOutline = 43,
-            Playstation5EliteRb = 44,
-            Playstation5EliteRbOutline = 45,
-            Playstation5Touchpad = 46,
-            Playstation5TouchpadOutline = 47,
-            Playstation5TouchpadPress = 48,
-            Playstation5TouchpadPressCenter = 49,
-            Playstation5TouchpadPressLeft = 50,
-            Playstation5TouchpadPressRight = 51,
-            Playstation5TouchpadSelected = 52,
-            Playstation5TouchpadSwipeDown = 53,
-            Playstation5TouchpadSwipeHorizontal = 54,
-            Playstation5TouchpadSwipeLeft = 55,
-            Playstation5TouchpadSwipeRight = 56,
-            Playstation5TouchpadSwipeUp = 57,
-            Playstation5TouchpadSwipeVertical = 58,
-            Playstation5TouchpadTouch = 59,
-            Playstation5TouchpadTouchOutline = 60,
-            ButtonAnalog = 61,
-            ButtonAnalogOutline = 62,
-            ButtonCircle = 63,
-            ButtonCircleOutline = 64,
-            ButtonColorCircle = 65,
-            ButtonColorCircleOutline = 66,
-            ButtonColorCross = 67,
-            ButtonColorCrossOutline = 68,
-            ButtonColorSquare = 69,
-            ButtonColorSquareOutline = 70,
-            ButtonColorTriangle = 71,
-            ButtonColorTriangleOutline = 72,
-            ButtonCross = 73,
-            ButtonCrossOutline = 74,
-            ButtonL3 = 75,
-            ButtonL3Outline = 76,
-            ButtonR3 = 77,
-            ButtonR3Outline = 78,
-            ButtonSquare = 79,
-            ButtonSquareOutline = 80,
-            ButtonTriangle = 81,
-            ButtonTriangleOutline = 82,
-            Dpad = 83,
-            DpadAll = 84,
-            DpadDown = 85,
-            DpadDownOutline = 86,
-            DpadHorizontal = 87,
-            DpadHorizontalOutline = 88,
-            DpadLeft = 89,
-            DpadLeftOutline = 90,
-            DpadNone = 91,
-            DpadRight = 92,
-            DpadRightOutline = 93,
-            DpadUp = 94,
-            DpadUpOutline = 95,
-            DpadVertical = 96,
-            DpadVerticalOutline = 97,
-            StickL = 98,
-            StickLDown = 99,
-            StickLHorizontal = 100,
-            StickLLeft = 101,
-            StickLPress = 102,
-            StickLRight = 103,
-            StickLUp = 104,
-            StickLVertical = 105,
-            StickR = 106,
-            StickRDown = 107,
-            StickRHorizontal = 108,
-            StickRLeft = 109,
-            StickRPress = 110,
-            StickRRight = 111,
-            StickRUp = 112,
-            StickRVertical = 113,
-            StickSideL = 114,
-            StickSideR = 115,
-            StickTopL = 116,
-            StickTopR = 117,
-            TriggerL1 = 118,
-            TriggerL1Alternative = 119,
-            TriggerL1AlternativeOutline = 120,
-            TriggerL1Outline = 121,
-            TriggerL2 = 122,
-            TriggerL2Alternative = 123,
-            TriggerL2AlternativeOutline = 124,
-            TriggerL2Outline = 125,
-            TriggerR1 = 126,
-            TriggerR1Alternative = 127,
-            TriggerR1AlternativeOutline = 128,
-            TriggerR1Outline = 129,
-            TriggerR2 = 130,
-            TriggerR2Alternative = 131,
-            TriggerR2AlternativeOutline = 132,
-            TriggerR2Outline = 133,
-        ]
+pub mod playstation {
+    use bevy::color::palettes::css::*;
+    use bevy::color::Color;
+
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::color::TextColor;
+    use crate::theme::typography::FontFamily;
+
+    pub struct Playstation;
+
+    impl Playstation {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::PlayStation)
+        }
     }
+
+    pub const ControllerPlaystation1: &str = "\u{e000}";
+    pub const ControllerPlaystation2: &str = "\u{e001}";
+    pub const ControllerPlaystation3: &str = "\u{e002}";
+    pub const ControllerPlaystation4: &str = "\u{e003}";
+    pub const ControllerPlaystation5: &str = "\u{e004}";
+    pub const Playstation3ButtonSelect: &str = "\u{e005}";
+    pub const Playstation3ButtonSelectOutline: &str = "\u{e006}";
+    pub const Playstation3ButtonStart: &str = "\u{e007}";
+    pub const Playstation3ButtonStartOutline: &str = "\u{e008}";
+    pub const Playstation4ButtonOptions: &str = "\u{e009}";
+    pub const Playstation4ButtonOptionsOutline: &str = "\u{e00a}";
+    pub const Playstation4ButtonShare: &str = "\u{e00b}";
+    pub const Playstation4ButtonShareOutline: &str = "\u{e00c}";
+    pub const Playstation4Touchpad: &str = "\u{e00d}";
+    pub const Playstation4TouchpadOutline: &str = "\u{e00e}";
+    pub const Playstation4TouchpadPress: &str = "\u{e00f}";
+    pub const Playstation4TouchpadPressCenter: &str = "\u{e010}";
+    pub const Playstation4TouchpadPressLeft: &str = "\u{e011}";
+    pub const Playstation4TouchpadPressRight: &str = "\u{e012}";
+    pub const Playstation4TouchpadSelected: &str = "\u{e013}";
+    pub const Playstation4TouchpadSwipeDown: &str = "\u{e014}";
+    pub const Playstation4TouchpadSwipeHorizontal: &str = "\u{e015}";
+    pub const Playstation4TouchpadSwipeLeft: &str = "\u{e016}";
+    pub const Playstation4TouchpadSwipeRight: &str = "\u{e017}";
+    pub const Playstation4TouchpadSwipeUp: &str = "\u{e018}";
+    pub const Playstation4TouchpadSwipeVertical: &str = "\u{e019}";
+    pub const Playstation4TouchpadTouch: &str = "\u{e01a}";
+    pub const Playstation4TouchpadTouchOutline: &str = "\u{e01b}";
+    pub const Playstation5ButtonCreate: &str = "\u{e01c}";
+    pub const Playstation5ButtonCreateAlternative: &str = "\u{e01d}";
+    pub const Playstation5ButtonCreateAlternativeOutline: &str = "\u{e01e}";
+    pub const Playstation5ButtonCreateOutline: &str = "\u{e01f}";
+    pub const Playstation5ButtonMute: &str = "\u{e020}";
+    pub const Playstation5ButtonMuteOutline: &str = "\u{e021}";
+    pub const Playstation5ButtonOptions: &str = "\u{e022}";
+    pub const Playstation5ButtonOptionsAlternative: &str = "\u{e023}";
+    pub const Playstation5ButtonOptionsAlternativeOutline: &str = "\u{e024}";
+    pub const Playstation5ButtonOptionsOutline: &str = "\u{e025}";
+    pub const Playstation5EliteFnL: &str = "\u{e026}";
+    pub const Playstation5EliteFnLOutline: &str = "\u{e027}";
+    pub const Playstation5EliteFnR: &str = "\u{e028}";
+    pub const Playstation5EliteFnROutline: &str = "\u{e029}";
+    pub const Playstation5EliteLb: &str = "\u{e02a}";
+    pub const Playstation5EliteLbOutline: &str = "\u{e02b}";
+    pub const Playstation5EliteRb: &str = "\u{e02c}";
+    pub const Playstation5EliteRbOutline: &str = "\u{e02d}";
+    pub const Playstation5Touchpad: &str = "\u{e02e}";
+    pub const Playstation5TouchpadOutline: &str = "\u{e02f}";
+    pub const Playstation5TouchpadPress: &str = "\u{e030}";
+    pub const Playstation5TouchpadPressCenter: &str = "\u{e031}";
+    pub const Playstation5TouchpadPressLeft: &str = "\u{e032}";
+    pub const Playstation5TouchpadPressRight: &str = "\u{e033}";
+    pub const Playstation5TouchpadSelected: &str = "\u{e034}";
+    pub const Playstation5TouchpadSwipeDown: &str = "\u{e035}";
+    pub const Playstation5TouchpadSwipeHorizontal: &str = "\u{e036}";
+    pub const Playstation5TouchpadSwipeLeft: &str = "\u{e037}";
+    pub const Playstation5TouchpadSwipeRight: &str = "\u{e038}";
+    pub const Playstation5TouchpadSwipeUp: &str = "\u{e039}";
+    pub const Playstation5TouchpadSwipeVertical: &str = "\u{e03a}";
+    pub const Playstation5TouchpadTouch: &str = "\u{e03b}";
+    pub const Playstation5TouchpadTouchOutline: &str = "\u{e03c}";
+    pub const ButtonAnalog: &str = "\u{e03d}";
+    pub const ButtonAnalogOutline: &str = "\u{e03e}";
+    pub const ButtonCircle: &str = "\u{e03f}";
+    pub const ButtonCircleOutline: &str = "\u{e040}";
+    pub const ButtonColorCircle: &str = "\u{e041}";
+    pub const ButtonColorCircleOutline: &str = "\u{e042}";
+    pub const ButtonColorCross: &str = "\u{e043}";
+    pub const ButtonColorCrossOutline: &str = "\u{e044}";
+    pub const ButtonColorSquare: &str = "\u{e045}";
+    pub const ButtonColorSquareOutline: &str = "\u{e046}";
+    pub const ButtonColorTriangle: &str = "\u{e047}";
+    pub const ButtonColorTriangleOutline: &str = "\u{e048}";
+    pub const ButtonCross: &str = "\u{e049}";
+    pub const ButtonCrossOutline: &str = "\u{e04a}";
+    pub const ButtonL3: &str = "\u{e04b}";
+    pub const ButtonL3Outline: &str = "\u{e04c}";
+    pub const ButtonR3: &str = "\u{e04d}";
+    pub const ButtonR3Outline: &str = "\u{e04e}";
+    pub const ButtonSquare: &str = "\u{e04f}";
+    pub const ButtonSquareOutline: &str = "\u{e050}";
+    pub const ButtonTriangle: &str = "\u{e051}";
+    pub const ButtonTriangleOutline: &str = "\u{e052}";
+    pub const Dpad: &str = "\u{e053}";
+    pub const DpadAll: &str = "\u{e054}";
+    pub const DpadDown: &str = "\u{e055}";
+    pub const DpadDownOutline: &str = "\u{e056}";
+    pub const DpadHorizontal: &str = "\u{e057}";
+    pub const DpadHorizontalOutline: &str = "\u{e058}";
+    pub const DpadLeft: &str = "\u{e059}";
+    pub const DpadLeftOutline: &str = "\u{e05a}";
+    pub const DpadNone: &str = "\u{e05b}";
+    pub const DpadRight: &str = "\u{e05c}";
+    pub const DpadRightOutline: &str = "\u{e05d}";
+    pub const DpadUp: &str = "\u{e05e}";
+    pub const DpadUpOutline: &str = "\u{e05f}";
+    pub const DpadVertical: &str = "\u{e060}";
+    pub const DpadVerticalOutline: &str = "\u{e061}";
+    pub const StickL: &str = "\u{e062}";
+    pub const StickLDown: &str = "\u{e063}";
+    pub const StickLHorizontal: &str = "\u{e064}";
+    pub const StickLLeft: &str = "\u{e065}";
+    pub const StickLPress: &str = "\u{e066}";
+    pub const StickLRight: &str = "\u{e067}";
+    pub const StickLUp: &str = "\u{e068}";
+    pub const StickLVertical: &str = "\u{e069}";
+    pub const StickR: &str = "\u{e06a}";
+    pub const StickRDown: &str = "\u{e06b}";
+    pub const StickRHorizontal: &str = "\u{e06c}";
+    pub const StickRLeft: &str = "\u{e06d}";
+    pub const StickRPress: &str = "\u{e06e}";
+    pub const StickRRight: &str = "\u{e06f}";
+    pub const StickRUp: &str = "\u{e070}";
+    pub const StickRVertical: &str = "\u{e071}";
+    pub const StickSideL: &str = "\u{e072}";
+    pub const StickSideR: &str = "\u{e073}";
+    pub const StickTopL: &str = "\u{e074}";
+    pub const StickTopR: &str = "\u{e075}";
+    pub const TriggerL1: &str = "\u{e076}";
+    pub const TriggerL1Alternative: &str = "\u{e077}";
+    pub const TriggerL1AlternativeOutline: &str = "\u{e078}";
+    pub const TriggerL1Outline: &str = "\u{e079}";
+    pub const TriggerL2: &str = "\u{e07a}";
+    pub const TriggerL2Alternative: &str = "\u{e07b}";
+    pub const TriggerL2AlternativeOutline: &str = "\u{e07c}";
+    pub const TriggerL2Outline: &str = "\u{e07d}";
+    pub const TriggerR1: &str = "\u{e07e}";
+    pub const TriggerR1Alternative: &str = "\u{e07f}";
+    pub const TriggerR1AlternativeOutline: &str = "\u{e080}";
+    pub const TriggerR1Outline: &str = "\u{e081}";
+    pub const TriggerR2: &str = "\u{e082}";
+    pub const TriggerR2Alternative: &str = "\u{e083}";
+    pub const TriggerR2AlternativeOutline: &str = "\u{e084}";
+    pub const TriggerR2Outline: &str = "\u{e085}";
 }
 
 // ===== XBOX ICONS =====
-define_icon_category! {
-    Xbox {
-        path: "ui/icons/controllers/xbox_series",
-        atlas: (20, 5),
-        icons: [
-            ControllerXbox360 = 0,
-            ControllerXboxAdaptive = 1,
-            ControllerXboxone = 2,
-            ControllerXboxseries = 3,
-            ButtonA = 4,
-            ButtonAOutline = 5,
-            ButtonB = 6,
-            ButtonBOutline = 7,
-            ButtonBack = 8,
-            ButtonBackIcon = 9,
-            ButtonBackIconOutline = 10,
-            ButtonBackOutline = 11,
-            ButtonColorA = 12,
-            ButtonColorAOutline = 13,
-            ButtonColorB = 14,
-            ButtonColorBOutline = 15,
-            ButtonColorX = 16,
-            ButtonColorXOutline = 17,
-            ButtonColorY = 18,
-            ButtonColorYOutline = 19,
-            ButtonMenu = 20,
-            ButtonMenuOutline = 21,
-            ButtonShare = 22,
-            ButtonShareOutline = 23,
-            ButtonStart = 24,
-            ButtonStartIcon = 25,
-            ButtonStartIconOutline = 26,
-            ButtonStartOutline = 27,
-            ButtonView = 28,
-            ButtonViewOutline = 29,
-            ButtonX = 30,
-            ButtonXOutline = 31,
-            ButtonY = 32,
-            ButtonYOutline = 33,
-            Dpad = 34,
-            DpadAll = 35,
-            DpadDown = 36,
-            DpadDownOutline = 37,
-            DpadHorizontal = 38,
-            DpadHorizontalOutline = 39,
-            DpadLeft = 40,
-            DpadLeftOutline = 41,
-            DpadNone = 42,
-            DpadRight = 43,
-            DpadRightOutline = 44,
-            DpadRound = 45,
-            DpadRoundAll = 46,
-            DpadRoundDown = 47,
-            DpadRoundHorizontal = 48,
-            DpadRoundLeft = 49,
-            DpadRoundRight = 50,
-            DpadRoundUp = 51,
-            DpadRoundVertical = 52,
-            DpadUp = 53,
-            DpadUpOutline = 54,
-            DpadVertical = 55,
-            DpadVerticalOutline = 56,
-            ElitePaddleBottomLeft = 57,
-            ElitePaddleBottomLeftOutline = 58,
-            ElitePaddleBottomRight = 59,
-            ElitePaddleBottomRightOutline = 60,
-            ElitePaddleTopLeft = 61,
-            ElitePaddleTopLeftOutline = 62,
-            ElitePaddleTopRight = 63,
-            ElitePaddleTopRightOutline = 64,
-            Guide = 65,
-            GuideOutline = 66,
-            Lb = 67,
-            LbOutline = 68,
-            Ls = 69,
-            LsOutline = 70,
-            Lt = 71,
-            LtOutline = 72,
-            Rb = 73,
-            RbOutline = 74,
-            Rs = 75,
-            RsOutline = 76,
-            Rt = 77,
-            RtOutline = 78,
-            StickL = 79,
-            StickLDown = 80,
-            StickLHorizontal = 81,
-            StickLLeft = 82,
-            StickLPress = 83,
-            StickLRight = 84,
-            StickLUp = 85,
-            StickLVertical = 86,
-            StickR = 87,
-            StickRDown = 88,
-            StickRHorizontal = 89,
-            StickRLeft = 90,
-            StickRPress = 91,
-            StickRRight = 92,
-            StickRUp = 93,
-            StickRVertical = 94,
-            StickSideL = 95,
-            StickSideR = 96,
-            StickTopL = 97,
-            StickTopR = 98,
-        ]
+pub mod xbox {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct Xbox;
+
+    impl Xbox {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::Xbox)
+        }
     }
+
+    pub const ControllerXbox360: &str = "\u{e000}";
+    pub const ControllerXboxAdaptive: &str = "\u{e001}";
+    pub const ControllerXboxone: &str = "\u{e002}";
+    pub const ControllerXboxseries: &str = "\u{e003}";
+    pub const ButtonA: &str = "\u{e004}";
+    pub const ButtonAOutline: &str = "\u{e005}";
+    pub const ButtonB: &str = "\u{e006}";
+    pub const ButtonBOutline: &str = "\u{e007}";
+    pub const ButtonBack: &str = "\u{e008}";
+    pub const ButtonBackIcon: &str = "\u{e009}";
+    pub const ButtonBackIconOutline: &str = "\u{e00a}";
+    pub const ButtonBackOutline: &str = "\u{e00b}";
+    pub const ButtonColorA: &str = "\u{e00c}";
+    pub const ButtonColorAOutline: &str = "\u{e00d}";
+    pub const ButtonColorB: &str = "\u{e00e}";
+    pub const ButtonColorBOutline: &str = "\u{e00f}";
+    pub const ButtonColorX: &str = "\u{e010}";
+    pub const ButtonColorXOutline: &str = "\u{e011}";
+    pub const ButtonColorY: &str = "\u{e012}";
+    pub const ButtonColorYOutline: &str = "\u{e013}";
+    pub const ButtonMenu: &str = "\u{e014}";
+    pub const ButtonMenuOutline: &str = "\u{e015}";
+    pub const ButtonShare: &str = "\u{e016}";
+    pub const ButtonShareOutline: &str = "\u{e017}";
+    pub const ButtonStart: &str = "\u{e018}";
+    pub const ButtonStartIcon: &str = "\u{e019}";
+    pub const ButtonStartIconOutline: &str = "\u{e01a}";
+    pub const ButtonStartOutline: &str = "\u{e01b}";
+    pub const ButtonView: &str = "\u{e01c}";
+    pub const ButtonViewOutline: &str = "\u{e01d}";
+    pub const ButtonX: &str = "\u{e01e}";
+    pub const ButtonXOutline: &str = "\u{e01f}";
+    pub const ButtonY: &str = "\u{e020}";
+    pub const ButtonYOutline: &str = "\u{e021}";
+    pub const Dpad: &str = "\u{e022}";
+    pub const DpadAll: &str = "\u{e023}";
+    pub const DpadDown: &str = "\u{e024}";
+    pub const DpadDownOutline: &str = "\u{e025}";
+    pub const DpadHorizontal: &str = "\u{e026}";
+    pub const DpadHorizontalOutline: &str = "\u{e027}";
+    pub const DpadLeft: &str = "\u{e028}";
+    pub const DpadLeftOutline: &str = "\u{e029}";
+    pub const DpadNone: &str = "\u{e02a}";
+    pub const DpadRight: &str = "\u{e02b}";
+    pub const DpadRightOutline: &str = "\u{e02c}";
+    pub const DpadRound: &str = "\u{e02d}";
+    pub const DpadRoundAll: &str = "\u{e02e}";
+    pub const DpadRoundDown: &str = "\u{e02f}";
+    pub const DpadRoundHorizontal: &str = "\u{e030}";
+    pub const DpadRoundLeft: &str = "\u{e031}";
+    pub const DpadRoundRight: &str = "\u{e032}";
+    pub const DpadRoundUp: &str = "\u{e033}";
+    pub const DpadRoundVertical: &str = "\u{e034}";
+    pub const DpadUp: &str = "\u{e035}";
+    pub const DpadUpOutline: &str = "\u{e036}";
+    pub const DpadVertical: &str = "\u{e037}";
+    pub const DpadVerticalOutline: &str = "\u{e038}";
+    pub const ElitePaddleBottomLeft: &str = "\u{e039}";
+    pub const ElitePaddleBottomLeftOutline: &str = "\u{e03a}";
+    pub const ElitePaddleBottomRight: &str = "\u{e03b}";
+    pub const ElitePaddleBottomRightOutline: &str = "\u{e03c}";
+    pub const ElitePaddleTopLeft: &str = "\u{e03d}";
+    pub const ElitePaddleTopLeftOutline: &str = "\u{e03e}";
+    pub const ElitePaddleTopRight: &str = "\u{e03f}";
+    pub const ElitePaddleTopRightOutline: &str = "\u{e040}";
+    pub const Guide: &str = "\u{e041}";
+    pub const GuideOutline: &str = "\u{e042}";
+    pub const Lb: &str = "\u{e043}";
+    pub const LbOutline: &str = "\u{e044}";
+    pub const Ls: &str = "\u{e045}";
+    pub const LsOutline: &str = "\u{e046}";
+    pub const Lt: &str = "\u{e047}";
+    pub const LtOutline: &str = "\u{e048}";
+    pub const Rb: &str = "\u{e049}";
+    pub const RbOutline: &str = "\u{e04a}";
+    pub const Rs: &str = "\u{e04b}";
+    pub const RsOutline: &str = "\u{e04c}";
+    pub const Rt: &str = "\u{e04d}";
+    pub const RtOutline: &str = "\u{e04e}";
+    pub const StickL: &str = "\u{e04f}";
+    pub const StickLDown: &str = "\u{e050}";
+    pub const StickLHorizontal: &str = "\u{e051}";
+    pub const StickLLeft: &str = "\u{e052}";
+    pub const StickLPress: &str = "\u{e053}";
+    pub const StickLRight: &str = "\u{e054}";
+    pub const StickLUp: &str = "\u{e055}";
+    pub const StickLVertical: &str = "\u{e056}";
+    pub const StickR: &str = "\u{e057}";
+    pub const StickRDown: &str = "\u{e058}";
+    pub const StickRHorizontal: &str = "\u{e059}";
+    pub const StickRLeft: &str = "\u{e05a}";
+    pub const StickRPress: &str = "\u{e05b}";
+    pub const StickRRight: &str = "\u{e05c}";
+    pub const StickRUp: &str = "\u{e05d}";
+    pub const StickRVertical: &str = "\u{e05e}";
+    pub const StickSideL: &str = "\u{e05f}";
+    pub const StickSideR: &str = "\u{e060}";
+    pub const StickTopL: &str = "\u{e061}";
+    pub const StickTopR: &str = "\u{e062}";
 }
 
 // ===== STEAM CONTROLLER ICONS =====
-define_icon_category! {
-    SteamController {
-        path: "ui/icons/controllers/steam_controller",
-        atlas: (20, 4),
-        icons: [
-            ControllerSteam = 0,
-            ButtonA = 1,
-            ButtonAOutline = 2,
-            ButtonB = 3,
-            ButtonBOutline = 4,
-            ButtonBackIcon = 5,
-            ButtonBackIconOutline = 6,
-            ButtonColorA = 7,
-            ButtonColorAOutline = 8,
-            ButtonColorB = 9,
-            ButtonColorBOutline = 10,
-            ButtonColorX = 11,
-            ButtonColorXOutline = 12,
-            ButtonColorY = 13,
-            ButtonColorYOutline = 14,
-            ButtonLp = 15,
-            ButtonLpOutline = 16,
-            ButtonRp = 17,
-            ButtonRpOutline = 18,
-            ButtonStartIcon = 19,
-            ButtonStartIconOutline = 20,
-            ButtonX = 21,
-            ButtonXOutline = 22,
-            ButtonY = 23,
-            ButtonYOutline = 24,
-            Dpad = 25,
-            DpadAll = 26,
-            DpadDown = 27,
-            DpadDownOutline = 28,
-            DpadHorizontal = 29,
-            DpadHorizontalOutline = 30,
-            DpadLeft = 31,
-            DpadLeftOutline = 32,
-            DpadNone = 33,
-            DpadRight = 34,
-            DpadRightOutline = 35,
-            DpadUp = 36,
-            DpadUpOutline = 37,
-            DpadVertical = 38,
-            DpadVerticalOutline = 39,
-            Lb = 40,
-            LbOutline = 41,
-            Lg = 42,
-            LgOutline = 43,
-            Lt = 44,
-            LtOutline = 45,
-            Pad = 46,
-            PadCenter = 47,
-            PadDown = 48,
-            PadLeft = 49,
-            PadRight = 50,
-            PadUp = 51,
-            Rb = 52,
-            RbOutline = 53,
-            Rg = 54,
-            RgOutline = 55,
-            Rt = 56,
-            RtOutline = 57,
-            Stick = 58,
-            StickDown = 59,
-            StickHorizontal = 60,
-            StickLPress = 61,
-            StickLeft = 62,
-            StickRight = 63,
-            StickSideL = 64,
-            StickUp = 65,
-            StickVertical = 66,
-        ]
+pub mod steam_controller {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct SteamController;
+
+    impl SteamController {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::SteamController)
+        }
     }
+    pub const ControllerSteamController: &str = "\u{e000}";
+    pub const ButtonA: &str = "\u{e001}";
+    pub const ButtonAOutline: &str = "\u{e002}";
+    pub const ButtonB: &str = "\u{e003}";
+    pub const ButtonBOutline: &str = "\u{e004}";
+    pub const ButtonBackIcon: &str = "\u{e005}";
+    pub const ButtonBackIconOutline: &str = "\u{e006}";
+    pub const ButtonColorA: &str = "\u{e007}";
+    pub const ButtonColorAOutline: &str = "\u{e008}";
+    pub const ButtonColorB: &str = "\u{e009}";
+    pub const ButtonColorBOutline: &str = "\u{e00a}";
+    pub const ButtonColorX: &str = "\u{e00b}";
+    pub const ButtonColorXOutline: &str = "\u{e00c}";
+    pub const ButtonColorY: &str = "\u{e00d}";
+    pub const ButtonColorYOutline: &str = "\u{e00e}";
+    pub const ButtonLp: &str = "\u{e00f}";
+    pub const ButtonLpOutline: &str = "\u{e010}";
+    pub const ButtonRp: &str = "\u{e011}";
+    pub const ButtonRpOutline: &str = "\u{e012}";
+    pub const ButtonStartIcon: &str = "\u{e013}";
+    pub const ButtonStartIconOutline: &str = "\u{e014}";
+    pub const ButtonX: &str = "\u{e015}";
+    pub const ButtonXOutline: &str = "\u{e016}";
+    pub const ButtonY: &str = "\u{e017}";
+    pub const ButtonYOutline: &str = "\u{e018}";
+    pub const Dpad: &str = "\u{e019}";
+    pub const DpadAll: &str = "\u{e01a}";
+    pub const DpadDown: &str = "\u{e01b}";
+    pub const DpadDownOutline: &str = "\u{e01c}";
+    pub const DpadHorizontal: &str = "\u{e01d}";
+    pub const DpadHorizontalOutline: &str = "\u{e01e}";
+    pub const DpadLeft: &str = "\u{e01f}";
+    pub const DpadLeftOutline: &str = "\u{e020}";
+    pub const DpadNone: &str = "\u{e021}";
+    pub const DpadRight: &str = "\u{e022}";
+    pub const DpadRightOutline: &str = "\u{e023}";
+    pub const DpadUp: &str = "\u{e024}";
+    pub const DpadUpOutline: &str = "\u{e025}";
+    pub const DpadVertical: &str = "\u{e026}";
+    pub const DpadVerticalOutline: &str = "\u{e027}";
+    pub const Lb: &str = "\u{e028}";
+    pub const LbOutline: &str = "\u{e029}";
+    pub const Lg: &str = "\u{e02a}";
+    pub const LgOutline: &str = "\u{e02b}";
+    pub const Lt: &str = "\u{e02c}";
+    pub const LtOutline: &str = "\u{e02d}";
+    pub const Pad: &str = "\u{e02e}";
+    pub const PadCenter: &str = "\u{e02f}";
+    pub const PadDown: &str = "\u{e030}";
+    pub const PadLeft: &str = "\u{e031}";
+    pub const PadRight: &str = "\u{e032}";
+    pub const PadUp: &str = "\u{e033}";
+    pub const Rb: &str = "\u{e034}";
+    pub const RbOutline: &str = "\u{e035}";
+    pub const Rg: &str = "\u{e036}";
+    pub const RgOutline: &str = "\u{e037}";
+    pub const Rt: &str = "\u{e038}";
+    pub const RtOutline: &str = "\u{e039}";
+    pub const Stick: &str = "\u{e03a}";
+    pub const StickDown: &str = "\u{e03b}";
+    pub const StickHorizontal: &str = "\u{e03c}";
+    pub const StickLPress: &str = "\u{e03d}";
+    pub const StickLeft: &str = "\u{e03e}";
+    pub const StickRight: &str = "\u{e03f}";
+    pub const StickSideL: &str = "\u{e040}";
+    pub const StickUp: &str = "\u{e041}";
+    pub const StickVertical: &str = "\u{e042}";
 }
 
 // ===== STEAM DECK ICONS =====
-define_icon_category! {
-    SteamDeck {
-        path: "ui/icons/controllers/steam_deck",
-        atlas: (20, 6),
-        icons: [
-            ControllerSteamdeck = 0,
-            ButtonA = 1,
-            ButtonAOutline = 2,
-            ButtonB = 3,
-            ButtonBOutline = 4,
-            ButtonGuide = 5,
-            ButtonGuideOutline = 6,
-            ButtonL1 = 7,
-            ButtonL1Outline = 8,
-            ButtonL2 = 9,
-            ButtonL2Outline = 10,
-            ButtonL4 = 11,
-            ButtonL4Outline = 12,
-            ButtonL5 = 13,
-            ButtonL5Outline = 14,
-            ButtonOptions = 15,
-            ButtonOptionsOutline = 16,
-            ButtonQuickaccess = 17,
-            ButtonQuickaccessOutline = 18,
-            ButtonR1 = 19,
-            ButtonR1Outline = 20,
-            ButtonR2 = 21,
-            ButtonR2Outline = 22,
-            ButtonR4 = 23,
-            ButtonR4Outline = 24,
-            ButtonR5 = 25,
-            ButtonR5Outline = 26,
-            ButtonView = 27,
-            ButtonViewOutline = 28,
-            ButtonX = 29,
-            ButtonXOutline = 30,
-            ButtonY = 31,
-            ButtonYOutline = 32,
-            Dpad = 33,
-            DpadAll = 34,
-            DpadDown = 35,
-            DpadDownOutline = 36,
-            DpadHorizontal = 37,
-            DpadHorizontalOutline = 38,
-            DpadLeft = 39,
-            DpadLeftOutline = 40,
-            DpadNone = 41,
-            DpadRight = 42,
-            DpadRightOutline = 43,
-            DpadUp = 44,
-            DpadUpOutline = 45,
-            DpadVertical = 46,
-            DpadVerticalOutline = 47,
-            StickL = 48,
-            StickLDown = 49,
-            StickLHorizontal = 50,
-            StickLLeft = 51,
-            StickLPress = 52,
-            StickLRight = 53,
-            StickLUp = 54,
-            StickLVertical = 55,
-            StickR = 56,
-            StickRDown = 57,
-            StickRHorizontal = 58,
-            StickRLeft = 59,
-            StickRPress = 60,
-            StickRRight = 61,
-            StickRUp = 62,
-            StickRVertical = 63,
-            StickSideL = 64,
-            StickSideR = 65,
-            StickTopL = 66,
-            StickTopR = 67,
-            Trackpad = 68,
-            TrackpadAll = 69,
-            TrackpadAllOutline = 70,
-            TrackpadDown = 71,
-            TrackpadDownOutline = 72,
-            TrackpadHorizontal = 73,
-            TrackpadHorizontalOutline = 74,
-            TrackpadL = 75,
-            TrackpadLAll = 76,
-            TrackpadLAllOutline = 77,
-            TrackpadLDown = 78,
-            TrackpadLDownOutline = 79,
-            TrackpadLHorizontal = 80,
-            TrackpadLHorizontalOutline = 81,
-            TrackpadLLeft = 82,
-            TrackpadLLeftOutline = 83,
-            TrackpadLOutline = 84,
-            TrackpadLRight = 85,
-            TrackpadLRightOutline = 86,
-            TrackpadLUp = 87,
-            TrackpadLUpOutline = 88,
-            TrackpadLVertical = 89,
-            TrackpadLVerticalOutline = 90,
-            TrackpadLeft = 91,
-            TrackpadLeftOutline = 92,
-            TrackpadOutline = 93,
-            TrackpadR = 94,
-            TrackpadRAll = 95,
-            TrackpadRAllOutline = 96,
-            TrackpadRDown = 97,
-            TrackpadRDownOutline = 98,
-            TrackpadRHorizontal = 99,
-            TrackpadRHorizontalOutline = 100,
-            TrackpadRLeft = 101,
-            TrackpadRLeftOutline = 102,
-            TrackpadROutline = 103,
-            TrackpadRRight = 104,
-            TrackpadRRightOutline = 105,
-            TrackpadRUp = 106,
-            TrackpadRUpOutline = 107,
-            TrackpadRVertical = 108,
-            TrackpadRVerticalOutline = 109,
-            TrackpadRight = 110,
-            TrackpadRightOutline = 111,
-            TrackpadUp = 112,
-            TrackpadUpOutline = 113,
-            TrackpadVertical = 114,
-            TrackpadVerticalOutline = 115,
-        ]
+pub mod steam_deck {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct SteamDeck;
+
+    impl SteamDeck {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::SteamDeck)
+        }
     }
+
+    pub const ControllerSteamDeck: &str = "\u{e000}";
+    pub const ButtonA: &str = "\u{e001}";
+    pub const ButtonAOutline: &str = "\u{e002}";
+    pub const ButtonB: &str = "\u{e003}";
+    pub const ButtonBOutline: &str = "\u{e004}";
+    pub const ButtonGuide: &str = "\u{e005}";
+    pub const ButtonGuideOutline: &str = "\u{e006}";
+    pub const ButtonL1: &str = "\u{e007}";
+    pub const ButtonL1Outline: &str = "\u{e008}";
+    pub const ButtonL2: &str = "\u{e009}";
+    pub const ButtonL2Outline: &str = "\u{e00a}";
+    pub const ButtonL4: &str = "\u{e00b}";
+    pub const ButtonL4Outline: &str = "\u{e00c}";
+    pub const ButtonL5: &str = "\u{e00d}";
+    pub const ButtonL5Outline: &str = "\u{e00e}";
+    pub const ButtonOptions: &str = "\u{e00f}";
+    pub const ButtonOptionsOutline: &str = "\u{e010}";
+    pub const ButtonQuickaccess: &str = "\u{e011}";
+    pub const ButtonQuickaccessOutline: &str = "\u{e012}";
+    pub const ButtonR1: &str = "\u{e013}";
+    pub const ButtonR1Outline: &str = "\u{e014}";
+    pub const ButtonR2: &str = "\u{e015}";
+    pub const ButtonR2Outline: &str = "\u{e016}";
+    pub const ButtonR4: &str = "\u{e017}";
+    pub const ButtonR4Outline: &str = "\u{e018}";
+    pub const ButtonR5: &str = "\u{e019}";
+    pub const ButtonR5Outline: &str = "\u{e01a}";
+    pub const ButtonView: &str = "\u{e01b}";
+    pub const ButtonViewOutline: &str = "\u{e01c}";
+    pub const ButtonX: &str = "\u{e01d}";
+    pub const ButtonXOutline: &str = "\u{e01e}";
+    pub const ButtonY: &str = "\u{e01f}";
+    pub const ButtonYOutline: &str = "\u{e020}";
+    pub const Dpad: &str = "\u{e021}";
+    pub const DpadAll: &str = "\u{e022}";
+    pub const DpadDown: &str = "\u{e023}";
+    pub const DpadDownOutline: &str = "\u{e024}";
+    pub const DpadHorizontal: &str = "\u{e025}";
+    pub const DpadHorizontalOutline: &str = "\u{e026}";
+    pub const DpadLeft: &str = "\u{e027}";
+    pub const DpadLeftOutline: &str = "\u{e028}";
+    pub const DpadNone: &str = "\u{e029}";
+    pub const DpadRight: &str = "\u{e02a}";
+    pub const DpadRightOutline: &str = "\u{e02b}";
+    pub const DpadUp: &str = "\u{e02c}";
+    pub const DpadUpOutline: &str = "\u{e02d}";
+    pub const DpadVertical: &str = "\u{e02e}";
+    pub const DpadVerticalOutline: &str = "\u{e02f}";
+    pub const StickL: &str = "\u{e030}";
+    pub const StickLDown: &str = "\u{e031}";
+    pub const StickLHorizontal: &str = "\u{e032}";
+    pub const StickLLeft: &str = "\u{e033}";
+    pub const StickLPress: &str = "\u{e034}";
+    pub const StickLRight: &str = "\u{e035}";
+    pub const StickLUp: &str = "\u{e036}";
+    pub const StickLVertical: &str = "\u{e037}";
+    pub const StickR: &str = "\u{e038}";
+    pub const StickRDown: &str = "\u{e039}";
+    pub const StickRHorizontal: &str = "\u{e03a}";
+    pub const StickRLeft: &str = "\u{e03b}";
+    pub const StickRPress: &str = "\u{e03c}";
+    pub const StickRRight: &str = "\u{e03d}";
+    pub const StickRUp: &str = "\u{e03e}";
+    pub const StickRVertical: &str = "\u{e03f}";
+    pub const StickSideL: &str = "\u{e040}";
+    pub const StickSideR: &str = "\u{e041}";
+    pub const StickTopL: &str = "\u{e042}";
+    pub const StickTopR: &str = "\u{e043}";
+    pub const Trackpad: &str = "\u{e044}";
+    pub const TrackpadAll: &str = "\u{e045}";
+    pub const TrackpadAllOutline: &str = "\u{e046}";
+    pub const TrackpadDown: &str = "\u{e047}";
+    pub const TrackpadDownOutline: &str = "\u{e048}";
+    pub const TrackpadHorizontal: &str = "\u{e049}";
+    pub const TrackpadHorizontalOutline: &str = "\u{e04a}";
+    pub const TrackpadL: &str = "\u{e04b}";
+    pub const TrackpadLAll: &str = "\u{e04c}";
+    pub const TrackpadLAllOutline: &str = "\u{e04d}";
+    pub const TrackpadLDown: &str = "\u{e04e}";
+    pub const TrackpadLDownOutline: &str = "\u{e04f}";
+    pub const TrackpadLHorizontal: &str = "\u{e050}";
+    pub const TrackpadLHorizontalOutline: &str = "\u{e051}";
+    pub const TrackpadLLeft: &str = "\u{e052}";
+    pub const TrackpadLLeftOutline: &str = "\u{e053}";
+    pub const TrackpadLOutline: &str = "\u{e054}";
+    pub const TrackpadLRight: &str = "\u{e055}";
+    pub const TrackpadLRightOutline: &str = "\u{e056}";
+    pub const TrackpadLUp: &str = "\u{e057}";
+    pub const TrackpadLUpOutline: &str = "\u{e058}";
+    pub const TrackpadLVertical: &str = "\u{e059}";
+    pub const TrackpadLVerticalOutline: &str = "\u{e05a}";
+    pub const TrackpadLeft: &str = "\u{e05b}";
+    pub const TrackpadLeftOutline: &str = "\u{e05c}";
+    pub const TrackpadOutline: &str = "\u{e05d}";
+    pub const TrackpadR: &str = "\u{e05e}";
+    pub const TrackpadRAll: &str = "\u{e05f}";
+    pub const TrackpadRAllOutline: &str = "\u{e060}";
+    pub const TrackpadRDown: &str = "\u{e061}";
+    pub const TrackpadRDownOutline: &str = "\u{e062}";
+    pub const TrackpadRHorizontal: &str = "\u{e063}";
+    pub const TrackpadRHorizontalOutline: &str = "\u{e064}";
+    pub const TrackpadRLeft: &str = "\u{e065}";
+    pub const TrackpadRLeftOutline: &str = "\u{e066}";
+    pub const TrackpadROutline: &str = "\u{e067}";
+    pub const TrackpadRRight: &str = "\u{e068}";
+    pub const TrackpadRRightOutline: &str = "\u{e069}";
+    pub const TrackpadRUp: &str = "\u{e06a}";
+    pub const TrackpadRUpOutline: &str = "\u{e06b}";
+    pub const TrackpadRVertical: &str = "\u{e06c}";
+    pub const TrackpadRVerticalOutline: &str = "\u{e06d}";
+    pub const TrackpadRight: &str = "\u{e06e}";
+    pub const TrackpadRightOutline: &str = "\u{e06f}";
+    pub const TrackpadUp: &str = "\u{e070}";
+    pub const TrackpadUpOutline: &str = "\u{e071}";
+    pub const TrackpadVertical: &str = "\u{e072}";
+    pub const TrackpadVerticalOutline: &str = "\u{e073}";
 }
 
 // ===== GAMECUBE ICONS =====
-define_icon_category! {
-    Gamecube {
-        path: "ui/icons/controllers/nintendo_gamecube",
-        atlas: (20, 4),
-        icons: [
-            ButtonA = 0,
-            ButtonAOutline = 1,
-            ButtonB = 2,
-            ButtonBOutline = 3,
-            ButtonColorA = 4,
-            ButtonColorAOutline = 5,
-            ButtonColorB = 6,
-            ButtonColorBOutline = 7,
-            ButtonStart = 8,
-            ButtonStartOutline = 9,
-            ButtonX = 10,
-            ButtonXOutline = 11,
-            ButtonXTilted = 12,
-            ButtonXTiltedOutline = 13,
-            ButtonY = 14,
-            ButtonYOutline = 15,
-            ButtonYTilted = 16,
-            ButtonYTiltedOutline = 17,
-            ButtonZ = 18,
-            ButtonZOutline = 19,
-            Controller = 20,
-            ControllerWavebird = 21,
-            Dpad = 22,
-            DpadAll = 23,
-            DpadDown = 24,
-            DpadDownOutline = 25,
-            DpadHorizontal = 26,
-            DpadHorizontalOutline = 27,
-            DpadLeft = 28,
-            DpadLeftOutline = 29,
-            DpadNone = 30,
-            DpadRight = 31,
-            DpadRightOutline = 32,
-            DpadUp = 33,
-            DpadUpOutline = 34,
-            DpadVertical = 35,
-            DpadVerticalOutline = 36,
-            Stick = 37,
-            StickC = 38,
-            StickCColorDown = 39,
-            StickCColorHorizontal = 40,
-            StickCColorLeft = 41,
-            StickCColorRight = 42,
-            StickCColorTop = 43,
-            StickCColorUp = 44,
-            StickCColorVertical = 45,
-            StickCDown = 46,
-            StickCHorizontal = 47,
-            StickCLeft = 48,
-            StickCRight = 49,
-            StickCTop = 50,
-            StickCUp = 51,
-            StickCVertical = 52,
-            StickColorC = 53,
-            StickDown = 54,
-            StickGrip = 55,
-            StickGripDown = 56,
-            StickGripHorizontal = 57,
-            StickGripLeft = 58,
-            StickGripRight = 59,
-            StickGripTop = 60,
-            StickGripUp = 61,
-            StickGripVertical = 62,
-            StickHorizontal = 63,
-            StickLeft = 64,
-            StickRight = 65,
-            StickTop = 66,
-            StickUp = 67,
-            StickVertical = 68,
-            TriggerL = 69,
-            TriggerLOutline = 70,
-            TriggerR = 71,
-            TriggerROutline = 72,
-        ]
+pub mod gamecube {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct Gamecube;
+
+    impl Gamecube {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::Gamecube)
+        }
     }
+
+    pub const ButtonA: &str = "\u{e000}";
+    pub const ButtonAOutline: &str = "\u{e001}";
+    pub const ButtonB: &str = "\u{e002}";
+    pub const ButtonBOutline: &str = "\u{e003}";
+    pub const ButtonColorA: &str = "\u{e004}";
+    pub const ButtonColorAOutline: &str = "\u{e005}";
+    pub const ButtonColorB: &str = "\u{e006}";
+    pub const ButtonColorBOutline: &str = "\u{e007}";
+    pub const ButtonStart: &str = "\u{e008}";
+    pub const ButtonStartOutline: &str = "\u{e009}";
+    pub const ButtonX: &str = "\u{e00a}";
+    pub const ButtonXOutline: &str = "\u{e00b}";
+    pub const ButtonXTilted: &str = "\u{e00c}";
+    pub const ButtonXTiltedOutline: &str = "\u{e00d}";
+    pub const ButtonY: &str = "\u{e00e}";
+    pub const ButtonYOutline: &str = "\u{e00f}";
+    pub const ButtonYTilted: &str = "\u{e010}";
+    pub const ButtonYTiltedOutline: &str = "\u{e011}";
+    pub const ButtonZ: &str = "\u{e012}";
+    pub const ButtonZOutline: &str = "\u{e013}";
+    pub const ControllerGamecube: &str = "\u{e014}";
+    pub const ControllerGamecubeWavebird: &str = "\u{e015}";
+    pub const Dpad: &str = "\u{e016}";
+    pub const DpadAll: &str = "\u{e017}";
+    pub const DpadDown: &str = "\u{e018}";
+    pub const DpadDownOutline: &str = "\u{e019}";
+    pub const DpadHorizontal: &str = "\u{e01a}";
+    pub const DpadHorizontalOutline: &str = "\u{e01b}";
+    pub const DpadLeft: &str = "\u{e01c}";
+    pub const DpadLeftOutline: &str = "\u{e01d}";
+    pub const DpadNone: &str = "\u{e01e}";
+    pub const DpadRight: &str = "\u{e01f}";
+    pub const DpadRightOutline: &str = "\u{e020}";
+    pub const DpadUp: &str = "\u{e021}";
+    pub const DpadUpOutline: &str = "\u{e022}";
+    pub const DpadVertical: &str = "\u{e023}";
+    pub const DpadVerticalOutline: &str = "\u{e024}";
+    pub const Stick: &str = "\u{e025}";
+    pub const StickC: &str = "\u{e026}";
+    pub const StickCColorDown: &str = "\u{e027}";
+    pub const StickCColorHorizontal: &str = "\u{e028}";
+    pub const StickCColorLeft: &str = "\u{e029}";
+    pub const StickCColorRight: &str = "\u{e02a}";
+    pub const StickCColorTop: &str = "\u{e02b}";
+    pub const StickCColorUp: &str = "\u{e02c}";
+    pub const StickCColorVertical: &str = "\u{e02d}";
+    pub const StickCDown: &str = "\u{e02e}";
+    pub const StickCHorizontal: &str = "\u{e02f}";
+    pub const StickCLeft: &str = "\u{e030}";
+    pub const StickCRight: &str = "\u{e031}";
+    pub const StickCTop: &str = "\u{e032}";
+    pub const StickCUp: &str = "\u{e033}";
+    pub const StickCVertical: &str = "\u{e034}";
+    pub const StickColorC: &str = "\u{e035}";
+    pub const StickDown: &str = "\u{e036}";
+    pub const StickGrip: &str = "\u{e037}";
+    pub const StickGripDown: &str = "\u{e038}";
+    pub const StickGripHorizontal: &str = "\u{e039}";
+    pub const StickGripLeft: &str = "\u{e03a}";
+    pub const StickGripRight: &str = "\u{e03b}";
+    pub const StickGripTop: &str = "\u{e03c}";
+    pub const StickGripUp: &str = "\u{e03d}";
+    pub const StickGripVertical: &str = "\u{e03e}";
+    pub const StickHorizontal: &str = "\u{e03f}";
+    pub const StickLeft: &str = "\u{e040}";
+    pub const StickRight: &str = "\u{e041}";
+    pub const StickTop: &str = "\u{e042}";
+    pub const StickUp: &str = "\u{e043}";
+    pub const StickVertical: &str = "\u{e044}";
+    pub const TriggerL: &str = "\u{e045}";
+    pub const TriggerLOutline: &str = "\u{e046}";
+    pub const TriggerR: &str = "\u{e047}";
+    pub const TriggerROutline: &str = "\u{e048}";
 }
 
 // ===== WII ICONS =====
-define_icon_category! {
-    Wii {
-        path: "ui/icons/controllers/nintendo_wii",
-        atlas: (20, 5),
-        icons: [
-            ControllerWiiClassic = 0,
-            ControllerWiiClassicPro = 1,
-            Button1 = 2,
-            Button1Outline = 3,
-            Button2 = 4,
-            Button2Outline = 5,
-            ButtonA = 6,
-            ButtonAOutline = 7,
-            ButtonB = 8,
-            ButtonBOutline = 9,
-            ButtonC = 10,
-            ButtonCOutline = 11,
-            ButtonHome = 12,
-            ButtonHomeOutline = 13,
-            ButtonL = 14,
-            ButtonLOutline = 15,
-            ButtonMinus = 16,
-            ButtonMinusOutline = 17,
-            ButtonPlus = 18,
-            ButtonPlusOutline = 19,
-            ButtonPower = 20,
-            ButtonPowerOutline = 21,
-            ButtonR = 22,
-            ButtonROutline = 23,
-            ButtonX = 24,
-            ButtonXOutline = 25,
-            ButtonY = 26,
-            ButtonYOutline = 27,
-            ButtonZ = 28,
-            ButtonZOutline = 29,
-            ButtonZl = 30,
-            ButtonZlOutline = 31,
-            ButtonZr = 32,
-            ButtonZrOutline = 33,
-            Controller = 34,
-            ControllerDiagonal = 35,
-            ControllerDiagonalOutline = 36,
-            ControllerHorizontal = 37,
-            ControllerHorizontalOutline = 38,
-            ControllerNunchuk = 39,
-            ControllerNunchukWire = 40,
-            ControllerOutline = 41,
-            ControllerRotate = 42,
-            ControllerRotateOutline = 43,
-            ControllerVertical = 44,
-            ControllerVerticalOutline = 45,
-            Dpad = 46,
-            DpadAll = 47,
-            DpadDown = 48,
-            DpadDownOutline = 49,
-            DpadHorizontal = 50,
-            DpadHorizontalOutline = 51,
-            DpadLeft = 52,
-            DpadLeftOutline = 53,
-            DpadNone = 54,
-            DpadRight = 55,
-            DpadRightOutline = 56,
-            DpadUp = 57,
-            DpadUpOutline = 58,
-            DpadVertical = 59,
-            DpadVerticalOutline = 60,
-            Stick = 61,
-            StickDown = 62,
-            StickHorizontal = 63,
-            StickL = 64,
-            StickLDown = 65,
-            StickLHorizontal = 66,
-            StickLLeft = 67,
-            StickLRight = 68,
-            StickLUp = 69,
-            StickLVertical = 70,
-            StickLeft = 71,
-            StickR = 72,
-            StickRDown = 73,
-            StickRHorizontal = 74,
-            StickRLeft = 75,
-            StickRRight = 76,
-            StickRUp = 77,
-            StickRVertical = 78,
-            StickRight = 79,
-            StickTopL = 80,
-            StickTopR = 81,
-            StickUp = 82,
-            StickVertical = 83,
-        ]
+pub mod wii {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct Wii;
+
+    impl Wii {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::Wii)
+        }
     }
+
+    pub const ControllerClassicWII: &str = "\u{e000}";
+    pub const ControllerClassicWIIPro: &str = "\u{e001}";
+    pub const Button1: &str = "\u{e002}";
+    pub const Button1Outline: &str = "\u{e003}";
+    pub const Button2: &str = "\u{e004}";
+    pub const Button2Outline: &str = "\u{e005}";
+    pub const ButtonA: &str = "\u{e006}";
+    pub const ButtonAOutline: &str = "\u{e007}";
+    pub const ButtonB: &str = "\u{e008}";
+    pub const ButtonBOutline: &str = "\u{e009}";
+    pub const ButtonC: &str = "\u{e00a}";
+    pub const ButtonCOutline: &str = "\u{e00b}";
+    pub const ButtonHome: &str = "\u{e00c}";
+    pub const ButtonHomeOutline: &str = "\u{e00d}";
+    pub const ButtonL: &str = "\u{e00e}";
+    pub const ButtonLOutline: &str = "\u{e00f}";
+    pub const ButtonMinus: &str = "\u{e010}";
+    pub const ButtonMinusOutline: &str = "\u{e011}";
+    pub const ButtonPlus: &str = "\u{e012}";
+    pub const ButtonPlusOutline: &str = "\u{e013}";
+    pub const ButtonPower: &str = "\u{e014}";
+    pub const ButtonPowerOutline: &str = "\u{e015}";
+    pub const ButtonR: &str = "\u{e016}";
+    pub const ButtonROutline: &str = "\u{e017}";
+    pub const ButtonX: &str = "\u{e018}";
+    pub const ButtonXOutline: &str = "\u{e019}";
+    pub const ButtonY: &str = "\u{e01a}";
+    pub const ButtonYOutline: &str = "\u{e01b}";
+    pub const ButtonZ: &str = "\u{e01c}";
+    pub const ButtonZOutline: &str = "\u{e01d}";
+    pub const ButtonZl: &str = "\u{e01e}";
+    pub const ButtonZlOutline: &str = "\u{e01f}";
+    pub const ButtonZr: &str = "\u{e020}";
+    pub const ButtonZrOutline: &str = "\u{e021}";
+    pub const ControllerWII: &str = "\u{e022}";
+    pub const ControllerDiagonal: &str = "\u{e023}";
+    pub const ControllerDiagonalOutline: &str = "\u{e024}";
+    pub const ControllerHorizontal: &str = "\u{e025}";
+    pub const ControllerHorizontalOutline: &str = "\u{e026}";
+    pub const ControllerNunchuk: &str = "\u{e027}";
+    pub const ControllerNunchukWire: &str = "\u{e028}";
+    pub const ControllerOutline: &str = "\u{e029}";
+    pub const ControllerRotate: &str = "\u{e02a}";
+    pub const ControllerRotateOutline: &str = "\u{e02b}";
+    pub const ControllerVertical: &str = "\u{e02c}";
+    pub const ControllerVerticalOutline: &str = "\u{e02d}";
+    pub const Dpad: &str = "\u{e02e}";
+    pub const DpadAll: &str = "\u{e02f}";
+    pub const DpadDown: &str = "\u{e030}";
+    pub const DpadDownOutline: &str = "\u{e031}";
+    pub const DpadHorizontal: &str = "\u{e032}";
+    pub const DpadHorizontalOutline: &str = "\u{e033}";
+    pub const DpadLeft: &str = "\u{e034}";
+    pub const DpadLeftOutline: &str = "\u{e035}";
+    pub const DpadNone: &str = "\u{e036}";
+    pub const DpadRight: &str = "\u{e037}";
+    pub const DpadRightOutline: &str = "\u{e038}";
+    pub const DpadUp: &str = "\u{e039}";
+    pub const DpadUpOutline: &str = "\u{e03a}";
+    pub const DpadVertical: &str = "\u{e03b}";
+    pub const DpadVerticalOutline: &str = "\u{e03c}";
+    pub const Stick: &str = "\u{e03d}";
+    pub const StickDown: &str = "\u{e03e}";
+    pub const StickHorizontal: &str = "\u{e03f}";
+    pub const StickL: &str = "\u{e040}";
+    pub const StickLDown: &str = "\u{e041}";
+    pub const StickLHorizontal: &str = "\u{e042}";
+    pub const StickLLeft: &str = "\u{e043}";
+    pub const StickLRight: &str = "\u{e044}";
+    pub const StickLUp: &str = "\u{e045}";
+    pub const StickLVertical: &str = "\u{e046}";
+    pub const StickLeft: &str = "\u{e047}";
+    pub const StickR: &str = "\u{e048}";
+    pub const StickRDown: &str = "\u{e049}";
+    pub const StickRHorizontal: &str = "\u{e04a}";
+    pub const StickRLeft: &str = "\u{e04b}";
+    pub const StickRRight: &str = "\u{e04c}";
+    pub const StickRUp: &str = "\u{e04d}";
+    pub const StickRVertical: &str = "\u{e04e}";
+    pub const StickRight: &str = "\u{e04f}";
+    pub const StickTopL: &str = "\u{e050}";
+    pub const StickTopR: &str = "\u{e051}";
+    pub const StickUp: &str = "\u{e052}";
+    pub const StickVertical: &str = "\u{e053}";
 }
 
 // ===== WIIU ICONS =====
-define_icon_category! {
-    WiiU {
-        path: "ui/icons/controllers/nintendo_wiiu",
-        atlas: (20, 4),
-        icons: [
-            ControllerWiiuPro = 0,
-            Button1 = 1,
-            Button1Outline = 2,
-            Button2 = 3,
-            Button2Outline = 4,
-            ButtonA = 5,
-            ButtonAOutline = 6,
-            ButtonB = 7,
-            ButtonBOutline = 8,
-            ButtonHome = 9,
-            ButtonHomeOutline = 10,
-            ButtonL = 11,
-            ButtonLOutline = 12,
-            ButtonMinus = 13,
-            ButtonMinusOutline = 14,
-            ButtonPlus = 15,
-            ButtonPlusOutline = 16,
-            ButtonPower = 17,
-            ButtonPowerOutline = 18,
-            ButtonR = 19,
-            ButtonROutline = 20,
-            ButtonTv = 21,
-            ButtonTvOutline = 22,
-            ButtonX = 23,
-            ButtonXOutline = 24,
-            ButtonY = 25,
-            ButtonYOutline = 26,
-            ButtonZl = 27,
-            ButtonZlOutline = 28,
-            ButtonZr = 29,
-            ButtonZrOutline = 30,
-            Controller = 31,
-            ControllerDown = 32,
-            ControllerDownOutline = 33,
-            ControllerOutline = 34,
-            ControllerUp = 35,
-            ControllerUpOutlnie = 36,
-            Dpad = 37,
-            DpadAll = 38,
-            DpadDown = 39,
-            DpadDownOutline = 40,
-            DpadHorizontal = 41,
-            DpadHorizontalOutline = 42,
-            DpadLeft = 43,
-            DpadLeftOutline = 44,
-            DpadNone = 45,
-            DpadRight = 46,
-            DpadRightOutline = 47,
-            DpadUp = 48,
-            DpadUpOutline = 49,
-            DpadVertical = 50,
-            DpadVerticalOutline = 51,
-            StickL = 52,
-            StickLDown = 53,
-            StickLHorizontal = 54,
-            StickLLeft = 55,
-            StickLRight = 56,
-            StickLUp = 57,
-            StickLVertical = 58,
-            StickR = 59,
-            StickRDown = 60,
-            StickRHorizontal = 61,
-            StickRLeft = 62,
-            StickRRight = 63,
-            StickRUp = 64,
-            StickRVertical = 65,
-            StickTopL = 66,
-            StickTopR = 67,
-        ]
+pub mod wiiu {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct WiiU;
+
+    impl WiiU {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::WiiU)
+        }
     }
+
+    pub const ControllerWIIUPro: &str = "\u{e000}";
+    pub const Button1: &str = "\u{e001}";
+    pub const Button1Outline: &str = "\u{e002}";
+    pub const Button2: &str = "\u{e003}";
+    pub const Button2Outline: &str = "\u{e004}";
+    pub const ButtonA: &str = "\u{e005}";
+    pub const ButtonAOutline: &str = "\u{e006}";
+    pub const ButtonB: &str = "\u{e007}";
+    pub const ButtonBOutline: &str = "\u{e008}";
+    pub const ButtonHome: &str = "\u{e009}";
+    pub const ButtonHomeOutline: &str = "\u{e00a}";
+    pub const ButtonL: &str = "\u{e00b}";
+    pub const ButtonLOutline: &str = "\u{e00c}";
+    pub const ButtonMinus: &str = "\u{e00d}";
+    pub const ButtonMinusOutline: &str = "\u{e00e}";
+    pub const ButtonPlus: &str = "\u{e00f}";
+    pub const ButtonPlusOutline: &str = "\u{e010}";
+    pub const ButtonPower: &str = "\u{e011}";
+    pub const ButtonPowerOutline: &str = "\u{e012}";
+    pub const ButtonR: &str = "\u{e013}";
+    pub const ButtonROutline: &str = "\u{e014}";
+    pub const ButtonTv: &str = "\u{e015}";
+    pub const ButtonTvOutline: &str = "\u{e016}";
+    pub const ButtonX: &str = "\u{e017}";
+    pub const ButtonXOutline: &str = "\u{e018}";
+    pub const ButtonY: &str = "\u{e019}";
+    pub const ButtonYOutline: &str = "\u{e01a}";
+    pub const ButtonZl: &str = "\u{e01b}";
+    pub const ButtonZlOutline: &str = "\u{e01c}";
+    pub const ButtonZr: &str = "\u{e01d}";
+    pub const ButtonZrOutline: &str = "\u{e01e}";
+    pub const ControllerWIIU: &str = "\u{e01f}";
+    pub const ControllerDown: &str = "\u{e020}";
+    pub const ControllerDownOutline: &str = "\u{e021}";
+    pub const ControllerOutline: &str = "\u{e022}";
+    pub const ControllerUp: &str = "\u{e023}";
+    pub const ControllerUpOutlnie: &str = "\u{e024}";
+    pub const Dpad: &str = "\u{e025}";
+    pub const DpadAll: &str = "\u{e026}";
+    pub const DpadDown: &str = "\u{e027}";
+    pub const DpadDownOutline: &str = "\u{e028}";
+    pub const DpadHorizontal: &str = "\u{e029}";
+    pub const DpadHorizontalOutline: &str = "\u{e02a}";
+    pub const DpadLeft: &str = "\u{e02b}";
+    pub const DpadLeftOutline: &str = "\u{e02c}";
+    pub const DpadNone: &str = "\u{e02d}";
+    pub const DpadRight: &str = "\u{e02e}";
+    pub const DpadRightOutline: &str = "\u{e02f}";
+    pub const DpadUp: &str = "\u{e030}";
+    pub const DpadUpOutline: &str = "\u{e031}";
+    pub const DpadVertical: &str = "\u{e032}";
+    pub const DpadVerticalOutline: &str = "\u{e033}";
+    pub const StickL: &str = "\u{e034}";
+    pub const StickLDown: &str = "\u{e035}";
+    pub const StickLHorizontal: &str = "\u{e036}";
+    pub const StickLLeft: &str = "\u{e037}";
+    pub const StickLRight: &str = "\u{e038}";
+    pub const StickLUp: &str = "\u{e039}";
+    pub const StickLVertical: &str = "\u{e03a}";
+    pub const StickR: &str = "\u{e03b}";
+    pub const StickRDown: &str = "\u{e03c}";
+    pub const StickRHorizontal: &str = "\u{e03d}";
+    pub const StickRLeft: &str = "\u{e03e}";
+    pub const StickRRight: &str = "\u{e03f}";
+    pub const StickRUp: &str = "\u{e040}";
+    pub const StickRVertical: &str = "\u{e041}";
+    pub const StickTopL: &str = "\u{e042}";
+    pub const StickTopR: &str = "\u{e043}";
 }
 
 // ===== TOUCH ICONS =====
-define_icon_category! {
-    Touch {
-        path: "ui/icons/controllers/touch",
-        atlas: (20, 2),
-        icons: [
-            FingerOne = 0,
-            FingerTwo = 1,
-            HandClosed = 2,
-            HandOpen = 3,
-            RotateLeft = 4,
-            RotateRight = 5,
-            SwipeDown = 6,
-            SwipeHorizontal = 7,
-            SwipeLeft = 8,
-            SwipeMove = 9,
-            SwipeRight = 10,
-            SwipeTwoDown = 11,
-            SwipeTwoHorizontal = 12,
-            SwipeTwoLeft = 13,
-            SwipeTwoMove = 14,
-            SwipeTwoRight = 15,
-            SwipeTwoUp = 16,
-            SwipeTwoVertical = 17,
-            SwipeUp = 18,
-            SwipeVertical = 19,
-            Tap = 20,
-            TapDouble = 21,
-            TapHold = 22,
-            Two = 23,
-            TwoDouble = 24,
-            TwoHold = 25,
-            ZoomIn = 26,
-            ZoomOut = 27,
-        ]
+pub mod touch {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct Touch;
+
+    impl Touch {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content).family(FontFamily::Touch)
+        }
     }
+
+    pub const FingerOne: &str = "\u{e000}";
+    pub const FingerTwo: &str = "\u{e001}";
+    pub const HandClosed: &str = "\u{e002}";
+    pub const HandOpen: &str = "\u{e003}";
+    pub const RotateLeft: &str = "\u{e004}";
+    pub const RotateRight: &str = "\u{e005}";
+    pub const SwipeDown: &str = "\u{e006}";
+    pub const SwipeHorizontal: &str = "\u{e007}";
+    pub const SwipeLeft: &str = "\u{e008}";
+    pub const SwipeMove: &str = "\u{e009}";
+    pub const SwipeRight: &str = "\u{e00a}";
+    pub const SwipeTwoDown: &str = "\u{e00b}";
+    pub const SwipeTwoHorizontal: &str = "\u{e00c}";
+    pub const SwipeTwoLeft: &str = "\u{e00d}";
+    pub const SwipeTwoMove: &str = "\u{e00e}";
+    pub const SwipeTwoRight: &str = "\u{e00f}";
+    pub const SwipeTwoUp: &str = "\u{e010}";
+    pub const SwipeTwoVertical: &str = "\u{e011}";
+    pub const SwipeUp: &str = "\u{e012}";
+    pub const SwipeVertical: &str = "\u{e013}";
+    pub const Tap: &str = "\u{e014}";
+    pub const TapDouble: &str = "\u{e015}";
+    pub const TapHold: &str = "\u{e016}";
+    pub const Two: &str = "\u{e017}";
+    pub const TwoDouble: &str = "\u{e018}";
+    pub const TwoHold: &str = "\u{e019}";
+    pub const ZoomIn: &str = "\u{e01a}";
+    pub const ZoomOut: &str = "\u{e01b}";
 }
 
 // ===== INDICATORS/FLAIRS =====
-define_icon_category! {
-    Indicators {
-        path: "ui/icons/controllers/indicators",
-        atlas: (20, 5),
-        icons: [
-            ControllerBatteryEmpty = 0,
-            ControllerBatteryFull = 1,
-            ControllerBatteryHalf = 2,
-            ControllerConnectingA = 3,
-            ControllerConnectingB = 4,
-            ControllerDisconnected = 5,
-            ControllerGeneric = 6,
-            ControllerIconBatteryEmpty = 7,
-            ControllerIconBatteryFull = 8,
-            ControllerIconBatteryHalf = 9,
-            ControllerIconConnectingA = 10,
-            ControllerIconConnectingB = 11,
-            ControllerIconDisconnected = 12,
-            FlairArrow0 = 13,
-            FlairArrow1 = 14,
-            FlairArrow2 = 15,
-            FlairArrow3 = 16,
-            FlairArrowBackforth = 17,
-            FlairArrowCenter0 = 18,
-            FlairArrowCenter1 = 19,
-            FlairArrowCenter2 = 20,
-            FlairArrowCenter3 = 21,
-            FlairArrowLong = 22,
-            FlairArrowShort = 23,
-            FlairArrowZ = 24,
-            FlairArrowsAll = 25,
-            FlairArrowsDiagonalAll = 26,
-            FlairArrowsDiagonalLeft = 27,
-            FlairArrowsDiagonalRight = 28,
-            FlairArrowsDown = 29,
-            FlairArrowsHorizontal = 30,
-            FlairArrowsLeft = 31,
-            FlairArrowsRight = 32,
-            FlairArrowsUp = 33,
-            FlairArrowsVertical = 34,
-            FlairCircle0 = 35,
-            FlairCircle1 = 36,
-            FlairCircle2 = 37,
-            FlairCircle3 = 38,
-            FlairCircle4 = 39,
-            FlairCircle5 = 40,
-            FlairCircle6 = 41,
-            FlairCircle7 = 42,
-            FlairCircle8 = 43,
-            FlairCircleRed0 = 44,
-            FlairCircleRed1 = 45,
-            FlairCircleRed2 = 46,
-            FlairCircleRed3 = 47,
-            FlairCircleRed4 = 48,
-            FlairCircleRed5 = 49,
-            FlairCircleRed6 = 50,
-            FlairCircleRed7 = 51,
-            FlairCircleRed8 = 52,
-            FlairCircleTargetA = 53,
-            FlairCircleTargetB = 54,
-            FlairCross = 55,
-            FlairDisabled = 56,
-            FlairDisabledCross = 57,
-            FlairDisabledCrossOutline = 58,
-            FlairDisabledLine = 59,
-            FlairDisabledLineOutline = 60,
-            FlairDisabledOutline = 61,
-            FlairNumber0 = 62,
-            FlairNumber0Outline = 63,
-            FlairNumber1 = 64,
-            FlairNumber1Outline = 65,
-            FlairNumber2 = 66,
-            FlairNumber2Outline = 67,
-            FlairNumber3 = 68,
-            FlairNumber3Outline = 69,
-            FlairNumber4 = 70,
-            FlairNumber4Outline = 71,
-            FlairNumber5 = 72,
-            FlairNumber5Outline = 73,
-            FlairNumber6 = 74,
-            FlairNumber6Outline = 75,
-            FlairNumber7 = 76,
-            FlairNumber7Outline = 77,
-            FlairNumber8 = 78,
-            FlairNumber8Outline = 79,
-            FlairNumber9 = 80,
-            FlairNumber9Outline = 81,
-            FlairPlus = 82,
-            FlairSmallCheck = 83,
-            FlairSmallCheckOutline = 84,
-            FlairSmallCross = 85,
-            FlairSmallCrossOutline = 86,
-            FlairSmallDisabled = 87,
-            FlairSmallDisabledOutline = 88,
-            FlairSmallInfo = 89,
-            FlairSmallInfoOutline = 90,
-            FlairSmallRotate = 91,
-            FlairSmallRotateOutline = 92,
-        ]
+pub mod indicators {
+    use crate::components::{text::Text, TextBuilder};
+    use crate::theme::typography::FontFamily;
+
+    pub struct Indicators;
+
+    impl Indicators {
+        pub fn new(content: impl Into<String>) -> TextBuilder {
+            Text::new(content)
+                .family(FontFamily::Indicators)
+                .size(crate::theme::typography::TextSize::X2l)
+        }
     }
+
+    pub const ControllerBatteryEmpty: &str = "\u{e000}";
+    pub const ControllerBatteryFull: &str = "\u{e001}";
+    pub const ControllerBatteryHalf: &str = "\u{e002}";
+    pub const ControllerConnectingA: &str = "\u{e003}";
+    pub const ControllerConnectingB: &str = "\u{e004}";
+    pub const ControllerDisconnected: &str = "\u{e005}";
+    pub const ControllerGeneric: &str = "\u{e006}";
+    pub const ControllerIconBatteryEmpty: &str = "\u{e007}";
+    pub const ControllerIconBatteryFull: &str = "\u{e008}";
+    pub const ControllerIconBatteryHalf: &str = "\u{e009}";
+    pub const ControllerIconConnectingA: &str = "\u{e00a}";
+    pub const ControllerIconConnectingB: &str = "\u{e00b}";
+    pub const ControllerIconDisconnected: &str = "\u{e00c}";
+    pub const FlairArrow0: &str = "\u{e00d}";
+    pub const FlairArrow1: &str = "\u{e00e}";
+    pub const FlairArrow2: &str = "\u{e00f}";
+    pub const FlairArrow3: &str = "\u{e010}";
+    pub const FlairArrowBackforth: &str = "\u{e011}";
+    pub const FlairArrowCenter0: &str = "\u{e012}";
+    pub const FlairArrowCenter1: &str = "\u{e013}";
+    pub const FlairArrowCenter2: &str = "\u{e014}";
+    pub const FlairArrowCenter3: &str = "\u{e015}";
+    pub const FlairArrowLong: &str = "\u{e016}";
+    pub const FlairArrowShort: &str = "\u{e017}";
+    pub const FlairArrowZ: &str = "\u{e018}";
+    pub const FlairArrowsAll: &str = "\u{e019}";
+    pub const FlairArrowsDiagonalAll: &str = "\u{e01a}";
+    pub const FlairArrowsDiagonalLeft: &str = "\u{e01b}";
+    pub const FlairArrowsDiagonalRight: &str = "\u{e01c}";
+    pub const FlairArrowsDown: &str = "\u{e01d}";
+    pub const FlairArrowsHorizontal: &str = "\u{e01e}";
+    pub const FlairArrowsLeft: &str = "\u{e01f}";
+    pub const FlairArrowsRight: &str = "\u{e020}";
+    pub const FlairArrowsUp: &str = "\u{e021}";
+    pub const FlairArrowsVertical: &str = "\u{e022}";
+    pub const FlairCircle0: &str = "\u{e023}";
+    pub const FlairCircle1: &str = "\u{e024}";
+    pub const FlairCircle2: &str = "\u{e025}";
+    pub const FlairCircle3: &str = "\u{e026}";
+    pub const FlairCircle4: &str = "\u{e027}";
+    pub const FlairCircle5: &str = "\u{e028}";
+    pub const FlairCircle6: &str = "\u{e029}";
+    pub const FlairCircle7: &str = "\u{e02a}";
+    pub const FlairCircle8: &str = "\u{e02b}";
+    pub const FlairCircleRed0: &str = "\u{e02c}";
+    pub const FlairCircleRed1: &str = "\u{e02d}";
+    pub const FlairCircleRed2: &str = "\u{e02e}";
+    pub const FlairCircleRed3: &str = "\u{e02f}";
+    pub const FlairCircleRed4: &str = "\u{e030}";
+    pub const FlairCircleRed5: &str = "\u{e031}";
+    pub const FlairCircleRed6: &str = "\u{e032}";
+    pub const FlairCircleRed7: &str = "\u{e033}";
+    pub const FlairCircleRed8: &str = "\u{e034}";
+    pub const FlairCircleTargetA: &str = "\u{e035}";
+    pub const FlairCircleTargetB: &str = "\u{e036}";
+    pub const FlairCross: &str = "\u{e037}";
+    pub const FlairDisabled: &str = "\u{e038}";
+    pub const FlairDisabledCross: &str = "\u{e039}";
+    pub const FlairDisabledCrossOutline: &str = "\u{e03a}";
+    pub const FlairDisabledLine: &str = "\u{e03b}";
+    pub const FlairDisabledLineOutline: &str = "\u{e03c}";
+    pub const FlairDisabledOutline: &str = "\u{e03d}";
+    pub const FlairNumber0: &str = "\u{e03e}";
+    pub const FlairNumber0Outline: &str = "\u{e03f}";
+    pub const FlairNumber1: &str = "\u{e040}";
+    pub const FlairNumber1Outline: &str = "\u{e041}";
+    pub const FlairNumber2: &str = "\u{e042}";
+    pub const FlairNumber2Outline: &str = "\u{e043}";
+    pub const FlairNumber3: &str = "\u{e044}";
+    pub const FlairNumber3Outline: &str = "\u{e045}";
+    pub const FlairNumber4: &str = "\u{e046}";
+    pub const FlairNumber4Outline: &str = "\u{e047}";
+    pub const FlairNumber5: &str = "\u{e048}";
+    pub const FlairNumber5Outline: &str = "\u{e049}";
+    pub const FlairNumber6: &str = "\u{e04a}";
+    pub const FlairNumber6Outline: &str = "\u{e04b}";
+    pub const FlairNumber7: &str = "\u{e04c}";
+    pub const FlairNumber7Outline: &str = "\u{e04d}";
+    pub const FlairNumber8: &str = "\u{e04e}";
+    pub const FlairNumber8Outline: &str = "\u{e04f}";
+    pub const FlairNumber9: &str = "\u{e050}";
+    pub const FlairNumber9Outline: &str = "\u{e051}";
+    pub const FlairPlus: &str = "\u{e052}";
+    pub const FlairSmallCheck: &str = "\u{e053}";
+    pub const FlairSmallCheckOutline: &str = "\u{e054}";
+    pub const FlairSmallCross: &str = "\u{e055}";
+    pub const FlairSmallCrossOutline: &str = "\u{e056}";
+    pub const FlairSmallDisabled: &str = "\u{e057}";
+    pub const FlairSmallDisabledOutline: &str = "\u{e058}";
+    pub const FlairSmallInfo: &str = "\u{e059}";
+    pub const FlairSmallInfoOutline: &str = "\u{e05a}";
+    pub const FlairSmallRotate: &str = "\u{e05b}";
+    pub const FlairSmallRotateOutline: &str = "\u{e05c}";
 }

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use ui::{
-    assets::icons::interface::InterfaceIconId,
+    assets::{icons::interface::Interface, interface},
     components::toggle::*,
     plugin::ForgeUiPlugin,
     theme::color::{accent_palette, error_palette, success_palette, warning_palette},
@@ -113,7 +113,7 @@ fn setup(mut commands: Commands) {
             parent.spawn((
                 Name::new("IconOnlyToggle"),
                 ToggleComponent::new("icon_only")
-                    .icon(InterfaceIconId::Heart)
+                    .text(Interface::new(interface::AArrowDown))
                     .variant(ToggleVariant::Soft)
                     .build(),
             ));

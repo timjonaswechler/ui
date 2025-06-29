@@ -1,4 +1,5 @@
 use crate::{
+    assets::{Check, Interface},
     theme::{
         color::{accent_palette, UiColorPalette},
         layout::UiLayout,
@@ -237,12 +238,15 @@ impl CheckboxBuilder {
     /// Calculate background color based on state
     fn calculate_background_color(&self) -> BackgroundColor {
         let palette = &self.checkbox_config.color_palette;
-        
+
         if self.checkbox_config.disabled {
             return BackgroundColor(palette.bg_subtle.with_alpha(0.5));
         }
 
-        match (self.checkbox_config.checked, self.checkbox_config.current_state) {
+        match (
+            self.checkbox_config.checked,
+            self.checkbox_config.current_state,
+        ) {
             (true, CheckboxState::Normal) => BackgroundColor(palette.solid),
             (true, CheckboxState::Hover) => BackgroundColor(palette.solid_hover),
             (true, CheckboxState::Active) => BackgroundColor(palette.solid_hover),
@@ -261,7 +265,10 @@ impl CheckboxBuilder {
             return BorderColor(palette.border.with_alpha(0.5));
         }
 
-        match (self.checkbox_config.checked, self.checkbox_config.current_state) {
+        match (
+            self.checkbox_config.checked,
+            self.checkbox_config.current_state,
+        ) {
             (true, _) => BorderColor(palette.solid),
             (false, CheckboxState::Normal) => BorderColor(palette.border),
             (false, CheckboxState::Hover) => BorderColor(palette.border_hover),
@@ -315,14 +322,15 @@ pub fn handle_checkbox_interactions(
     >,
     mut checkbox_events: EventWriter<CheckboxChangeEvent>,
 ) {
-    for (entity, interaction, mut checkbox, mut bg_color, mut border_color) in &mut interaction_query {
+    for (entity, interaction, mut checkbox, mut bg_color, mut border_color) in
+        &mut interaction_query
+    {
         if checkbox.disabled {
             continue;
         }
 
         let old_state = checkbox.current_state;
         let old_checked = checkbox.checked;
-        
 
         // Update state based on interaction
         checkbox.current_state = match *interaction {
@@ -333,10 +341,12 @@ pub fn handle_checkbox_interactions(
 
         // Toggle checked state on click (when releasing click)
         // Check for both Active->Normal and Active->Hover transitions (both indicate release)
-        if old_state == CheckboxState::Active && 
-           (checkbox.current_state == CheckboxState::Normal || checkbox.current_state == CheckboxState::Hover) {
+        if old_state == CheckboxState::Active
+            && (checkbox.current_state == CheckboxState::Normal
+                || checkbox.current_state == CheckboxState::Hover)
+        {
             checkbox.checked = !checkbox.checked;
-            
+
             // Send change event
             checkbox_events.write(CheckboxChangeEvent {
                 checkbox_entity: entity,
@@ -376,16 +386,10 @@ pub fn handle_checkbox_interactions(
 pub fn spawn_checkmarks(
     mut commands: Commands,
     checkbox_query: Query<(Entity, &CheckboxComponent), Added<CheckboxComponent>>,
-    icon_atlases: Option<Res<crate::assets::icons::InterfaceAtlases>>,
 ) {
-    // Only proceed if icon atlases are loaded
-    let Some(atlases) = icon_atlases else {
-        return;
-    };
-
     for (entity, checkbox) in &checkbox_query {
         if checkbox.checked {
-            spawn_checkmark_with_atlas(&mut commands, entity, checkbox, &atlases);
+            spawn_checkmark_with_atlas(&mut commands, entity);
         }
     }
 }
@@ -393,15 +397,12 @@ pub fn spawn_checkmarks(
 /// System to update checkmarks when checkbox state changes
 pub fn update_checkmarks(
     mut commands: Commands,
-    checkbox_query: Query<(Entity, &CheckboxComponent, Option<&Children>), Changed<CheckboxComponent>>,
+    checkbox_query: Query<
+        (Entity, &CheckboxComponent, Option<&Children>),
+        Changed<CheckboxComponent>,
+    >,
     checkmark_query: Query<Entity, With<CheckmarkComponent>>,
-    icon_atlases: Option<Res<crate::assets::icons::InterfaceAtlases>>,
 ) {
-    // Only proceed if icon atlases are loaded
-    let Some(atlases) = icon_atlases else {
-        return;
-    };
-
     for (checkbox_entity, checkbox, children) in &checkbox_query {
         // Find existing checkmark among children
         let existing_checkmark = if let Some(children) = children {
@@ -415,7 +416,7 @@ pub fn update_checkmarks(
         if checkbox.checked {
             // Spawn checkmark if it doesn't exist
             if existing_checkmark.is_none() {
-                spawn_checkmark_with_atlas(&mut commands, checkbox_entity, checkbox, &atlases);
+                spawn_checkmark_with_atlas(&mut commands, checkbox_entity);
             }
         } else {
             // Remove checkmark if it exists
@@ -431,36 +432,20 @@ pub fn update_checkmarks(
 pub struct CheckmarkComponent;
 
 /// Helper function to spawn a checkmark icon from the texture atlas
-fn spawn_checkmark_with_atlas(
-    commands: &mut Commands, 
-    parent_entity: Entity, 
-    checkbox: &CheckboxComponent,
-    atlases: &crate::assets::icons::InterfaceAtlases,
-) {
-    use crate::assets::icons::{IconSize, InterfaceIcon, InterfaceIconId};
-    
-    let icon_size = match checkbox.size {
-        CheckboxSize::Size1 => IconSize::Small,   // 16px
-        CheckboxSize::Size2 => IconSize::Small,   // 16px for 20px checkbox 
-        CheckboxSize::Size3 => IconSize::Medium,  // 24px for 24px checkbox
-    };
-    
-    // Use the Check icon from the interface atlas (InterfaceIconId::Check = 56)
-    let icon = InterfaceIcon::new(InterfaceIconId::Check)
-        .size(icon_size)
-        .tint(Color::WHITE); // White checkmark on colored background
-    
+fn spawn_checkmark_with_atlas(commands: &mut Commands, parent_entity: Entity) {
+    // Use the Check icon from the interface font
+    let icon = Interface::new(Check).color(crate::theme::color::TextColor::Accent); // White checkmark on colored background
+
     commands.entity(parent_entity).with_children(|parent| {
         // Create the icon bundle
-        let icon_bundle = icon.bundle(atlases);
-        
+
         let mut entity_commands = parent.spawn((
             Name::new("Checkmark"),
             CheckmarkComponent,
-            icon_bundle,
+            icon.build(),
             Pickable::IGNORE,
         ));
-        
+
         // Update the existing Node from the icon bundle to position it
         entity_commands.insert(Node {
             position_type: PositionType::Absolute,

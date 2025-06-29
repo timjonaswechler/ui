@@ -1,20 +1,21 @@
 use bevy::prelude::*;
+
 use ui::{
-    assets::icons::{
-        controllers::{
-            GenericAtlases, GenericIcon, GenericIconId, KeyboardMouseAtlases, KeyboardMouseIcon,
-            KeyboardMouseIconId, NintendoSwitchAtlases, NintendoSwitchIcon, NintendoSwitchIconId,
-            PlayStationAtlases, PlayStationIcon, PlayStationIconId, XboxAtlases, XboxIcon,
-            XboxIconId,
+    assets::{
+        icons::{
+            controllers::{
+                generic, generic::Generic, keyboard_mouse, keyboard_mouse::KeyboardMouse,
+                playstation, playstation::Playstation, xbox::Xbox,
+            },
+            interface::{AArrowDown, Anchor},
         },
-        interface::{InterfaceAtlases, InterfaceIcon, InterfaceIconId},
-        IconSize,
+        Interface,
     },
     components::{heading::Heading, text::Text},
     plugin::{ForgeUiPlugin, UiState},
     theme::{
-        color::{theme, TextColor as TextColorEnum},
-        typography::{TextSize, TextWeight},
+        color::{theme, warning_palette, TextColor as TextColorEnum},
+        typography::{FontSize, TextSize, TextWeight},
     },
     utilities::ui_root,
 };
@@ -27,15 +28,7 @@ fn main() {
         .run();
 }
 
-fn setup_icon_demo(
-    mut commands: Commands,
-    generic_atlases: Option<Res<GenericAtlases>>,
-    keyboard_mouse_atlases: Option<Res<KeyboardMouseAtlases>>,
-    xbox_atlases: Option<Res<XboxAtlases>>,
-    playstation_atlases: Option<Res<PlayStationAtlases>>,
-    switch_atlases: Option<Res<NintendoSwitchAtlases>>,
-    interface_atlases: Option<Res<InterfaceAtlases>>,
-) {
+fn setup_icon_demo(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2d);
 
@@ -69,31 +62,23 @@ fn setup_icon_demo(
             );
 
             // Icon Size Demo Section
-            create_size_demo_section(parent, generic_atlases.as_deref());
+            create_size_demo_section(parent );
 
             // Controller Icons Section
             create_controller_section(
-                parent,
-                generic_atlases.as_deref(),
-                keyboard_mouse_atlases.as_deref(),
-                xbox_atlases.as_deref(),
-                playstation_atlases.as_deref(),
-                switch_atlases.as_deref(),
+                parent
             );
 
             // Interface Icons Section
-            create_interface_section(parent, interface_atlases.as_deref());
+            create_interface_section(parent);
 
             // Color Tinting Demo
-            create_tinting_section(parent, generic_atlases.as_deref());
+            create_tinting_section(parent);
         });
     });
 }
 
-fn create_size_demo_section(
-    parent: &mut ChildSpawnerCommands,
-    generic_atlases: Option<&GenericAtlases>,
-) {
+fn create_size_demo_section(parent: &mut ChildSpawnerCommands) {
     parent
         .spawn((Node {
             flex_direction: FlexDirection::Column,
@@ -109,123 +94,91 @@ fn create_size_demo_section(
                     .build(),
             );
 
-            if let Some(atlases) = generic_atlases {
-                // Size demonstration row
-                parent
-                    .spawn((Node {
-                        flex_direction: FlexDirection::Row,
-                        align_items: AlignItems::Center,
-                        column_gap: Val::Px(24.0),
-                        padding: UiRect::all(Val::Px(16.0)),
-                        ..default()
-                    },))
-                    .with_children(|parent| {
-                        // Small (16px)
-                        parent
-                            .spawn((Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                row_gap: Val::Px(8.0),
-                                ..default()
-                            },))
-                            .with_children(|parent| {
-                                parent.spawn(
-                                    GenericIcon::new(GenericIconId::Button)
-                                        .size(IconSize::Small)
-                                        .bundle(atlases),
-                                );
-                                parent.spawn(
-                                    Text::caption("Small (16px)")
-                                        .size(TextSize::Xs)
-                                        .color(TextColorEnum::Muted)
-                                        .build(),
-                                );
-                            });
+            // Size demonstration row
+            parent
+                .spawn((Node {
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::Center,
+                    column_gap: Val::Px(24.0),
+                    padding: UiRect::all(Val::Px(16.0)),
+                    ..default()
+                },))
+                .with_children(|parent| {
+                    // Small (16px)
+                    parent
+                        .spawn((Node {
+                            flex_direction: FlexDirection::Column,
+                            align_items: AlignItems::Center,
+                            row_gap: Val::Px(8.0),
+                            ..default()
+                        },))
+                        .with_children(|parent| {
+                            parent.spawn(Generic::new(generic::Button).build());
+                            parent.spawn(
+                                Text::caption("Small (16px)")
+                                    .color(TextColorEnum::Muted)
+                                    .build(),
+                            );
+                        });
 
-                        // Medium (24px) - Default
-                        parent
-                            .spawn((Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                row_gap: Val::Px(8.0),
-                                ..default()
-                            },))
-                            .with_children(|parent| {
-                                parent.spawn(
-                                    GenericIcon::new(GenericIconId::Button)
-                                        .size(IconSize::Medium)
-                                        .bundle(atlases),
-                                );
-                                parent.spawn(
-                                    Text::caption("Medium (24px)")
-                                        .size(TextSize::Xs)
-                                        .color(TextColorEnum::Muted)
-                                        .build(),
-                                );
-                            });
+                    // Medium (24px) - Default
+                    parent
+                        .spawn((Node {
+                            flex_direction: FlexDirection::Column,
+                            align_items: AlignItems::Center,
+                            row_gap: Val::Px(8.0),
+                            ..default()
+                        },))
+                        .with_children(|parent| {
+                            parent.spawn(Generic::new(generic::Button).build());
+                            parent.spawn(
+                                Text::caption("Medium (24px)")
+                                    .size(TextSize::Xs)
+                                    .color(TextColorEnum::Muted)
+                                    .build(),
+                            );
+                        });
 
-                        // Large (32px)
-                        parent
-                            .spawn((Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                row_gap: Val::Px(8.0),
-                                ..default()
-                            },))
-                            .with_children(|parent| {
-                                parent.spawn(
-                                    GenericIcon::new(GenericIconId::Button)
-                                        .size(IconSize::Large)
-                                        .bundle(atlases),
-                                );
-                                parent.spawn(
-                                    Text::caption("Large (32px)")
-                                        .size(TextSize::Xs)
-                                        .color(TextColorEnum::Muted)
-                                        .build(),
-                                );
-                            });
+                    // Large (32px)
+                    parent
+                        .spawn((Node {
+                            flex_direction: FlexDirection::Column,
+                            align_items: AlignItems::Center,
+                            row_gap: Val::Px(8.0),
+                            ..default()
+                        },))
+                        .with_children(|parent| {
+                            parent.spawn(Generic::new(generic::Button).size(TextSize::Lg).build());
+                            parent.spawn(
+                                Text::caption("Large (32px)")
+                                    .size(TextSize::Xs)
+                                    .color(TextColorEnum::Muted)
+                                    .build(),
+                            );
+                        });
 
-                        // Extra Large (64px)
-                        parent
-                            .spawn((Node {
-                                flex_direction: FlexDirection::Column,
-                                align_items: AlignItems::Center,
-                                row_gap: Val::Px(8.0),
-                                ..default()
-                            },))
-                            .with_children(|parent| {
-                                parent.spawn(
-                                    GenericIcon::new(GenericIconId::Button)
-                                        .size(IconSize::ExtraLarge)
-                                        .bundle(atlases),
-                                );
-                                parent.spawn(
-                                    Text::caption("Extra Large (64px)")
-                                        .size(TextSize::Xs)
-                                        .color(TextColorEnum::Muted)
-                                        .build(),
-                                );
-                            });
-                    });
-            } else {
-                parent.spawn(
-                    Text::body("Loading icon atlases...")
-                        .color(TextColorEnum::Muted)
-                        .build(),
-                );
-            }
+                    // Extra Large (64px)
+                    parent
+                        .spawn((Node {
+                            flex_direction: FlexDirection::Column,
+                            align_items: AlignItems::Center,
+                            row_gap: Val::Px(8.0),
+                            ..default()
+                        },))
+                        .with_children(|parent| {
+                            parent.spawn(Generic::new(generic::Button).size(TextSize::Xl).build());
+                            parent.spawn(
+                                Text::caption("Extra Large (64px)")
+                                    .size(TextSize::Xs)
+                                    .color(TextColorEnum::Muted)
+                                    .build(),
+                            );
+                        });
+                });
         });
 }
 
-fn create_controller_section(
-    parent: &mut ChildSpawnerCommands,
-    generic_atlases: Option<&GenericAtlases>,
-    keyboad_mouse_atlas: Option<&KeyboardMouseAtlases>,
-    xbox_atlases: Option<&XboxAtlases>,
-    playstation_atlases: Option<&PlayStationAtlases>,
-    switch_atlases: Option<&NintendoSwitchAtlases>,
-) {
+fn create_controller_section(parent: &mut ChildSpawnerCommands) {
     parent
         .spawn((Node {
             flex_direction: FlexDirection::Column,
@@ -252,98 +205,60 @@ fn create_controller_section(
                 },))
                 .with_children(|parent| {
                     // Generic Controls
-                    if let Some(atlases) = generic_atlases {
-                        create_controller_card(parent, "Generic Controls", |parent| {
-                            parent.spawn(GenericIcon::new(GenericIconId::Button).bundle(atlases));
-                            parent.spawn(GenericIcon::new(GenericIconId::Joystick).bundle(atlases));
-                            parent.spawn(GenericIcon::new(GenericIconId::Stick).bundle(atlases));
-                        });
-                    }
 
-                    if let Some(atlases) = keyboad_mouse_atlas {
-                        create_controller_card(parent, "Keyboard & Mouse", |parent| {
-                            parent.spawn(
-                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardW)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardA)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardS)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                KeyboardMouseIcon::new(KeyboardMouseIconId::KeyboardD)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                KeyboardMouseIcon::new(KeyboardMouseIconId::Mouse).bundle(atlases),
-                            );
-                        });
-                    }
+                    create_controller_card(parent, "Generic Controls", |parent| {
+                        parent.spawn(Generic::new(generic::Button).build());
+                        parent.spawn(Generic::new(generic::Stick).build());
+                        parent.spawn(Generic::new(generic::Joystick).build());
+                    });
+
+                    create_controller_card(parent, "Keyboard & Mouse", |parent| {
+                        parent.spawn(KeyboardMouse::new(keyboard_mouse::KeyboardW).build());
+                        parent.spawn(KeyboardMouse::new(keyboard_mouse::Mouse).build());
+                    });
+
                     // Xbox Controls
-                    if let Some(atlases) = xbox_atlases {
-                        create_controller_card(parent, "Xbox Controls", |parent| {
-                            parent.spawn(XboxIcon::new(XboxIconId::ButtonA).bundle(atlases));
-                            parent.spawn(XboxIcon::new(XboxIconId::ButtonB).bundle(atlases));
-                            parent.spawn(XboxIcon::new(XboxIconId::ButtonX).bundle(atlases));
-                            parent.spawn(XboxIcon::new(XboxIconId::ButtonY).bundle(atlases));
-                        });
-                    }
 
-                    // PlayStation Controls
-                    if let Some(atlases) = playstation_atlases {
-                        create_controller_card(parent, "PlayStation Controls", |parent| {
-                            parent.spawn(
-                                PlayStationIcon::new(PlayStationIconId::ButtonCross)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                PlayStationIcon::new(PlayStationIconId::ButtonCircle)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                PlayStationIcon::new(PlayStationIconId::ButtonSquare)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                PlayStationIcon::new(PlayStationIconId::ButtonTriangle)
-                                    .bundle(atlases),
-                            );
-                        });
-                    }
+                    // create_controller_card(parent, "Xbox Controls", |parent| {
+                    //     parent.spawn(Xbox::new(xbox::ButtonA).build());
+                    //     parent.spawn(Xbox::new(xbox::ButtonB).build());
+                    //     parent.spawn(Xbox::new(xbox::ButtonX).build());
+                    //     parent.spawn(Xbox::new(xbox::ButtonY).build());
+                    // });
 
-                    // Nintendo Switch Controls
-                    if let Some(atlases) = switch_atlases {
-                        create_controller_card(parent, "Nintendo Switch Controls", |parent| {
-                            parent.spawn(
-                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonA)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonB)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonX)
-                                    .bundle(atlases),
-                            );
-                            parent.spawn(
-                                NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonY)
-                                    .bundle(atlases),
-                            );
-                        });
-                    }
+                    // // PlayStation Controls
+
+                    create_controller_card(parent, "PlayStation Controls", |parent| {
+                        parent.spawn(
+                            Playstation::new(playstation::ButtonCross)
+                                .size(TextSize::X6l)
+                                .build(),
+                        );
+                        parent.spawn(Playstation::new(playstation::ButtonCircleOutline).build());
+                        parent.spawn(Playstation::new(playstation::ButtonSquare).build());
+                        parent.spawn(Playstation::new(playstation::ButtonSquareOutline).build());
+                        parent.spawn(Playstation::new(playstation::ButtonTriangle).build());
+                    });
+
+                    // create_controller_card(parent, "Nintendo Switch Controls", |parent| {
+                    //     parent.spawn(
+                    //         NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonA).bundle(atlases),
+                    //     );
+                    //     parent.spawn(
+                    //         NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonB).bundle(atlases),
+                    //     );
+                    //     parent.spawn(
+                    //         NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonX).bundle(atlases),
+                    //     );
+                    //     parent.spawn(
+                    //         NintendoSwitchIcon::new(NintendoSwitchIconId::ButtonY).bundle(atlases),
+                    //     );
+                    // });
                 });
         });
 }
 
-fn create_interface_section(
-    parent: &mut ChildSpawnerCommands,
-    interface_atlases: Option<&InterfaceAtlases>,
-) {
+fn create_interface_section(parent: &mut ChildSpawnerCommands) {
     parent
         .spawn((Node {
             flex_direction: FlexDirection::Column,
@@ -359,36 +274,29 @@ fn create_interface_section(
                     .build(),
             );
 
-            if let Some(atlases) = interface_atlases {
-                parent
-                    .spawn((Node {
-                        flex_direction: FlexDirection::Row,
-                        column_gap: Val::Px(16.0),
-                        padding: UiRect::all(Val::Px(16.0)),
-                        ..default()
-                    },))
-                    .with_children(|parent| {
-                        parent.spawn(InterfaceIcon::new(InterfaceIconId::Home).bundle(atlases));
-                        parent.spawn(InterfaceIcon::new(InterfaceIconId::Gear).bundle(atlases));
-                        parent.spawn(
-                            InterfaceIcon::new(InterfaceIconId::ChevronDown).bundle(atlases),
-                        );
-                        parent.spawn(InterfaceIcon::new(InterfaceIconId::Avatar).bundle(atlases));
-                    });
-            } else {
-                parent.spawn(
-                    Text::body("Loading interface icons...")
-                        .color(TextColorEnum::Muted)
-                        .build(),
-                );
-            }
+            parent
+                .spawn((Node {
+                    display: Display::Grid,
+                    grid_template_columns: vec![RepeatedGridTrack::fr(1, 1.0); 6],
+                    column_gap: Val::Px(16.0),
+                    row_gap: Val::Px(16.0),
+                    padding: UiRect::all(Val::Px(16.0)),
+                    ..default()
+                },))
+                .with_children(|parent| {
+                    // Using the new font-based icon API with individual icon structs
+                    parent.spawn(Interface::new(AArrowDown).build());
+                    parent.spawn(
+                        Interface::new(Anchor)
+                            .size(TextSize::X8l)
+                            .color(TextColorEnum::Custom(theme().amber.track))
+                            .build(),
+                    );
+                });
         });
 }
 
-fn create_tinting_section(
-    parent: &mut ChildSpawnerCommands,
-    generic_atlases: Option<&GenericAtlases>,
-) {
+fn create_tinting_section(parent: &mut ChildSpawnerCommands) {
     parent
         .spawn((Node {
             flex_direction: FlexDirection::Column,
@@ -404,47 +312,45 @@ fn create_tinting_section(
                     .build(),
             );
 
-            if let Some(atlases) = generic_atlases {
-                parent
-                    .spawn((Node {
-                        flex_direction: FlexDirection::Row,
-                        column_gap: Val::Px(16.0),
-                        padding: UiRect::all(Val::Px(16.0)),
-                        ..default()
-                    },))
-                    .with_children(|parent| {
-                        // White (default)
-                        parent.spawn(GenericIcon::new(GenericIconId::Button).bundle(atlases));
+            parent
+                .spawn((Node {
+                    flex_direction: FlexDirection::Row,
+                    column_gap: Val::Px(16.0),
+                    padding: UiRect::all(Val::Px(16.0)),
+                    ..default()
+                },))
+                .with_children(|parent| {
+                    // White (default)
+                    parent.spawn(Generic::new(generic::Button).build());
 
-                        // Red tint
-                        parent.spawn(
-                            GenericIcon::new(GenericIconId::Button)
-                                .tint(theme().red.solid)
-                                .bundle(atlases),
-                        );
+                    // Red tint
+                    parent.spawn(
+                        Generic::new(generic::Button)
+                            .color(TextColorEnum::Accent)
+                            .build(),
+                    );
 
-                        // Green tint
-                        parent.spawn(
-                            GenericIcon::new(GenericIconId::Button)
-                                .tint(theme().green.solid)
-                                .bundle(atlases),
-                        );
+                    // Green tint
+                    parent.spawn(
+                        Generic::new(generic::Button)
+                            .color(TextColorEnum::Success)
+                            .build(),
+                    );
 
-                        // Blue tint
-                        parent.spawn(
-                            GenericIcon::new(GenericIconId::Button)
-                                .tint(theme().indigo.solid)
-                                .bundle(atlases),
-                        );
+                    // Blue tint
+                    parent.spawn(
+                        Generic::new(generic::Button)
+                            .color(TextColorEnum::Warning)
+                            .build(),
+                    );
 
-                        // Purple tint
-                        parent.spawn(
-                            GenericIcon::new(GenericIconId::Button)
-                                .tint(theme().purple.solid)
-                                .bundle(atlases),
-                        );
-                    });
-            }
+                    // Purple tint
+                    parent.spawn(
+                        Generic::new(generic::Button)
+                            .color(TextColorEnum::Custom(theme().pink.solid_hover_a))
+                            .build(),
+                    );
+                });
         });
 }
 
